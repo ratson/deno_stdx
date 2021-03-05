@@ -1,0 +1,19 @@
+commit-msg:
+  commands:
+    commitizen:
+      run: cz check --commit-msg-file .git/COMMIT_EDITMSG
+
+pre-commit:
+  parallel: true
+  commands:
+    deno-fmt:
+      glob: "*.{js,ts}"
+      run: deno fmt --check {staged_files}
+    deno-lint:
+      glob: "*.{js,ts}"
+      run: deno lint --unstable
+
+pre-push:
+  commands:
+    deno-test:
+      run: deno test --allow-run

@@ -1,15 +1,12 @@
-# subprocess
+# Subprocess
+
+[![deno doc](https://doc.deno.land/badge.svg)](https://doc.deno.land/https/deno.land/x/stdx/subprocess/mod.ts)
 
 Usage:
 
 ```typescript
 import * as subprocess from "https://deno.land/x/stdx/subprocess/mod.ts";
 ```
-
-- [subprocess](#subprocess)
-    - [output()](#output)
-    - [stderrOutput()](#stderroutput)
-    - [run()](#run)
 
 ### output()
 

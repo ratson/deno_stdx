@@ -1,7 +1,7 @@
 import {
   assertEquals,
   assertMatch,
-} from "https://deno.land/std@0.89.0/testing/asserts.ts";
+} from "https://deno.land/std@0.91.0/testing/asserts.ts";
 import * as subprocess from "./mod.ts";
 
 Deno.test("run() exit with 0", async () => {
@@ -17,4 +17,9 @@ Deno.test("output() return stdout as string", async () => {
 Deno.test("stderrOutput() return stderr as string", async () => {
   const s = await subprocess.stderrOutput(["deno", "--version"]);
   assertEquals(s, "");
+});
+
+Deno.test("pipeText() return piped text", async () => {
+  const s = await subprocess.pipeText(["cat"], "testing");
+  assertEquals(s, "testing");
 });

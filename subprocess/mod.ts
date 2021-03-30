@@ -1,3 +1,6 @@
+const encoder = new TextEncoder();
+const decoder = new TextDecoder();
+
 type Stdio = "inherit" | "piped" | "null" | number;
 
 interface RunOptions {
@@ -17,10 +20,10 @@ export const run = async (cmd: string[], opts?: RunOptions) => {
     stdout?: string;
   } = await p.status();
   if (opts?.stderr === "piped") {
-    result.stderr = new TextDecoder().decode(await p.stderrOutput());
+    result.stderr = decoder.decode(await p.stderrOutput());
   }
   if (opts?.stdout === "piped") {
-    result.stdout = new TextDecoder().decode(await p.output());
+    result.stdout = decoder.decode(await p.output());
   }
   p.close();
   return result;
@@ -40,4 +43,25 @@ export const stderrOutput = async (
 ) => {
   const r = await run(cmd, { stdout: "null", ...opts, stderr: "piped" });
   return r.stderr!;
+};
+
+type PipeTextOptions = {
+  cwd?: string;
+  env?: {
+    [key: string]: string;
+  };
+};
+
+export const pipeText = async (
+  cmd: string[],
+  text: string,
+  opts?: PipeTextOptions,
+) => {
+  const p = Deno.run({ ...opts, cmd, stdout: "piped", stdin: "piped" });
+  await p.stdin.write(encoder.encode(text));
+  p.stdin.close();
+
+  const output = await p.output();
+  p.close();
+  return decoder.decode(output);
 };

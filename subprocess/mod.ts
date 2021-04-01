@@ -13,7 +13,7 @@ interface RunOptions {
   stdin?: Stdio;
 }
 
-export const run = async (cmd: string[], opts?: RunOptions) => {
+export async function run(cmd: string[], opts?: RunOptions) {
   const p = Deno.run({ ...opts, cmd });
   const result: Deno.ProcessStatus & {
     stderr?: string;
@@ -27,23 +27,23 @@ export const run = async (cmd: string[], opts?: RunOptions) => {
   }
   p.close();
   return result;
-};
+}
 
-export const output = async (
+export async function output(
   cmd: string[],
   opts?: RunOptions & { stdout?: "piped" },
-) => {
+) {
   const r = await run(cmd, { stderr: "null", ...opts, stdout: "piped" });
   return r.stdout!;
-};
+}
 
-export const stderrOutput = async (
+export async function stderrOutput(
   cmd: string[],
   opts?: RunOptions & { stderr?: "piped" },
-) => {
+) {
   const r = await run(cmd, { stdout: "null", ...opts, stderr: "piped" });
   return r.stderr!;
-};
+}
 
 type PipeTextOptions = {
   cwd?: string;
@@ -52,11 +52,11 @@ type PipeTextOptions = {
   };
 };
 
-export const pipeText = async (
+export async function pipeText(
   cmd: string[],
   text: string,
   opts?: PipeTextOptions,
-) => {
+) {
   const p = Deno.run({ ...opts, cmd, stdout: "piped", stdin: "piped" });
   await p.stdin.write(encoder.encode(text));
   p.stdin.close();
@@ -64,4 +64,4 @@ export const pipeText = async (
   const output = await p.output();
   p.close();
   return decoder.decode(output);
-};
+}

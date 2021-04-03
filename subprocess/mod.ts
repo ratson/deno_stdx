@@ -1,17 +1,7 @@
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
 
-type Stdio = "inherit" | "piped" | "null" | number;
-
-interface RunOptions {
-  cwd?: string;
-  env?: {
-    [key: string]: string;
-  };
-  stdout?: Stdio;
-  stderr?: Stdio;
-  stdin?: Stdio;
-}
+type RunOptions = Omit<Deno.RunOptions, "cmd">;
 
 /**
  * Spawns a subprocess to run `cmd`.
@@ -56,12 +46,7 @@ export async function stderrOutput(
   return r.stderr!;
 }
 
-type PipeTextOptions = {
-  cwd?: string;
-  env?: {
-    [key: string]: string;
-  };
-};
+type PipeTextOptions = Omit<RunOptions, "stdout" | "stdin">;
 
 /**
  * Similar to `echo "text" | cmd`.

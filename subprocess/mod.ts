@@ -13,6 +13,11 @@ interface RunOptions {
   stdin?: Stdio;
 }
 
+/**
+ * Spawns a subprocess to run `cmd`.
+ * 
+ * @param cmd An array of program arguments, the first of which is the binary
+ */
 export async function run(cmd: string[], opts?: RunOptions) {
   const p = Deno.run({ ...opts, cmd });
   const result: Deno.ProcessStatus & {
@@ -29,6 +34,9 @@ export async function run(cmd: string[], opts?: RunOptions) {
   return result;
 }
 
+/**
+ * Capture stdout output from a command.
+ */
 export async function output(
   cmd: string[],
   opts?: RunOptions & { stdout?: "piped" },
@@ -37,6 +45,9 @@ export async function output(
   return r.stdout!;
 }
 
+/**
+ * Capture stderr output from a command.
+ */
 export async function stderrOutput(
   cmd: string[],
   opts?: RunOptions & { stderr?: "piped" },
@@ -52,6 +63,9 @@ type PipeTextOptions = {
   };
 };
 
+/**
+ * Similar to `echo "text" | cmd`.
+ */
 export async function pipeText(
   cmd: string[],
   text: string,

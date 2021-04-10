@@ -16,4 +16,4 @@ pre-commit:
 pre-push:
   commands:
     deno-test:
-      run: deno test --allow-run
+      run: deno test --allow-run --allow-env --allow-read

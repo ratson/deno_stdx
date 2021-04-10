@@ -1,7 +1,7 @@
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
 
-type RunOptions = Omit<Deno.RunOptions, "cmd">;
+export type RunOptions = Omit<Deno.RunOptions, "cmd">;
 
 /**
  * Spawns a subprocess to run `cmd`.
@@ -46,7 +46,7 @@ export async function stderrOutput(
   return r.stderr!;
 }
 
-type PipeTextOptions = Omit<RunOptions, "stdout" | "stdin">;
+export type PipeTextOptions = Omit<RunOptions, "stdout" | "stdin">;
 
 /**
  * Similar to `echo "text" | cmd`.

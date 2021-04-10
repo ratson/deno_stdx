@@ -56,7 +56,13 @@ export async function pipeText(
   text: string,
   opts?: PipeTextOptions,
 ) {
-  const p = Deno.run({ ...opts, cmd, stdout: "piped", stdin: "piped" });
+  const p = Deno.run({
+    stderr: "null",
+    ...opts,
+    cmd,
+    stdout: "piped",
+    stdin: "piped",
+  });
   await p.stdin.write(encoder.encode(text));
   p.stdin.close();
 

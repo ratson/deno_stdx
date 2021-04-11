@@ -1,4 +1,48 @@
 /**
+ * Returns the default root directory to use for user-specific cached data.
+ * Users should create their own application-specific subdirectory within this one and use that.
+ * 
+ * On Unix systems, it returns $XDG_CACHE_HOME as specified by
+ * https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html
+ * if non-empty, else $HOME/.cache.
+ * On Darwin, it returns $HOME/Library/Caches.
+ * On Windows, it returns %LocalAppData%.
+ * 
+ * If the location cannot be determined (for example, $HOME is not defined), then it will throw an error.
+ */
+export function userCacheDir() {
+  const { env } = Deno;
+  let dir: string | undefined;
+
+  switch (Deno.build.os) {
+    case "darwin":
+      dir = env.get("HOME");
+      if (!dir) {
+        throw new Error("$HOME is not defined");
+      }
+      dir += "/Library/Caches";
+      break;
+    case "windows":
+      dir = env.get("LocalAppData");
+      if (!dir) {
+        throw new Error("%LocalAppData% is not defined");
+      }
+      break;
+    default: // Unix
+      dir = env.get("XDG_CACHE_HOME");
+      if (!dir) {
+        dir = env.get("HOME");
+        if (!dir) {
+          throw new Error("neither $XDG_CACHE_HOME nor $HOME are defined");
+        }
+        dir += "/.cache";
+      }
+  }
+
+  return dir;
+}
+
+/**
  * Returns the current user's home directory.
  * 
  * On Unix, including macOS, it returns the $HOME environment variable.

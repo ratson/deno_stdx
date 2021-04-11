@@ -43,6 +43,50 @@ export function userCacheDir() {
 }
 
 /**
+ * Returns the default root directory to use for user-specific configuration data.
+ * Users should create their own application-specific subdirectory within this one and use that.
+ * 
+ * On Unix systems, it returns $XDG_CONFIG_HOME as specified by
+ * https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html
+ * if non-empty, else $HOME/.config.
+ * On Darwin, it returns $HOME/Library/Application Support.
+ * On Windows, it returns %AppData%.
+ * 
+ * If the location cannot be determined (for example, $HOME is not defined), then it will throw an error.
+ */
+export function userConfigDir() {
+  const { env } = Deno;
+  let dir: string | undefined;
+
+  switch (Deno.build.os) {
+    case "darwin":
+      dir = env.get("HOME");
+      if (!dir) {
+        throw new Error("$HOME is not defined");
+      }
+      dir += "/Library/Application Support";
+      break;
+    case "windows":
+      dir = env.get("AppData");
+      if (!dir) {
+        throw new Error("%AppData% is not defined");
+      }
+      break;
+    default: // Unix
+      dir = env.get("XDG_CONFIG_HOME");
+      if (!dir) {
+        dir = env.get("HOME");
+        if (!dir) {
+          throw new Error("neither $XDG_CONFIG_HOME nor $HOME are defined");
+        }
+        dir += "/.config";
+      }
+  }
+
+  return dir;
+}
+
+/**
  * Returns the current user's home directory.
  * 
  * On Unix, including macOS, it returns the $HOME environment variable.

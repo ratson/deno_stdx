@@ -1,7 +1,4 @@
-import {
-  assertEquals,
-  assertStrictEquals,
-} from "https://deno.land/std@0.92.0/testing/asserts.ts";
+import { assertEquals, assertStrictEquals } from "../deps_test.ts";
 import { Path } from "./path.ts";
 
 Deno.test("Path", () => {

@@ -1,7 +1,4 @@
-import {
-  assertEquals,
-  assertMatch,
-} from "https://deno.land/std@0.91.0/testing/asserts.ts";
+import { assertEquals, assertMatch } from "../deps_test.ts";
 import * as subprocess from "./mod.ts";
 
 Deno.test("run() exit with 0", async () => {

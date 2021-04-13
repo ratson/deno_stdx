@@ -2,7 +2,7 @@ import {
   assertStrictEquals,
   assertThrows,
   assertThrowsAsync,
-} from "https://deno.land/std@0.92.0/testing/asserts.ts";
+} from "../deps_test.ts";
 import { delay, timeout, TimeoutError } from "./timeout.ts";
 
 const fixture = Symbol("fixture");

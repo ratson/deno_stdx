@@ -1,7 +1,4 @@
-import {
-  assert,
-  assertStrictEquals,
-} from "https://deno.land/std@0.92.0/testing/asserts.ts";
+import { assert, assertStrictEquals } from "../deps_test.ts";
 import { randomInt } from "./rand.ts";
 
 Deno.test("randomInt()", () => {

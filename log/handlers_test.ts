@@ -1,5 +1,5 @@
 import { getLogger, setup } from "https://deno.land/std@0.92.0/log/mod.ts";
-import { assertEquals } from "https://deno.land/std@0.92.0/testing/asserts.ts";
+import { assertEquals } from "../deps_test.ts";
 import { BufferHandler } from "./handlers.ts";
 
 Deno.test("BufferHandler", async () => {

@@ -6,6 +6,13 @@ Deno.test("run() exit with 0", async () => {
   assertEquals(r, { code: 0, success: true });
 });
 
+Deno.test("run() with check", async () => {
+  await assertThrowsAsync(
+    () => subprocess.run(["deno", "404"], { check: true, stderr: "null" }),
+    subprocess.CalledProcessError,
+  );
+});
+
 Deno.test("run() with pipeText", async () => {
   const s = await subprocess.run(["cat"], {
     pipeText: "testing",

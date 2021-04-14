@@ -1,7 +1,10 @@
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
 
-type RunOptionsBase = Omit<Deno.RunOptions, "cmd">;
+export class CalledProcessError extends Error {
+}
+
+type RunOptionsBase = Omit<Deno.RunOptions, "cmd"> & { check?: boolean };
 export type RunOptions =
   | (RunOptionsBase & { pipeText: string; stdin?: "piped" })
   | (RunOptionsBase & { pipeText?: undefined })
@@ -52,6 +55,11 @@ async function run(cmd: string[], opts?: RunOptions) {
     result.stdout = decoder.decode(await p.output());
   }
   p.close();
+
+  if (o.check && !result.success) {
+    throw new CalledProcessError();
+  }
+
   return result;
 }
 export { run };

@@ -1,7 +1,11 @@
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
 
-export type RunOptions = Omit<Deno.RunOptions, "cmd">;
+type RunOptionsBase = Omit<Deno.RunOptions, "cmd">;
+export type RunOptions =
+  | (RunOptionsBase & { pipeText: string; stdin?: "piped" })
+  | (RunOptionsBase & { pipeText?: undefined })
+  | undefined;
 
 function run(
   cmd: string[],
@@ -11,22 +15,40 @@ function run(
   cmd: string[],
   opts: RunOptions & { stdout: "piped" },
 ): Promise<Deno.ProcessStatus & { stdout: string }>;
-function run(cmd: string[], opts?: RunOptions): Promise<Deno.ProcessStatus>;
+function run(
+  cmd: string[],
+  opts?: RunOptions,
+): Promise<Deno.ProcessStatus>;
 /**
  * Spawns a subprocess to run `cmd`.
  * 
  * @param cmd An array of program arguments, the first of which is the binary
  */
 async function run(cmd: string[], opts?: RunOptions) {
-  const p = Deno.run({ ...opts, cmd });
+  const { pipeText, ...o } = opts ?? {};
+  const hasPipeText = typeof pipeText === "string";
+  if (hasPipeText) {
+    if (!o.stdin) {
+      o.stdin = "piped";
+    } else if (o.stdin !== "piped") {
+      throw new TypeError("`pipeText` only works when `stdin` is `piped`");
+    }
+  }
+
+  const p = Deno.run({ ...o, cmd });
+  if (hasPipeText && p.stdin) {
+    await p.stdin.write(encoder.encode(pipeText));
+    p.stdin.close();
+  }
+
   const result: Deno.ProcessStatus & {
     stderr?: string;
     stdout?: string;
   } = await p.status();
-  if (opts?.stderr === "piped") {
+  if (o.stderr === "piped") {
     result.stderr = decoder.decode(await p.stderrOutput());
   }
-  if (opts?.stdout === "piped") {
+  if (o.stdout === "piped") {
     result.stdout = decoder.decode(await p.output());
   }
   p.close();
@@ -60,27 +82,14 @@ export async function stderrOutput(
   return r.stderr!;
 }
 
-export type PipeTextOptions = Omit<RunOptions, "stdout" | "stdin">;
-
 /**
  * Similar to `echo "text" | cmd`.
  */
 export async function pipeText(
   cmd: string[],
   text: string,
-  opts?: PipeTextOptions,
+  opts?: Omit<RunOptions, "pipeText" | "stdin" | "stdout">,
 ) {
-  const p = Deno.run({
-    stderr: "null",
-    ...opts,
-    cmd,
-    stdout: "piped",
-    stdin: "piped",
-  });
-  await p.stdin.write(encoder.encode(text));
-  p.stdin.close();
-
-  const output = await p.output();
-  p.close();
-  return decoder.decode(output);
+  const r = await run(cmd, { ...opts, pipeText: text, stdout: "piped" });
+  return r.stdout;
 }

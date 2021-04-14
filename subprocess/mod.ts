@@ -3,12 +3,21 @@ const decoder = new TextDecoder();
 
 export type RunOptions = Omit<Deno.RunOptions, "cmd">;
 
+function run(
+  cmd: string[],
+  opts: RunOptions & { stderr: "piped" },
+): Promise<Deno.ProcessStatus & { stderr: string }>;
+function run(
+  cmd: string[],
+  opts: RunOptions & { stdout: "piped" },
+): Promise<Deno.ProcessStatus & { stdout: string }>;
+function run(cmd: string[], opts?: RunOptions): Promise<Deno.ProcessStatus>;
 /**
  * Spawns a subprocess to run `cmd`.
  * 
  * @param cmd An array of program arguments, the first of which is the binary
  */
-export async function run(cmd: string[], opts?: RunOptions) {
+async function run(cmd: string[], opts?: RunOptions) {
   const p = Deno.run({ ...opts, cmd });
   const result: Deno.ProcessStatus & {
     stderr?: string;
@@ -23,24 +32,29 @@ export async function run(cmd: string[], opts?: RunOptions) {
   p.close();
   return result;
 }
+export { run };
 
 /**
- * Capture stdout output from a command.
+ * Capture `stdout` output from a command.
+ * 
+ * `stderr` is default to `null`.
  */
 export async function output(
   cmd: string[],
-  opts?: RunOptions & { stdout?: "piped" },
+  opts?: Omit<RunOptions, "stdout">,
 ) {
   const r = await run(cmd, { stderr: "null", ...opts, stdout: "piped" });
   return r.stdout!;
 }
 
 /**
- * Capture stderr output from a command.
+ * Capture `stderr` output from a command.
+ * 
+ * `stdout` is default to `null`.
  */
 export async function stderrOutput(
   cmd: string[],
-  opts?: RunOptions & { stderr?: "piped" },
+  opts?: Omit<RunOptions, "stderr">,
 ) {
   const r = await run(cmd, { stdout: "null", ...opts, stderr: "piped" });
   return r.stderr!;

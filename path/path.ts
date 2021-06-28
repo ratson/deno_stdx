@@ -1,10 +1,10 @@
-import { exists } from "https://deno.land/std@0.95.0/fs/exists.ts";
+import { exists } from "https://deno.land/std@0.99.0/fs/exists.ts";
 import {
   basename,
   isAbsolute,
   join,
   resolve,
-} from "https://deno.land/std@0.95.0/path/mod.ts";
+} from "https://deno.land/std@0.99.0/path/mod.ts";
 import { userHomeDir } from "../os/mod.ts";
 
 export class Path {

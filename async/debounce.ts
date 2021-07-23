@@ -6,6 +6,7 @@ export interface DebouncedFunction<F extends GenericFunction> {
   clear: () => void;
 }
 
+/** @deprecated - use `std/async/debounce` instead. */
 export function debounce<F extends GenericFunction>(
   this: ThisParameterType<F>,
   fn: F,

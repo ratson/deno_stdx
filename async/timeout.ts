@@ -40,6 +40,7 @@ export interface TimeoutPromise<T> extends Promise<T> {
   clear(): Promise<void>;
 }
 
+/** @deprecated - use `std/async/deadline` instead. */
 export function timeout<T, H = undefined>(
   milliseconds: number,
   opts?: TimeoutOptions<T, H>,

@@ -24,7 +24,7 @@ function run(
 ): Promise<Deno.ProcessStatus>;
 /**
  * Spawns a subprocess to run `cmd`.
- * 
+ *
  * @param cmd An array of program arguments, the first of which is the binary
  */
 async function run(cmd: string[], opts?: RunOptions) {
@@ -44,17 +44,19 @@ async function run(cmd: string[], opts?: RunOptions) {
     p.stdin.close();
   }
 
+  const [status, stdout, stderr] = await Promise.all([
+    p.status(),
+    o.stdout === "piped" ? p.output() : null,
+    o.stderr === "piped" ? p.stderrOutput() : null,
+  ]);
+  p.close();
+
   const result: Deno.ProcessStatus & {
     stderr?: string;
     stdout?: string;
-  } = await p.status();
-  if (o.stderr === "piped") {
-    result.stderr = decoder.decode(await p.stderrOutput());
-  }
-  if (o.stdout === "piped") {
-    result.stdout = decoder.decode(await p.output());
-  }
-  p.close();
+  } = status;
+  if (stderr !== null) result.stderr = decoder.decode(stderr);
+  if (stdout !== null) result.stdout = decoder.decode(stdout);
 
   if (o.check && !result.success) {
     throw new CalledProcessError();
@@ -66,7 +68,7 @@ export { run };
 
 /**
  * Capture `stdout` output from a command.
- * 
+ *
  * `stderr` is default to `null`.
  */
 export async function output(
@@ -79,7 +81,7 @@ export async function output(
 
 /**
  * Capture `stderr` output from a command.
- * 
+ *
  * `stdout` is default to `null`.
  */
 export async function stderrOutput(

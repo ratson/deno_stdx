@@ -9,6 +9,14 @@ Deno.test("map", async () => {
     }),
     [10, 20, 30],
   );
+
+  assertEquals(
+    await map([100, 20, 30], async (i) => {
+      await delay(i);
+      return i;
+    }),
+    [100, 20, 30],
+  );
 });
 
 Deno.test("concurrency: 1", async () => {

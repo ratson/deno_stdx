@@ -4,14 +4,26 @@ export async function map<T, R>(
   iterable: Iterable<T> | AsyncIterable<T>,
   mapper: (data: T) => Promise<R>,
   opts?: { readonly concurrency?: number },
-) {
+): Promise<R[]> {
+  async function* gen() {
+    let index = 0;
+    for await (const value of iterable) {
+      yield { index, value };
+      index += 1;
+    }
+  }
+
+  const arr: R[] = [];
   const results = pooledMap(
     opts?.concurrency ?? Number.POSITIVE_INFINITY,
-    iterable,
-    mapper,
+    gen(),
+    async ({ index, value }) => {
+      arr[index] = await mapper(value);
+    },
   );
 
-  const arr = [];
-  for await (const i of results) arr.push(i);
+  for await (const _ of results) {
+    // noop
+  }
   return arr;
 }

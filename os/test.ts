@@ -1,4 +1,4 @@
-import { exists } from "https://deno.land/std@0.104.0/fs/exists.ts";
+import { exists } from "https://deno.land/std@0.105.0/fs/exists.ts";
 import { assert } from "../deps_test.ts";
 import { userCacheDir, userConfigDir, userHomeDir } from "./mod.ts";
 

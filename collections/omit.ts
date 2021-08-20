@@ -2,7 +2,7 @@ import { filterKeys } from "https://deno.land/std@0.105.0/collections/filter_key
 
 export function omit<T>(
   record: Readonly<Record<string, T>>,
-  keys: string[],
+  keys: readonly string[],
 ): Record<string, T> {
   return filterKeys(record, (x) => !keys.includes(x));
 }

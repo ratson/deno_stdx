@@ -1,4 +1,4 @@
-import { pooledMap } from "https://deno.land/std@0.105.0/async/mod.ts";
+import { pooledMap } from "https://deno.land/std@0.108.0/async/mod.ts";
 
 export async function map<T, R>(
   iterable: Iterable<T> | AsyncIterable<T>,

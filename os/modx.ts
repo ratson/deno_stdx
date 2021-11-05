@@ -5,6 +5,8 @@ import { userHomeDir } from "./mod.ts";
 const homePath = userHomeDir();
 
 /**
+ * @deprecated - use `Path` in `stdx/path` instead.
+ *
  * Join `paths` to user home directory.
  * 
  * @param paths to be joined

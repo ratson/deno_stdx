@@ -45,4 +45,31 @@ export class Path {
   stat() {
     return Deno.stat(this.toString());
   }
+
+  async isDir() {
+    try {
+      const stat = await this.stat();
+      return stat.isDirectory;
+    } catch {
+      return false;
+    }
+  }
+
+  async isFile() {
+    try {
+      const stat = await this.stat();
+      return stat.isFile;
+    } catch {
+      return false;
+    }
+  }
+
+  async isSymlink() {
+    try {
+      const stat = await this.stat();
+      return stat.isSymlink;
+    } catch {
+      return false;
+    }
+  }
 }

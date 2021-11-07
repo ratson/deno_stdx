@@ -18,6 +18,10 @@ export class Path {
     return new Path(Deno.cwd());
   }
 
+  static fromImportMeta(importMeta: ImportMeta, url = "") {
+    return new Path(new URL(url, importMeta.url).pathname);
+  }
+
   static home() {
     return new Path(userHomeDir()!);
   }

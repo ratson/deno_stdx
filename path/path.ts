@@ -10,20 +10,45 @@ import { userHomeDir } from "../os/mod.ts";
 export class Path {
   #path: string[];
 
-  constructor(...pathSegments: string[]) {
+  private constructor(...pathSegments: string[]) {
     this.#path = pathSegments;
   }
 
+  static pathMap = new Map<string, WeakRef<Path>>();
+
   static cwd() {
-    return new Path(Deno.cwd());
+    return Path.from(Deno.cwd());
+  }
+
+  static from(...pathSegments: string[]) {
+    const k = resolve(...pathSegments);
+    const v = this.pathMap.get(k)?.deref();
+    if (v) return v;
+
+    const p = new this(...pathSegments);
+    this.pathMap.set(k, new WeakRef(p));
+
+    this.#counter += 1;
+    if (this.#counter % 128 === 0) this.#gc();
+
+    return p;
   }
 
   static fromImportMeta(importMeta: ImportMeta, url = "") {
-    return new Path(new URL(url, importMeta.url).pathname);
+    return Path.from(new URL(url, importMeta.url).pathname);
   }
 
   static home() {
-    return new Path(userHomeDir()!);
+    return Path.from(userHomeDir()!);
+  }
+
+  static #counter = 0;
+
+  static #gc() {
+    const m = this.pathMap;
+    for (const [k, v] of m.entries()) {
+      if (!v.deref()) m.delete(k);
+    }
   }
 
   get name() {
@@ -39,7 +64,7 @@ export class Path {
   }
 
   joinpath(...other: string[]) {
-    return new Path(join(...this.#path, ...other));
+    return Path.from(join(...this.#path, ...other));
   }
 
   toString() {

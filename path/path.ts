@@ -39,7 +39,9 @@ export class Path {
   }
 
   static home() {
-    return Path.from(userHomeDir()!);
+    const p = userHomeDir();
+    if (!p) throw new Error("cannot determine user home path");
+    return Path.from(p);
   }
 
   static #counter = 0;

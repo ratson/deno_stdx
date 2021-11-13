@@ -1,4 +1,8 @@
-import { assertEquals, assertStrictEquals } from "../deps_test.ts";
+import {
+  assertEquals,
+  assertStrictEquals,
+  assertThrows,
+} from "../deps_test.ts";
 import { Path } from "./path.ts";
 
 Deno.test("Path", async () => {
@@ -13,6 +17,16 @@ Deno.test("Path", async () => {
   assertStrictEquals(await p.isDir(), false);
   assertStrictEquals(await p.isFile(), false);
   assertStrictEquals(await p.isSymlink(), false);
+});
+
+Deno.test("readonly", () => {
+  assertThrows(
+    () => {
+      Object.assign(Path.from("/"), { x: 1 });
+    },
+    TypeError,
+    "Cannot add property",
+  );
 });
 
 Deno.test("Path.toString()", () => {

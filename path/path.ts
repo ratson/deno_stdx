@@ -14,9 +14,9 @@ export class Path {
     this.#path = pathSegments;
   }
 
-  static gcModulo = 128
+  static gcModulo = 128;
   static #counter = 0;
-  static #pathMap = new Map<string, WeakRef<Path>>();
+  static #pathMap = new Map<string, WeakRef<Readonly<Path>>>();
 
   static cwd() {
     return Path.from(Deno.cwd());
@@ -24,12 +24,12 @@ export class Path {
 
   static from(...pathSegments: string[]) {
     const k = resolve(...pathSegments);
-    const m = this.#pathMap
+    const m = this.#pathMap;
     const v = m.get(k)?.deref();
     if (v) return v;
 
     const p = new this(...pathSegments);
-    m.set(k, new WeakRef(p));
+    m.set(k, new WeakRef(Object.freeze(p)));
 
     this.#counter += 1;
     if (this.#counter % this.gcModulo === 0) this.gc();

@@ -19,6 +19,14 @@ Deno.test("Path", async () => {
   assertStrictEquals(await p.isSymlink(), false);
 });
 
+Deno.test("relative", () => {
+  const p = Path.from("../", "p", "../.");
+  assertStrictEquals(p, Path.from(".."));
+  assertStrictEquals(p.isAbsolute(), false);
+
+  assertStrictEquals(Path.from("../p/../a"), Path.from("../a"));
+});
+
 Deno.test("readonly", () => {
   assertThrows(
     () => {

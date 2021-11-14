@@ -3,7 +3,6 @@ import {
   basename,
   isAbsolute,
   join,
-  resolve,
 } from "https://deno.land/std@0.108.0/path/mod.ts";
 import { userHomeDir } from "../os/mod.ts";
 
@@ -23,7 +22,7 @@ export class Path {
   }
 
   static from(...pathSegments: string[]) {
-    const k = resolve(...pathSegments);
+    const k = join(...pathSegments);
     const m = this.#pathMap;
     const v = m.get(k)?.deref();
     if (v) return v;
@@ -71,7 +70,7 @@ export class Path {
   }
 
   toString() {
-    return resolve(...this.#path);
+    return join(...this.#path);
   }
 
   stat() {

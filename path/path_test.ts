@@ -24,7 +24,16 @@ Deno.test("relative", () => {
   assertStrictEquals(p, Path.from(".."));
   assertStrictEquals(p.isAbsolute(), false);
 
-  assertStrictEquals(Path.from("../p/../a"), Path.from("../a"));
+  for (
+    const [a, b] of [
+      ["", "."],
+      // [".", "./"],
+      ["..", "../."],
+      ["../p/../a", "../a"],
+    ]
+  ) {
+    assertStrictEquals(Path.from(a), Path.from(b), `${a} != ${b}`);
+  }
 });
 
 Deno.test("readonly", () => {
@@ -37,7 +46,7 @@ Deno.test("readonly", () => {
   );
 });
 
-Deno.test("Path.toString()", () => {
+Deno.test("toString()", () => {
   assertStrictEquals(`${Path.from("/")}`, "/");
 });
 

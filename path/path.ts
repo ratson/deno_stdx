@@ -8,10 +8,10 @@ import {
 import { userHomeDir } from "../os/mod.ts";
 
 export class Path {
-  #path: string[];
+  #path: string;
 
-  private constructor(...pathSegments: string[]) {
-    this.#path = pathSegments;
+  private constructor(s: string) {
+    this.#path = s;
   }
 
   static gcModulo = 128;
@@ -28,7 +28,7 @@ export class Path {
     const v = m.get(k)?.deref();
     if (v) return v;
 
-    const p = new this(...pathSegments);
+    const p = new this(k);
     m.set(k, new WeakRef(Object.freeze(p)));
 
     this.#counter += 1;
@@ -59,7 +59,7 @@ export class Path {
   }
 
   exists() {
-    return exists(join(...this.#path));
+    return exists(this.toString());
   }
 
   isAbsolute() {
@@ -71,7 +71,7 @@ export class Path {
   }
 
   toString() {
-    return join(...this.#path);
+    return this.#path;
   }
 
   stat() {

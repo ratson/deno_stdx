@@ -3,38 +3,22 @@ import {
   basename,
   isAbsolute,
   join,
-  normalize,
 } from "https://deno.land/std@0.108.0/path/mod.ts";
 import { userHomeDir } from "../os/mod.ts";
 
 export class Path {
-  #path: string;
+  #path: string[];
 
-  private constructor(s: string) {
-    this.#path = s;
+  private constructor(...pathSegments: string[]) {
+    this.#path = pathSegments;
   }
-
-  static gcModulo = 128;
-  static #counter = 0;
-  static #pathMap = new Map<string, WeakRef<Readonly<Path>>>();
 
   static cwd() {
     return Path.from(Deno.cwd());
   }
 
   static from(...pathSegments: string[]) {
-    const k = normalize(join(...pathSegments))
-    const m = this.#pathMap;
-    const v = m.get(k)?.deref();
-    if (v) return v;
-
-    const p = new this(k);
-    m.set(k, new WeakRef(Object.freeze(p)));
-
-    this.#counter += 1;
-    if (this.#counter % this.gcModulo === 0) this.gc();
-
-    return p;
+    return Object.freeze(new this(...pathSegments));
   }
 
   static fromImportMeta(importMeta: ImportMeta, url = "") {
@@ -45,13 +29,6 @@ export class Path {
     const p = userHomeDir();
     if (!p) throw new Error("cannot determine user home path");
     return Path.from(p);
-  }
-
-  static gc() {
-    const m = this.#pathMap;
-    for (const [k, v] of m.entries()) {
-      if (!v.deref()) m.delete(k);
-    }
   }
 
   get name() {
@@ -71,7 +48,7 @@ export class Path {
   }
 
   toString() {
-    return this.#path;
+    return join(...this.#path);
   }
 
   stat() {

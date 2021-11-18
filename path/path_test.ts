@@ -3,6 +3,7 @@ import {
   assertStrictEquals,
   assertThrows,
 } from "../deps_test.ts";
+import { userHomeDir } from "../os/mod.ts";
 import { Path } from "./path.ts";
 
 Deno.test("Path.from()", async () => {
@@ -29,6 +30,17 @@ Deno.test("Path.fromImportMeta()", async () => {
   assertStrictEquals(await d.isDir(), true);
   assertStrictEquals(await d.isFile(), false);
   assertStrictEquals(await d.isSymlink(), false);
+});
+
+Deno.test("Path.cwd()", () => {
+  assertStrictEquals(
+    Path.cwd("p").toString(),
+    Path.from("./p").resolve().toString(),
+  );
+});
+
+Deno.test("Path.home()", () => {
+  assertStrictEquals(Path.home().toString(), userHomeDir());
 });
 
 Deno.test("relative", () => {

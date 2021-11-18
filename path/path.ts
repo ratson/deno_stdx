@@ -3,6 +3,7 @@ import {
   basename,
   isAbsolute,
   join,
+  resolve,
 } from "https://deno.land/std@0.108.0/path/mod.ts";
 import { userHomeDir } from "../os/mod.ts";
 
@@ -13,8 +14,8 @@ export class Path {
     this.#path = pathSegments;
   }
 
-  static cwd() {
-    return Path.from(Deno.cwd());
+  static cwd(...pathSegments: string[]) {
+    return Path.from(Deno.cwd(), ...pathSegments);
   }
 
   static from(...pathSegments: string[]) {
@@ -25,10 +26,10 @@ export class Path {
     return Path.from(new URL(url, importMeta.url).pathname);
   }
 
-  static home() {
+  static home(...pathSegments: string[]) {
     const p = userHomeDir();
     if (!p) throw new Error("cannot determine user home path");
-    return Path.from(p);
+    return Path.from(p, ...pathSegments);
   }
 
   get name() {
@@ -47,12 +48,16 @@ export class Path {
     return Path.from(join(...this.#path, ...other));
   }
 
-  toString() {
-    return join(...this.#path);
+  resolve() {
+    return Path.from(resolve(this.toString()));
   }
 
   stat() {
     return Deno.stat(this.toString());
+  }
+
+  toString() {
+    return join(...this.#path);
   }
 
   async isDir() {

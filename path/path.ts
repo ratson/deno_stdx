@@ -1,4 +1,8 @@
-import { exists } from "https://deno.land/std@0.108.0/fs/exists.ts";
+import {
+  ensureDir,
+  ensureFile,
+  exists,
+} from "https://deno.land/std@0.108.0/fs/mod.ts";
 import {
   basename,
   extname,
@@ -23,7 +27,7 @@ export class Path {
   }
 
   static from(...pathSegments: string[]) {
-    const k = pathSegments.join("\0");
+    const k = pathSegments.join(":|\0");
     const m = this.#pathMap;
     const v = m.get(k)?.deref();
     if (v) return v;
@@ -123,5 +127,13 @@ export class Path {
     } catch {
       return false;
     }
+  }
+
+  ensureDir() {
+    return ensureDir(this.toString());
+  }
+
+  ensureFile() {
+    return ensureFile(this.toString());
   }
 }

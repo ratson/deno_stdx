@@ -70,6 +70,13 @@ Deno.test("readonly", () => {
   );
 });
 
+Deno.test("ext", () => {
+  assertStrictEquals(Path.from("/file.ext").ext, ".ext");
+  assertStrictEquals(Path.from("/dot.").ext, ".");
+  assertStrictEquals(Path.from("/noext").ext, "");
+  assertStrictEquals(Path.from("/dir/").ext, "");
+});
+
 Deno.test("equals()", () => {
   for (
     const [a, b] of [
@@ -84,7 +91,7 @@ Deno.test("equals()", () => {
     assertStrictEquals(Path.from(a).equals(Path.from(b)), true);
   }
 
-  const p = Path.from("/")
+  const p = Path.from("/");
   assertStrictEquals(p.equals(p), true);
 
   assertStrictEquals(Path.cwd().equals(Path.from(".")), true);

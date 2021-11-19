@@ -1,6 +1,7 @@
 import { exists } from "https://deno.land/std@0.108.0/fs/exists.ts";
 import {
   basename,
+  extname,
   isAbsolute,
   join,
   resolve,
@@ -30,6 +31,10 @@ export class Path {
     const p = userHomeDir();
     if (!p) throw new Error("cannot determine user home path");
     return Path.from(p, ...pathSegments);
+  }
+
+  get ext() {
+    return extname(this.toString());
   }
 
   get name() {

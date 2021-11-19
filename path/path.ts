@@ -27,7 +27,7 @@ export class Path {
   }
 
   static from(...pathSegments: string[]) {
-    const k = pathSegments.join(":|\0");
+    const k = [pathSegments.length.toString()].concat(pathSegments).join(":|\0");
     const m = this.#pathMap;
     const v = m.get(k)?.deref();
     if (v) return v;

@@ -2,14 +2,14 @@ import {
   ensureDir,
   ensureFile,
   exists,
-} from "https://deno.land/std@0.108.0/fs/mod.ts";
+} from "https://deno.land/std@0.115.1/fs/mod.ts";
 import {
   basename,
   extname,
   isAbsolute,
   join,
   resolve,
-} from "https://deno.land/std@0.108.0/path/mod.ts";
+} from "https://deno.land/std@0.115.1/path/mod.ts";
 import { userHomeDir } from "../os/mod.ts";
 
 export class Path {

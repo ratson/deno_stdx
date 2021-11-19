@@ -1,5 +1,5 @@
-import { join } from "https://deno.land/std@0.108.0/path/mod.ts";
-import { assert } from "https://deno.land/std@0.108.0/testing/asserts.ts";
+import { join } from "https://deno.land/std@0.115.1/path/mod.ts";
+import { assert } from "https://deno.land/std@0.115.1/testing/asserts.ts";
 import { userHomeDir } from "./mod.ts";
 
 const homePath = userHomeDir();

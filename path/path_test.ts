@@ -1,4 +1,5 @@
 import {
+  assert,
   assertEquals,
   assertStrictEquals,
   assertThrows,
@@ -7,17 +8,30 @@ import { userHomeDir } from "../os/mod.ts";
 import { Path } from "./path.ts";
 
 Deno.test("Path.from()", async () => {
-  assertEquals(Path.from("/"), Path.from("/"));
-
   const p = Path.from("/this/is/a/test/path/file.ext");
   assertStrictEquals(p.name, "file.ext");
   assertStrictEquals(p.isAbsolute(), true);
-  assertEquals(p.joinpath(".."), Path.from("/this/is/a", "test/path"));
+  assertEquals(
+    p.joinpath("..").resolve(),
+    Path.from("/this/is/a", "test/path").resolve(),
+  );
 
   assertStrictEquals(await p.exists(), false);
   assertStrictEquals(await p.isDir(), false);
   assertStrictEquals(await p.isFile(), false);
   assertStrictEquals(await p.isSymlink(), false);
+});
+
+Deno.test("Path.from() returns same instance if arguments is the same", () => {
+  assertStrictEquals(Path.from("/", "p"), Path.from("/", "p"));
+
+  assert(Path.from("/") !== Path.from("/p/.."));
+  assert(Path.from("/p") !== Path.from("/", "p"));
+
+  assertStrictEquals(Path.cwd(), Path.from(".").resolve());
+  assert(Path.cwd() !== Path.from("."));
+
+  assert(Path.from("/a") != Path.from("/b"));
 });
 
 Deno.test("Path.fromImportMeta()", async () => {
@@ -45,7 +59,7 @@ Deno.test("Path.home()", () => {
 
 Deno.test("relative", () => {
   const p = Path.from("../", "p", "../.");
-  assertEquals(p, Path.from(".."));
+  assertEquals(p.resolve(), Path.from("..").resolve());
   assertStrictEquals(p.isAbsolute(), false);
 
   for (
@@ -56,7 +70,11 @@ Deno.test("relative", () => {
       ["../p/../a", "../a"],
     ]
   ) {
-    assertEquals(Path.from(a), Path.from(b), `${a} != ${b}`);
+    assertEquals(
+      Path.from(a).resolve(),
+      Path.from(b).resolve(),
+      `${a} != ${b}`,
+    );
   }
 });
 

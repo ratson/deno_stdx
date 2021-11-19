@@ -9,18 +9,32 @@ import {
 import { userHomeDir } from "../os/mod.ts";
 
 export class Path {
-  #path: string[];
+  readonly segments: string[];
 
   private constructor(...pathSegments: string[]) {
-    this.#path = pathSegments;
+    this.segments = pathSegments;
   }
+  static gcModulo = 128;
+  static #counter = 0;
+  static #pathMap = new Map<string, WeakRef<Readonly<Path>>>();
 
   static cwd(...pathSegments: string[]) {
     return Path.from(Deno.cwd(), ...pathSegments);
   }
 
   static from(...pathSegments: string[]) {
-    return Object.freeze(new this(...pathSegments));
+    const k = pathSegments.join("\0");
+    const m = this.#pathMap;
+    const v = m.get(k)?.deref();
+    if (v) return v;
+
+    const p = Object.freeze(new this(...pathSegments));
+    m.set(k, new WeakRef(p));
+
+    this.#counter += 1;
+    if (this.#counter % this.gcModulo === 0) this.gc();
+
+    return p;
   }
 
   static fromImportMeta(importMeta: ImportMeta, url = "") {
@@ -31,6 +45,13 @@ export class Path {
     const p = userHomeDir();
     if (!p) throw new Error("cannot determine user home path");
     return Path.from(p, ...pathSegments);
+  }
+
+  static gc() {
+    const m = this.#pathMap;
+    for (const [k, v] of m.entries()) {
+      if (!v.deref()) m.delete(k);
+    }
   }
 
   get ext() {
@@ -62,7 +83,7 @@ export class Path {
   }
 
   joinpath(...other: string[]) {
-    return Path.from(join(...this.#path, ...other));
+    return Path.from(join(...this.segments, ...other));
   }
 
   resolve() {
@@ -74,7 +95,7 @@ export class Path {
   }
 
   toString() {
-    return join(...this.#path);
+    return join(...this.segments);
   }
 
   async isDir() {

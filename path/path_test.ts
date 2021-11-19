@@ -139,3 +139,7 @@ Deno.test("isDir()", async () => {
   assertStrictEquals(await p.isFile(), false);
   assertStrictEquals(await p.isSymlink(), false);
 });
+
+Deno.test("Deno.inspect()", () => {
+  assertStrictEquals(Deno.inspect(Path.from("/")), "Path { / }");
+});

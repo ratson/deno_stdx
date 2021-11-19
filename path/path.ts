@@ -13,10 +13,10 @@ import {
 import { userHomeDir } from "../os/mod.ts";
 
 export class Path {
-  readonly segments: string[];
+  readonly #segments: string[];
 
   private constructor(...pathSegments: string[]) {
-    this.segments = pathSegments;
+    this.#segments = pathSegments;
   }
   static gcModulo = 128;
   static #counter = 0;
@@ -87,7 +87,7 @@ export class Path {
   }
 
   joinpath(...other: string[]) {
-    return Path.from(join(...this.segments, ...other));
+    return Path.from(join(...this.#segments, ...other));
   }
 
   resolve() {
@@ -99,7 +99,11 @@ export class Path {
   }
 
   toString() {
-    return join(...this.segments);
+    return join(...this.#segments);
+  }
+
+  valueOf() {
+    return this.toString();
   }
 
   async isDir() {
@@ -135,5 +139,9 @@ export class Path {
 
   ensureFile() {
     return ensureFile(this.toString());
+  }
+
+  [Symbol.for("Deno.customInspect")]() {
+    return `${this.constructor.name} { ${this.toString()} }`;
   }
 }

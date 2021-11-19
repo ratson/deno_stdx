@@ -36,6 +36,18 @@ export class Path {
     return basename(this.toString());
   }
 
+  equals(otherPath: Readonly<Path>) {
+    if (this === otherPath) return true;
+
+    const a = this.toString();
+    const b = otherPath.toString();
+    if (a === b) return true;
+
+    if (resolve(a) === resolve(b)) return true;
+
+    return false;
+  }
+
   exists() {
     return exists(this.toString());
   }

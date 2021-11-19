@@ -70,6 +70,29 @@ Deno.test("readonly", () => {
   );
 });
 
+Deno.test("equals()", () => {
+  for (
+    const [a, b] of [
+      ["/", "/"],
+      ["/a/b/c/..", "/a/b"],
+      ["/a/b/c/../", "/a/b/"],
+      ["./.", "."],
+      ["../.", ".."],
+      [".", "./"],
+    ]
+  ) {
+    assertStrictEquals(Path.from(a).equals(Path.from(b)), true);
+  }
+
+  const p = Path.from("/")
+  assertStrictEquals(p.equals(p), true);
+
+  assertStrictEquals(Path.cwd().equals(Path.from(".")), true);
+  assertStrictEquals(Path.cwd().equals(Path.from("")), true);
+
+  assertStrictEquals(Path.from("/a").equals(Path.from("/b")), false);
+});
+
 Deno.test("toString()", () => {
   for (
     const [a, b] of [

@@ -129,7 +129,7 @@ Deno.test("toString()", () => {
       // [".", "./"],
     ]
   ) {
-    assertStrictEquals(`${Path.from(a)}`, b);
+    assertStrictEquals(Path.from(a).toString(), b);
   }
 });
 
@@ -142,4 +142,10 @@ Deno.test("isDir()", async () => {
 
 Deno.test("Deno.inspect()", () => {
   assertStrictEquals(Deno.inspect(Path.from("/")), "Path { / }");
+});
+
+Deno.test("toPrimitive", () => {
+  assertStrictEquals(isNaN(+Path.from("/")), true);
+  assertStrictEquals(`${Path.from("/")}`, "/");
+  assertStrictEquals(Path.from("/") + "", "/");
 });

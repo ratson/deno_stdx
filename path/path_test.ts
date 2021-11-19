@@ -118,6 +118,13 @@ Deno.test("equals()", () => {
   assertStrictEquals(Path.from("/a").equals(Path.from("/b")), false);
 });
 
+Deno.test("toFileUrl()", () => {
+  assertStrictEquals(
+    Path.from("/a/path").toFileUrl().href,
+    "file:///a/path",
+  );
+});
+
 Deno.test("toString()", () => {
   for (
     const [a, b] of [

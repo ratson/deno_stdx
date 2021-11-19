@@ -6,9 +6,11 @@ import {
 import {
   basename,
   extname,
+  fromFileUrl,
   isAbsolute,
   join,
   resolve,
+  toFileUrl,
 } from "https://deno.land/std@0.115.1/path/mod.ts";
 import { userHomeDir } from "../os/mod.ts";
 
@@ -27,7 +29,9 @@ export class Path {
   }
 
   static from(...pathSegments: string[]) {
-    const k = [pathSegments.length.toString()].concat(pathSegments).join(":|\0");
+    const k = [pathSegments.length.toString()].concat(pathSegments).join(
+      ":|\0",
+    );
     const m = this.#pathMap;
     const v = m.get(k)?.deref();
     if (v) return v;
@@ -41,8 +45,12 @@ export class Path {
     return p;
   }
 
+  static fromFileUrl(url: string | URL) {
+    return Path.from(fromFileUrl(url));
+  }
+
   static fromImportMeta(importMeta: ImportMeta, url = "") {
-    return Path.from(new URL(url, importMeta.url).pathname);
+    return Path.fromFileUrl(new URL(url, importMeta.url));
   }
 
   static home(...pathSegments: string[]) {
@@ -96,6 +104,10 @@ export class Path {
 
   stat() {
     return Deno.stat(this.toString());
+  }
+
+  toFileUrl() {
+    return toFileUrl(this.toString());
   }
 
   toString() {

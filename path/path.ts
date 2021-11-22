@@ -158,6 +158,27 @@ export class Path {
     return ensureFile(this.toString());
   }
 
+  readTextFile(options?: Deno.ReadFileOptions) {
+    return Deno.readTextFile(this.toString(), options);
+  }
+
+  writeTextFile(data: string, options?: Deno.WriteFileOptions) {
+    return Deno.writeTextFile(this.toString(), data, options);
+  }
+
+  async readJsonFile<T>(options?: Deno.ReadFileOptions) {
+    return JSON.parse(await this.readTextFile(options)) as T;
+  }
+
+  writeJsonFile(
+    // deno-lint-ignore no-explicit-any
+    value: any,
+    opts: { replacer?: (number | string)[] | null; space?: string | number } =
+      {},
+  ) {
+    return this.writeTextFile(JSON.stringify(value, opts.replacer, opts.space));
+  }
+
   [Symbol.for("Deno.customInspect")]() {
     return `${this.constructor.name} { ${this.toString()} }`;
   }

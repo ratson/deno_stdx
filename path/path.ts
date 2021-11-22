@@ -1,8 +1,4 @@
-import {
-  ensureDir,
-  ensureFile,
-  exists,
-} from "https://deno.land/std@0.115.1/fs/mod.ts";
+import { ensureDir, ensureFile } from "https://deno.land/std@0.115.1/fs/mod.ts";
 import {
   basename,
   extname,
@@ -86,8 +82,17 @@ export class Path {
     return false;
   }
 
-  exists() {
-    return exists(this.toString());
+  async exists() {
+    try {
+      await Deno.lstat(this.toString());
+      return true;
+    } catch (err) {
+      if (err instanceof Deno.errors.NotFound) {
+        return false;
+      }
+
+      throw err;
+    }
   }
 
   isAbsolute() {

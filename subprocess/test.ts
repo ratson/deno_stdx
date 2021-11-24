@@ -1,4 +1,4 @@
-import { assertEquals, assertMatch, assertThrowsAsync } from "../deps_test.ts";
+import { assertEquals, assertMatch, assertRejects } from "../deps_test.ts";
 import * as subprocess from "./mod.ts";
 
 Deno.test("run() exit with 0", async () => {
@@ -7,7 +7,7 @@ Deno.test("run() exit with 0", async () => {
 });
 
 Deno.test("run() with check", async () => {
-  await assertThrowsAsync(
+  await assertRejects(
     () => subprocess.run(["deno", "404"], { check: true, stderr: "null" }),
     subprocess.CalledProcessError,
   );
@@ -26,7 +26,7 @@ Deno.test("run() with pipeText", async () => {
   });
   assertEquals(s2.stdout, "");
 
-  await assertThrowsAsync(() =>
+  await assertRejects(() =>
     // @ts-expect-error ignore
     subprocess.run(["cat"], {
       pipeText: "testing",

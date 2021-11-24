@@ -70,7 +70,9 @@ export class Path {
     return basename(this.toString());
   }
 
-  equals(otherPath: Readonly<Path>) {
+  equals(otherPath: Readonly<Path> | string | undefined | null) {
+    if (otherPath === undefined || otherPath === null) return false;
+
     if (this === otherPath) return true;
 
     const a = this.toString();

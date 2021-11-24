@@ -24,6 +24,7 @@ Deno.test("Path.from()", async () => {
 
 Deno.test("Path.from() returns same instance if arguments is the same", () => {
   assertStrictEquals(Path.from("/", "p"), Path.from("/", "p"));
+  assertStrictEquals(Object.is(Path.from("/a"), Path.from("/a")), true);
 
   assert(Path.from("/") !== Path.from("/p/.."));
   assert(Path.from("/p") !== Path.from("/", "p"));
@@ -116,6 +117,26 @@ Deno.test("equals()", () => {
   assertStrictEquals(Path.cwd().equals(Path.from("")), true);
 
   assertStrictEquals(Path.from("/a").equals(Path.from("/b")), false);
+
+  assertStrictEquals(Path.from("/a").equals("/a"), true);
+  assertStrictEquals(Path.from("/a").equals("/b"), false);
+
+  assertStrictEquals(Path.from("/a").equals(undefined), false);
+  assertStrictEquals(Path.from("/a").equals(null), false);
+
+  assertStrictEquals(Path.from("/a").equals(Path.from("/", "a")), true);
+  assertStrictEquals(Path.from("/a").equals("/a/."), true);
+});
+
+Deno.test("path == string", () => {
+  // deno-lint-ignore no-explicit-any
+  const p = Path.from("/") as any;
+  assertStrictEquals(p == "/", true);
+  assertStrictEquals("/" == p, true);
+
+  assertStrictEquals("/not-equal" == p, false);
+
+  assertStrictEquals(p === "/", false);
 });
 
 Deno.test("toFileUrl()", () => {

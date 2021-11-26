@@ -1,4 +1,4 @@
-import { ensureDir, ensureFile } from "https://deno.land/std@0.115.1/fs/mod.ts";
+import { ensureDir, ensureFile } from "https://deno.land/std@0.116.0/fs/mod.ts";
 import {
   basename,
   dirname,
@@ -8,7 +8,7 @@ import {
   join,
   resolve,
   toFileUrl,
-} from "https://deno.land/std@0.115.1/path/mod.ts";
+} from "https://deno.land/std@0.116.0/path/mod.ts";
 import { userHomeDir } from "../os/mod.ts";
 
 /**

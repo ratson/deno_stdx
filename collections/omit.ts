@@ -1,4 +1,4 @@
-import { filterKeys } from "https://deno.land/std@0.115.1/collections/filter_keys.ts";
+import { filterKeys } from "https://deno.land/std@0.116.0/collections/filter_keys.ts";
 
 export function omit<T>(
   record: Readonly<Record<string, T>>,

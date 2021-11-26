@@ -20,9 +20,10 @@ export class Path {
   private constructor(...pathSegments: string[]) {
     this.#segments = pathSegments;
   }
+
   static gcModulo = 128;
+  static readonly #pathMap = new Map<string, WeakRef<Readonly<Path>>>();
   static #counter = 0;
-  static #pathMap = new Map<string, WeakRef<Readonly<Path>>>();
 
   static cwd(...pathSegments: string[]) {
     return Path.from(Deno.cwd(), ...pathSegments);
@@ -107,12 +108,15 @@ export class Path {
    * If a home directory can’t be resolved, an error is raised.
    */
   expanduser() {
+    const s = this.toString();
+    if (!s.startsWith("~")) return this;
+
     const homeDir = userHomeDir();
     if (homeDir === null) {
       throw new Error("Can't determine home directory");
     }
     return Path.from(
-      this.toString().replace(
+      s.replace(
         /^~([a-z]+|\/?)/,
         (_, $1) =>
           ["", "/"].includes($1) ? homeDir : `${dirname(homeDir)}/${$1}`,

@@ -186,4 +186,7 @@ Deno.test("expanduser", () => {
     Path.from("~user/").expanduser().equals(Path.home().joinpath("..", "user")),
     true,
   );
+
+  const p = Path.from("/");
+  assertStrictEquals(p.expanduser(), p);
 });

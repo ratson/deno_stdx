@@ -202,10 +202,16 @@ export class Path {
   writeJsonFile(
     // deno-lint-ignore no-explicit-any
     value: any,
-    opts: { replacer?: (number | string)[] | null; space?: string | number } =
-      {},
+    options: Deno.WriteFileOptions & {
+      replacer?: (number | string)[] | null;
+      space?: string | number;
+    } = {},
   ) {
-    return this.writeTextFile(JSON.stringify(value, opts.replacer, opts.space));
+    const { replacer, space, ...opts } = options;
+    return this.writeTextFile(
+      JSON.stringify(value, replacer, space),
+      opts,
+    );
   }
 
   [Symbol.for("Deno.customInspect")]() {

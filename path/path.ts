@@ -187,6 +187,14 @@ export class Path {
     return ensureFile(this.toString());
   }
 
+  readFile(options?: Deno.ReadFileOptions) {
+    return Deno.readFile(this.toString(), options);
+  }
+
+  writeFile(data: Uint8Array, options?: Deno.WriteFileOptions) {
+    return Deno.writeFile(this.toString(), data, options);
+  }
+
   readTextFile(options?: Deno.ReadFileOptions) {
     return Deno.readTextFile(this.toString(), options);
   }

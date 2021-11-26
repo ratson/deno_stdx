@@ -177,3 +177,13 @@ Deno.test("toPrimitive", () => {
   assertStrictEquals(`${Path.from("/")}`, "/");
   assertStrictEquals(Path.from("/") + "", "/");
 });
+
+Deno.test("expanduser", () => {
+  assertStrictEquals(Path.from("~").expanduser(), Path.home());
+  assertStrictEquals(Path.from("~/").expanduser(), Path.home());
+
+  assertStrictEquals(
+    Path.from("~user/").expanduser().equals(Path.home().joinpath("..", "user")),
+    true,
+  );
+});

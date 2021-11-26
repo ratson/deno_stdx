@@ -1,6 +1,7 @@
 import { ensureDir, ensureFile } from "https://deno.land/std@0.115.1/fs/mod.ts";
 import {
   basename,
+  dirname,
   extname,
   fromFileUrl,
   isAbsolute,
@@ -10,6 +11,9 @@ import {
 } from "https://deno.land/std@0.115.1/path/mod.ts";
 import { userHomeDir } from "../os/mod.ts";
 
+/**
+ * A class to represent filesystem path.
+ */
 export class Path {
   readonly #segments: string[];
 
@@ -95,6 +99,25 @@ export class Path {
 
       throw err;
     }
+  }
+
+  /**
+   * Return a new path with expanded ~ and ~user constructs.
+   *
+   * If a home directory can’t be resolved, an error is raised.
+   */
+  expanduser() {
+    const homeDir = userHomeDir();
+    if (homeDir === null) {
+      throw new Error("Can't determine home directory");
+    }
+    return Path.from(
+      this.toString().replace(
+        /^~([a-z]+|\/?)/,
+        (_, $1) =>
+          ["", "/"].includes($1) ? homeDir : `${dirname(homeDir)}/${$1}`,
+      ),
+    );
   }
 
   isAbsolute() {

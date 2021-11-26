@@ -15,3 +15,12 @@ Deno.test("pick", () => {
     assertEquals(pick(obj, keys), expected);
   });
 });
+
+Deno.test("pick interface", () => {
+  interface X {
+    a: number;
+  }
+  const x: X = { a: 1 };
+
+  assertEquals(pick(x, ["a"]), { a: 1 });
+});

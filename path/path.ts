@@ -1,4 +1,9 @@
-import { ensureDir, ensureFile } from "https://deno.land/std@0.116.0/fs/mod.ts";
+import {
+  ensureDir,
+  ensureFile,
+  expandGlob,
+  ExpandGlobOptions,
+} from "https://deno.land/std@0.116.0/fs/mod.ts";
 import {
   basename,
   dirname,
@@ -122,6 +127,17 @@ export class Path {
           ["", "/"].includes($1) ? homeDir : `${dirname(homeDir)}/${$1}`,
       ),
     );
+  }
+
+  async *glob(
+    glob: string,
+    opts: Omit<ExpandGlobOptions, "root"> = {},
+  ): AsyncIterableIterator<Readonly<Path>> {
+    for await (
+      const file of expandGlob(glob, { ...opts, root: this.toString() })
+    ) {
+      yield Path.from(file.path);
+    }
   }
 
   isAbsolute() {

@@ -190,3 +190,9 @@ Deno.test("expanduser", () => {
   const p = Path.from("/");
   assertStrictEquals(p.expanduser(), p);
 });
+
+Deno.test("glob", async () => {
+  for await (const p of Path.fromImportMeta(import.meta, ".").glob("*.ts")) {
+    assertStrictEquals(p.ext, ".ts");
+  }
+});

@@ -55,6 +55,15 @@ export class Path {
     return Path.from(fromFileUrl(url));
   }
 
+  /**
+   * Returns path relative to `import.meta`.
+   *
+   * Example:
+   * ```ts
+   *    Path.fromImportMeta(import.meta)  // current file path
+   *    Path.fromImportMeta(import.meta, ".")  // current directory path
+   * ```
+   */
   static fromImportMeta(importMeta: ImportMeta, url = "") {
     return Path.fromFileUrl(new URL(url, importMeta.url));
   }

@@ -45,6 +45,11 @@ Deno.test("Path.fromImportMeta()", async () => {
   assertStrictEquals(await d.isDir(), true);
   assertStrictEquals(await d.isFile(), false);
   assertStrictEquals(await d.isSymlink(), false);
+
+  const f = Path.fromImportMeta(import.meta, "./path.ts");
+  assertStrictEquals(await f.isDir(), false);
+  assertStrictEquals(await f.isFile(), true);
+  assertStrictEquals(await f.isSymlink(), false);
 });
 
 Deno.test("Path.cwd()", () => {

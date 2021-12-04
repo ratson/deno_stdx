@@ -26,8 +26,8 @@ export class Path {
     this.#segments = pathSegments;
   }
 
-  static gcModulo = 128;
-  static readonly #pathMap = new Map<string, WeakRef<Readonly<Path>>>();
+  static cacheSize = 128;
+  static readonly #cache = new Map<string, WeakRef<Readonly<Path>>>();
   static #counter = 0;
 
   static cwd(...pathSegments: string[]) {
@@ -38,7 +38,7 @@ export class Path {
     const k = [pathSegments.length.toString()].concat(pathSegments).join(
       ":|\0",
     );
-    const m = this.#pathMap;
+    const m = this.#cache;
     const v = m.get(k)?.deref();
     if (v) return v;
 
@@ -46,7 +46,7 @@ export class Path {
     m.set(k, new WeakRef(p));
 
     this.#counter += 1;
-    if (this.#counter % this.gcModulo === 0) this.gc();
+    if (this.#counter % this.cacheSize === 0) this.gc();
 
     return p;
   }
@@ -75,7 +75,7 @@ export class Path {
   }
 
   static gc() {
-    const m = this.#pathMap;
+    const m = this.#cache;
     for (const [k, v] of m.entries()) {
       if (!v.deref()) m.delete(k);
     }

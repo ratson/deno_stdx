@@ -12,6 +12,7 @@ import {
   isAbsolute,
   join,
   resolve,
+  SEP,
   toFileUrl,
 } from "https://deno.land/std@0.116.0/path/mod.ts";
 import { userHomeDir } from "../os/mod.ts";
@@ -36,7 +37,7 @@ export class Path {
 
   static from(...pathSegments: string[]) {
     const k = [pathSegments.length.toString()].concat(pathSegments).join(
-      ":|\0",
+      `${SEP}:\0`,
     );
     const m = this.#cache;
     const v = m.get(k)?.deref();

@@ -6,13 +6,14 @@ import {
 } from "https://deno.land/std@0.116.0/fs/mod.ts";
 import {
   basename,
+  delimiter,
   dirname,
   extname,
   fromFileUrl,
   isAbsolute,
   join,
   resolve,
-  SEP,
+  sep,
   toFileUrl,
 } from "https://deno.land/std@0.116.0/path/mod.ts";
 import { userHomeDir } from "../os/mod.ts";
@@ -36,8 +37,8 @@ export class Path {
   }
 
   static from(...pathSegments: string[]) {
-    const k = [pathSegments.length.toString()].concat(pathSegments).join(
-      `${SEP}:\0`,
+    const k = [`${pathSegments.length}`].concat(pathSegments).join(
+      `${delimiter}${sep}\0`,
     );
     const m = this.#cache;
     const v = m.get(k)?.deref();

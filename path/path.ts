@@ -17,6 +17,7 @@ import {
   toFileUrl,
 } from "https://deno.land/std@0.116.0/path/mod.ts";
 import { userHomeDir } from "../os/mod.ts";
+import { JsonValue } from "../typing/json.ts";
 
 /**
  * A class to represent filesystem path.
@@ -230,13 +231,12 @@ export class Path {
     return Deno.writeTextFile(this.toString(), data, options);
   }
 
-  async readJsonFile<T>(options?: Deno.ReadFileOptions) {
+  async readJsonFile<T = JsonValue>(options?: Deno.ReadFileOptions) {
     return JSON.parse(await this.readTextFile(options)) as T;
   }
 
   writeJsonFile(
-    // deno-lint-ignore no-explicit-any
-    value: any,
+    value: JsonValue,
     options: Deno.WriteFileOptions & {
       replacer?: (number | string)[] | null;
       space?: string | number;

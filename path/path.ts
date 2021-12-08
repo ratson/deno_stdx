@@ -172,6 +172,10 @@ export class Path {
     return toFileUrl(this.toString());
   }
 
+  toJSON() {
+    return this.toString();
+  }
+
   toString() {
     return join(...this.#segments);
   }

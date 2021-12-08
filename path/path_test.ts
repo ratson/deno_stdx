@@ -201,3 +201,11 @@ Deno.test("glob", async () => {
     assertStrictEquals(p.ext, ".ts");
   }
 });
+
+Deno.test("toJSON", () => {
+  assertStrictEquals(JSON.stringify(Path.from("/")), '"/"');
+  assertStrictEquals(
+    JSON.stringify({ path: Path.from('/"') }),
+    '{"path":"/\\""}',
+  );
+});

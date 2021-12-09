@@ -1,6 +1,8 @@
 import {
   ensureDir,
+  ensureDirSync,
   ensureFile,
+  ensureFileSync,
   expandGlob,
   ExpandGlobOptions,
 } from "https://deno.land/std@0.116.0/fs/mod.ts";
@@ -122,7 +124,6 @@ export class Path {
       if (err instanceof Deno.errors.NotFound) {
         return false;
       }
-
       throw err;
     }
   }
@@ -176,6 +177,10 @@ export class Path {
     return Deno.stat(this.toString());
   }
 
+  statSync() {
+    return Deno.statSync(this.toString());
+  }
+
   toFileUrl() {
     return toFileUrl(this.toString());
   }
@@ -223,24 +228,48 @@ export class Path {
     return ensureDir(this.toString());
   }
 
+  ensureDirSync() {
+    return ensureDirSync(this.toString());
+  }
+
   ensureFile() {
     return ensureFile(this.toString());
+  }
+
+  ensureFileSync() {
+    return ensureFileSync(this.toString());
   }
 
   readFile(options?: Deno.ReadFileOptions) {
     return Deno.readFile(this.toString(), options);
   }
 
+  readFileSync() {
+    return Deno.readFileSync(this.toString());
+  }
+
   writeFile(data: Uint8Array, options?: Deno.WriteFileOptions) {
     return Deno.writeFile(this.toString(), data, options);
+  }
+
+  writeFileSync(data: Uint8Array, options?: Deno.WriteFileOptions) {
+    return Deno.writeFileSync(this.toString(), data, options);
   }
 
   readTextFile(options?: Deno.ReadFileOptions) {
     return Deno.readTextFile(this.toString(), options);
   }
 
+  readTextFileSync() {
+    return Deno.readTextFileSync(this.toString());
+  }
+
   writeTextFile(data: string, options?: Deno.WriteFileOptions) {
     return Deno.writeTextFile(this.toString(), data, options);
+  }
+
+  writeTextFileSync(data: string, options?: Deno.WriteFileOptions) {
+    return Deno.writeTextFileSync(this.toString(), data, options);
   }
 
   async readJsonFile<T = JsonValue>(options?: Deno.ReadFileOptions) {

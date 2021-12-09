@@ -33,10 +33,6 @@ export class Path {
   static readonly #cache = new Map<string, WeakRef<Readonly<Path>>>();
   static #counter = 0;
 
-  static cwd(...pathSegments: string[]) {
-    return Path.from(Deno.cwd(), ...pathSegments);
-  }
-
   static from(...pathSegments: string[]) {
     const k = [`${pathSegments.length}`].concat(pathSegments).join(
       `${delimiter}${sep}\0`,
@@ -71,6 +67,18 @@ export class Path {
     return Path.fromFileUrl(new URL(url, importMeta.url));
   }
 
+  /**
+   * Returns path representing the current directory.
+   */
+  static cwd(...pathSegments: string[]) {
+    return Path.from(Deno.cwd(), ...pathSegments);
+  }
+
+  /**
+   * Returns path representing the user’s home directory.
+   *
+   * If the home directory can’t be resolved, throw error.
+   */
   static home(...pathSegments: string[]) {
     const p = userHomeDir();
     if (!p) throw new Error("cannot determine user home path");

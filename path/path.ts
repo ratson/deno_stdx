@@ -21,6 +21,12 @@ import {
 import { userHomeDir } from "../os/mod.ts";
 import { JsonValue } from "../typing/json.ts";
 
+export class HomePathError extends Error {
+  constructor(message?: string, init?: ErrorInit) {
+    super(message ?? "Can't determine user home path", init);
+  }
+}
+
 /**
  * A class to represent filesystem path.
  */
@@ -83,7 +89,7 @@ export class Path {
    */
   static home(...pathSegments: string[]) {
     const p = userHomeDir();
-    if (!p) throw new Error("cannot determine user home path");
+    if (!p) throw new HomePathError();
     return Path.from(p, ...pathSegments);
   }
 
@@ -138,9 +144,8 @@ export class Path {
     if (!s.startsWith("~")) return this;
 
     const homeDir = userHomeDir();
-    if (homeDir === null) {
-      throw new Error("Can't determine home directory");
-    }
+    if (homeDir === null) throw new HomePathError();
+
     return Path.from(
       s.replace(
         /^~([a-z]+|\/?)/,

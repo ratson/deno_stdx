@@ -180,9 +180,16 @@ Deno.test("Deno.inspect()", () => {
 });
 
 Deno.test("toPrimitive", () => {
-  assertStrictEquals(isNaN(+Path.from("/")), true);
-  assertStrictEquals(`${Path.from("/")}`, "/");
-  assertStrictEquals(Path.from("/") + "", "/");
+  const p = Path.from("/");
+  // number
+  assertStrictEquals(isNaN(+p), true);
+  assertStrictEquals(isNaN(Number(p)), true);
+  // string
+  assertStrictEquals(`${p}`, "/");
+  assertStrictEquals(p + "", "/");
+  // boolean
+  assertStrictEquals(Boolean(p), true);
+  assertStrictEquals(Boolean(Path.from("")), true);
 });
 
 Deno.test("expanduser", () => {

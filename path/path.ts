@@ -295,6 +295,14 @@ export class Path {
     );
   }
 
+  [Symbol.toPrimitive](hint: string) {
+    switch (hint) {
+      case "number":
+        return NaN;
+    }
+    return this.toString();
+  }
+
   [Symbol.for("Deno.customInspect")]() {
     return `${this.constructor.name} { ${this.toString()} }`;
   }

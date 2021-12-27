@@ -164,6 +164,8 @@ Deno.test("toString()", () => {
   ) {
     assertStrictEquals(Path.from(a).toString(), b);
   }
+
+  assertStrictEquals(Path.from("/") + "", "/");
 });
 
 Deno.test("isDir()", async () => {

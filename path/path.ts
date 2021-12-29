@@ -31,10 +31,10 @@ export class HomePathError extends Error {
  * A class to represent filesystem path.
  */
 export class Path {
-  readonly #segments: string[];
+  readonly #filepath: string;
 
   private constructor(...pathSegments: string[]) {
-    this.#segments = pathSegments;
+    this.#filepath = join(...pathSegments);
   }
 
   static cacheSize = 128;
@@ -171,7 +171,7 @@ export class Path {
   }
 
   joinpath(...other: string[]) {
-    return Path.from(join(...this.#segments, ...other));
+    return Path.from(this.#filepath, ...other);
   }
 
   resolve() {
@@ -195,7 +195,7 @@ export class Path {
   }
 
   toString() {
-    return join(...this.#segments);
+    return this.#filepath;
   }
 
   valueOf() {

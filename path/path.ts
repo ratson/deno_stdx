@@ -295,6 +295,10 @@ export class Path {
     );
   }
 
+  get [Symbol.toStringTag]() {
+    return "Path";
+  }
+
   [Symbol.toPrimitive](hint: string) {
     switch (hint) {
       case "number":

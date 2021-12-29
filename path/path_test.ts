@@ -218,3 +218,7 @@ Deno.test("toJSON", () => {
     '{"path":"/\\""}',
   );
 });
+
+Deno.test("toStringTag", () => {
+  assertStrictEquals(Object.prototype.toString.call(Path.from("/")), "[object Path]");
+});

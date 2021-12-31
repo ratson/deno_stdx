@@ -8,14 +8,12 @@ import {
 } from "https://deno.land/std@0.119.0/fs/mod.ts";
 import {
   basename,
-  delimiter,
   dirname,
   extname,
   fromFileUrl,
   isAbsolute,
   join,
   resolve,
-  sep,
   toFileUrl,
 } from "https://deno.land/std@0.119.0/path/mod.ts";
 import { userHomeDir } from "../os/mod.ts";
@@ -33,8 +31,8 @@ export class HomePathError extends Error {
 export class Path {
   readonly #filepath: string;
 
-  private constructor(...pathSegments: string[]) {
-    this.#filepath = join(...pathSegments);
+  private constructor(filepath: string) {
+    this.#filepath = filepath;
   }
 
   static cacheSize = 128;
@@ -42,14 +40,13 @@ export class Path {
   static #counter = 0;
 
   static from(...pathSegments: string[]) {
-    const k = [`${pathSegments.length}`].concat(pathSegments).join(
-      `${delimiter}${sep}\0`,
-    );
+    const k = join(...pathSegments);
+
     const m = this.#cache;
     const v = m.get(k)?.deref();
     if (v) return v;
 
-    const p = Object.freeze(new this(...pathSegments));
+    const p = Object.freeze(new this(k));
     m.set(k, new WeakRef(p));
 
     this.#counter += 1;

@@ -22,12 +22,14 @@ Deno.test("Path.from()", async () => {
   assertStrictEquals(await p.isSymlink(), false);
 });
 
-Deno.test("Path.from() returns same instance if arguments is the same", () => {
+Deno.test("Path.from() returns same instance if filepath is the same", () => {
   assertStrictEquals(Path.from("/", "p"), Path.from("/", "p"));
   assertStrictEquals(Object.is(Path.from("/a"), Path.from("/a")), true);
 
-  assert(Path.from("/") !== Path.from("/p/.."));
-  assert(Path.from("/p") !== Path.from("/", "p"));
+  assertStrictEquals(Path.from("/"), Path.from("/p/.."));
+  assertStrictEquals(Path.from("/"), Path.from("/", ".."));
+  assertStrictEquals(Path.from("/p"), Path.from("/", "p"));
+  assertStrictEquals(Path.from("./a"), Path.from("./b", "../a"));
 
   assertStrictEquals(Path.cwd(), Path.from(".").resolve());
   assert(Path.cwd() !== Path.from("."));
@@ -220,5 +222,8 @@ Deno.test("toJSON", () => {
 });
 
 Deno.test("toStringTag", () => {
-  assertStrictEquals(Object.prototype.toString.call(Path.from("/")), "[object Path]");
+  assertStrictEquals(
+    Object.prototype.toString.call(Path.from("/")),
+    "[object Path]",
+  );
 });

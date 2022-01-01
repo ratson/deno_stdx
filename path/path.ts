@@ -305,6 +305,6 @@ export class Path {
   }
 
   [Symbol.for("Deno.customInspect")]() {
-    return `${this.constructor.name} { ${this.toString()} }`;
+    return `${this[Symbol.toStringTag]} { ${this.toString()} }`;
   }
 }

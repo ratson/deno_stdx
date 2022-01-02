@@ -226,4 +226,12 @@ Deno.test("toStringTag", () => {
     Object.prototype.toString.call(Path.from("/")),
     "[object Path]",
   );
+
+  // @ts-expect-error private constructor should not be inherited
+  class Child extends Path {
+    constructor(s: string) {
+      super(s);
+    }
+  }
+  assertStrictEquals(Object.prototype.toString.call(new Child("/")), "[object Path]");
 });

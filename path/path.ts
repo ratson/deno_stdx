@@ -44,11 +44,12 @@ export class Path {
 
     const m = this.#cache;
     const v = m.get(k)?.deref();
-    if (v) return v;
+    if (v !== undefined) return v;
 
     const p = Object.freeze(new this(k));
     m.set(k, new WeakRef(p));
 
+    // TODO better gc strategy
     this.#counter += 1;
     if (this.#counter % this.cacheSize === 0) this.gc();
 
@@ -93,7 +94,7 @@ export class Path {
   static gc() {
     const m = this.#cache;
     for (const [k, v] of m.entries()) {
-      if (!v.deref()) m.delete(k);
+      if (v.deref() === undefined) m.delete(k);
     }
   }
 

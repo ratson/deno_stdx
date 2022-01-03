@@ -67,3 +67,8 @@ Deno.test("step = 0", () => {
     range(0, 1, 0).next();
   });
 });
+
+Deno.test("float", () => {
+  assertEquals(Array.from(range(1.5)), [0, 1]);
+  assertEquals(Array.from(range(0.2, 1.7, 1.3)), [0.2, 1.5]);
+});

@@ -5,6 +5,7 @@ import {
   ensureFileSync,
   expandGlob,
   ExpandGlobOptions,
+  expandGlobSync,
 } from "https://deno.land/std@0.119.0/fs/mod.ts";
 import {
   basename,
@@ -18,6 +19,8 @@ import {
 } from "https://deno.land/std@0.119.0/path/mod.ts";
 import { userHomeDir } from "../os/mod.ts";
 import { JsonValue } from "../typing/json.ts";
+
+type GlobOptions = Omit<ExpandGlobOptions, "root">;
 
 export class HomePathError extends Error {
   constructor(message?: string, init?: ErrorInit) {
@@ -155,10 +158,21 @@ export class Path {
 
   async *glob(
     glob: string,
-    opts: Omit<ExpandGlobOptions, "root"> = {},
+    opts: GlobOptions = {},
   ): AsyncIterableIterator<Readonly<Path>> {
     for await (
       const file of expandGlob(glob, { ...opts, root: this.toString() })
+    ) {
+      yield Path.from(file.path);
+    }
+  }
+
+  *globSync(
+    glob: string,
+    opts: GlobOptions = {},
+  ): IterableIterator<Readonly<Path>> {
+    for (
+      const file of expandGlobSync(glob, { ...opts, root: this.toString() })
     ) {
       yield Path.from(file.path);
     }

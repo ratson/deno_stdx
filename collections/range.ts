@@ -1,11 +1,11 @@
 type Range = Generator<number>;
 
+function range(stop: number): Range;
+function range(start: number, stop?: number, step?: number): Range;
 /**
  * Return an object that produces a sequence of integers from start (inclusive)
  * to stop (exclusive) by step.
  */
-function range(stop: number): Range;
-function range(start: number, stop?: number, step?: number): Range;
 function* range(start = 0, stop?: number, step = 1): Range {
   if (step === 0) {
     if (stop !== Infinity) {

@@ -28,6 +28,29 @@ export class HomePathError extends Error {
   }
 }
 
+class PathCache {
+  readonly #map = new Map<string, WeakRef<Readonly<Path>>>();
+  readonly #gcInterval = 128;
+  #counter = 0;
+
+  get(key: string) {
+    return this.#map.get(key)?.deref();
+  }
+
+  set(key: string, value: Readonly<Path>) {
+    const m = this.#map;
+    m.set(key, new WeakRef(value));
+
+    // TODO better gc strategy
+    this.#counter += 1;
+    if (this.#counter % this.#gcInterval === 0) {
+      for (const [k, v] of m.entries()) {
+        if (v.deref() === undefined) m.delete(k);
+      }
+    }
+  }
+}
+
 /**
  * A class to represent filesystem path.
  */
@@ -38,24 +61,17 @@ export class Path {
     this.#filepath = filepath;
   }
 
-  static cacheSize = 128;
-  static readonly #cache = new Map<string, WeakRef<Readonly<Path>>>();
-  static #counter = 0;
+  static readonly #cache = new PathCache();
 
   static from(...pathSegments: string[]) {
     const k = join(...pathSegments);
-
     const m = this.#cache;
-    const v = m.get(k)?.deref();
+
+    const v = m.get(k);
     if (v !== undefined) return v;
 
     const p = Object.freeze(new this(k));
-    m.set(k, new WeakRef(p));
-
-    // TODO better gc strategy
-    this.#counter += 1;
-    if (this.#counter % this.cacheSize === 0) this.gc();
-
+    m.set(k, p);
     return p;
   }
 
@@ -92,13 +108,6 @@ export class Path {
     const p = userHomeDir();
     if (!p) throw new HomePathError();
     return Path.from(p, ...pathSegments);
-  }
-
-  static gc() {
-    const m = this.#cache;
-    for (const [k, v] of m.entries()) {
-      if (v.deref() === undefined) m.delete(k);
-    }
   }
 
   get ext() {

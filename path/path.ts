@@ -28,7 +28,12 @@ export class HomePathError extends Error {
   }
 }
 
-class PathCache {
+export interface Cache {
+  get(key: string): Readonly<Path> | undefined;
+  set(key: string, value: Readonly<Path>): void;
+}
+
+class PathCache implements Cache {
   readonly #map = new Map<string, WeakRef<Readonly<Path>>>();
   readonly #gcInterval = 128;
   #counter = 0;
@@ -61,11 +66,11 @@ export class Path {
     this.#filepath = filepath;
   }
 
-  static readonly #cache = new PathCache();
+  static cache: Cache = new PathCache();
 
   static from(...pathSegments: string[]) {
     const k = join(...pathSegments);
-    const m = this.#cache;
+    const m = this.cache;
 
     const v = m.get(k);
     if (v !== undefined) return v;

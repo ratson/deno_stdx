@@ -3,9 +3,10 @@ import {
   assertEquals,
   assertStrictEquals,
   assertThrows,
+  delay,
 } from "../deps_test.ts";
 import { userHomeDir } from "../os/mod.ts";
-import { Path } from "./path.ts";
+import { DefaultCache, Path } from "./path.ts";
 
 Deno.test("Path.from()", async () => {
   const p = Path.from("/this/is/a/test/path/file.ext");
@@ -233,5 +234,30 @@ Deno.test("toStringTag", () => {
       super(s);
     }
   }
-  assertStrictEquals(Object.prototype.toString.call(new Child("/")), "[object Path]");
+  assertStrictEquals(
+    Object.prototype.toString.call(new Child("/")),
+    "[object Path]",
+  );
+});
+
+Deno.test("DefaultCache", async () => {
+  const cache = new DefaultCache();
+  // @ts-expect-error create new instance from private constuctor
+  const createPath = () => Object.freeze(new Path(crypto.randomUUID()));
+  let p1 = createPath();
+  const p1k = p1.toString();
+  assertStrictEquals(cache.get(p1k), undefined);
+
+  cache.set(p1k, p1);
+  assertStrictEquals(cache.get(p1k), p1);
+  assertStrictEquals(cache.counter, 1);
+  assertStrictEquals(cache.refs.size, 1);
+
+  // remove reference
+  p1 = undefined;
+  while (cache.get(p1k)) {
+    await delay(100);
+  }
+  cache.gc();
+  assertStrictEquals(cache.refs.size, 0);
 });

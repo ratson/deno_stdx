@@ -33,25 +33,27 @@ export interface Cache {
   set(key: string, value: Readonly<Path>): void;
 }
 
-class PathCache implements Cache {
-  readonly #map = new Map<string, WeakRef<Readonly<Path>>>();
-  readonly #gcInterval = 128;
-  #counter = 0;
+export class DefaultCache implements Cache {
+  readonly refs = new Map<string, WeakRef<Readonly<Path>>>();
+  readonly gcInterval = 128;
+  counter = 0;
 
   get(key: string) {
-    return this.#map.get(key)?.deref();
+    return this.refs.get(key)?.deref();
   }
 
   set(key: string, value: Readonly<Path>) {
-    const m = this.#map;
-    m.set(key, new WeakRef(value));
+    this.refs.set(key, new WeakRef(value));
 
     // TODO better gc strategy
-    this.#counter += 1;
-    if (this.#counter % this.#gcInterval === 0) {
-      for (const [k, v] of m.entries()) {
-        if (v.deref() === undefined) m.delete(k);
-      }
+    this.counter = (this.counter + 1) % this.gcInterval;
+    if (this.counter === 0) this.gc();
+  }
+
+  gc() {
+    const m = this.refs;
+    for (const [k, v] of m.entries()) {
+      if (v.deref() === undefined) m.delete(k);
     }
   }
 }
@@ -66,7 +68,7 @@ export class Path {
     this.#filepath = filepath;
   }
 
-  static cache: Cache = new PathCache();
+  static cache: Cache = new DefaultCache();
 
   static from(...pathSegments: string[]) {
     const k = join(...pathSegments);

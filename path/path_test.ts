@@ -5,6 +5,7 @@ import {
   assertThrows,
   delay,
 } from "../deps_test.ts";
+import { isCI } from "../testing/mod.ts";
 import { userHomeDir } from "../os/mod.ts";
 import { DefaultCache, Path } from "./path.ts";
 
@@ -254,10 +255,12 @@ Deno.test("DefaultCache", async () => {
   assertStrictEquals(cache.refs.size, 1);
 
   // remove reference
+  if (!isCI) return;
   p1 = undefined;
   while (cache.get(p1k)) {
     await delay(100);
   }
   cache.gc();
   assertStrictEquals(cache.refs.size, 0);
+  assertStrictEquals(cache.keys.length, 0);
 });

@@ -35,6 +35,7 @@ export interface Cache {
 
 export class DefaultCache implements Cache {
   readonly refs = new Map<string, WeakRef<Readonly<Path>>>();
+  readonly keys = new Array<string>();
   readonly gcInterval = 128;
   counter = 0;
 
@@ -44,16 +45,22 @@ export class DefaultCache implements Cache {
 
   set(key: string, value: Readonly<Path>) {
     this.refs.set(key, new WeakRef(value));
+    this.keys.push(key);
 
-    // TODO better gc strategy
     this.counter = (this.counter + 1) % this.gcInterval;
     if (this.counter === 0) this.gc();
   }
 
   gc() {
-    const m = this.refs;
-    for (const [k, v] of m.entries()) {
-      if (v.deref() === undefined) m.delete(k);
+    const { keys, refs: m } = this;
+    for (const k of keys.splice(0, this.gcInterval)) {
+      const v = m.get(k);
+      if (v === undefined) continue;
+      if (v.deref() === undefined) {
+        m.delete(k);
+      } else {
+        keys.push(k);
+      }
     }
   }
 }

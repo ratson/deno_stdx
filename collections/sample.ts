@@ -6,7 +6,7 @@ function* randomInts(max: number, n: number) {
   }
 }
 
-export function* sample<T>(items: Array<T>, n: number) {
+export function* sampleIndex<T>(items: Array<T>, n: number) {
   n = Math.min(n, items.length);
 
   const max = items.length - 1;
@@ -16,6 +16,12 @@ export function* sample<T>(items: Array<T>, n: number) {
   }
 
   for (const i of s) {
+    yield i;
+  }
+}
+
+export function* sample<T>(items: Array<T>, n: number) {
+  for (const i of sampleIndex(items, n)) {
     yield items[i];
   }
 }

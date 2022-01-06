@@ -1,4 +1,8 @@
-import { assertArrayIncludes, assertStrictEquals } from "../deps_test.ts";
+import {
+  assertArrayIncludes,
+  assertStrictEquals,
+  assertThrows,
+} from "../deps_test.ts";
 import { sample } from "./sample.ts";
 
 Deno.test("sample", () => {
@@ -18,4 +22,10 @@ Deno.test("n > input.lenght", () => {
 Deno.test("n <= 0", () => {
   assertArrayIncludes(Array.from(sample([1, 2, 3], 0)), []);
   assertArrayIncludes(Array.from(sample([1, 2, 3], -1)), []);
+});
+
+Deno.test("n is not an integer", () => {
+  assertThrows(() => {
+    Array.from(sample([], 1.1));
+  });
 });

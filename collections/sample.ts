@@ -7,10 +7,13 @@ function* randomInts(max: number, n: number) {
 }
 
 export function* sampleIndex<T>(items: Array<T>, n: number) {
+  if (!Number.isInteger(n)) {
+    throw new TypeError(`n must be an integer. Received ${n}`);
+  }
   n = Math.min(n, items.length);
 
   const max = items.length - 1;
-  const s = new Set<number>(randomInts(max, n));
+  const s = new Set(randomInts(max, n));
   while (s.size < n) {
     s.add(randomInteger(0, max));
   }

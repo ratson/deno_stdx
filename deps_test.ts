@@ -1,4 +1,4 @@
-export { delay } from "https://deno.land/std@0.119.0/async/mod.ts";
+export { delay } from "https://deno.land/std@0.120.0/async/mod.ts";
 export {
   assert,
   assertArrayIncludes,
@@ -7,6 +7,6 @@ export {
   assertRejects,
   assertStrictEquals,
   assertThrows,
-} from "https://deno.land/std@0.119.0/testing/asserts.ts";
+} from "https://deno.land/std@0.120.0/testing/asserts.ts";
 
 export * from "./testing/mod.ts";

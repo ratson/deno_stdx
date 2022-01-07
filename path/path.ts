@@ -213,6 +213,14 @@ export class Path {
     return Path.from(resolve(this.toString()));
   }
 
+  lstat() {
+    return Deno.lstat(this.toString());
+  }
+
+  lstatSync() {
+    return Deno.lstatSync(this.toString());
+  }
+
   stat() {
     return Deno.stat(this.toString());
   }
@@ -278,6 +286,124 @@ export class Path {
 
   ensureFileSync() {
     return ensureFileSync(this.toString());
+  }
+
+  chmod(mode: number) {
+    return Deno.chmod(this.toString(), mode);
+  }
+
+  chmodSync(mode: number) {
+    return Deno.chmodSync(this.toString(), mode);
+  }
+
+  chown(uid: number | null, gid: number | null) {
+    return Deno.chown(this.toString(), uid, gid);
+  }
+
+  chownSync(uid: number | null, gid: number | null) {
+    return Deno.chownSync(this.toString(), uid, gid);
+  }
+
+  copyFile(toPath: string | URL) {
+    return Deno.copyFile(this.toString(), toPath);
+  }
+
+  copyFileSync(toPath: string | URL) {
+    return Deno.copyFileSync(this.toString(), toPath);
+  }
+
+  create() {
+    return Deno.create(this.toString());
+  }
+
+  createSync() {
+    return Deno.createSync(this.toString());
+  }
+
+  link(newpath: string) {
+    return Deno.link(this.toString(), newpath);
+  }
+
+  linkSync(newpath: string) {
+    return Deno.linkSync(this.toString(), newpath);
+  }
+
+  mkdir(options?: Deno.MkdirOptions) {
+    return Deno.mkdir(this.toString(), options);
+  }
+
+  mkdirSync(options?: Deno.MkdirOptions) {
+    return Deno.mkdirSync(this.toString(), options);
+  }
+
+  open(options?: Deno.OpenOptions) {
+    return Deno.open(this.toString(), options);
+  }
+
+  openSync(options?: Deno.OpenOptions) {
+    return Deno.openSync(this.toString(), options);
+  }
+
+  symlink(newpath: string | URL, options?: Deno.SymlinkOptions) {
+    return Deno.symlink(this.toString(), newpath, options);
+  }
+
+  symlinkSync(newpath: string | URL, options?: Deno.SymlinkOptions) {
+    return Deno.symlinkSync(this.toString(), newpath, options);
+  }
+
+  readDir() {
+    return Deno.readDir(this.toString());
+  }
+
+  readDirSync() {
+    return Deno.readDirSync(this.toString());
+  }
+
+  async readLink() {
+    const p = await Deno.readLink(this.toString());
+    return Path.from(p);
+  }
+
+  readLinkSync() {
+    return Path.from(Deno.readLinkSync(this.toString()));
+  }
+
+  async realPath() {
+    const p = await Deno.realPath(this.toString());
+    return Path.from(p);
+  }
+
+  realPathSync() {
+    return Path.from(Deno.realPathSync(this.toString()));
+  }
+
+  rename(newpath: string | URL) {
+    return Deno.rename(this.toString(), newpath);
+  }
+
+  renameSync(newpath: string | URL) {
+    return Deno.renameSync(this.toString(), newpath);
+  }
+
+  remove(options?: Deno.RemoveOptions) {
+    return Deno.remove(this.toString(), options);
+  }
+
+  removeSync(options?: Deno.RemoveOptions) {
+    return Deno.removeSync(this.toString(), options);
+  }
+
+  truncate(len?: number) {
+    return Deno.truncate(this.toString(), len);
+  }
+
+  truncateSync(len?: number) {
+    return Deno.truncateSync(this.toString(), len);
+  }
+
+  watch(options?: { recursive: boolean }) {
+    return Deno.watchFs(this.toString(), options);
   }
 
   readFile(options?: Deno.ReadFileOptions) {

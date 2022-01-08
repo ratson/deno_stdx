@@ -11,7 +11,7 @@ Deno.test("noop", () => {
     [noop`1${2}${3}4`, "1234"],
   ];
 
-  tests.forEach(([result, expected]) => {
+  for (const [result, expected] of tests) {
     assertStrictEquals(result, expected);
-  });
+  }
 });

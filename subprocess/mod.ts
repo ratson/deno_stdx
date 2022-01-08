@@ -29,9 +29,9 @@ function run(
  */
 async function run(cmd: string[], opts?: RunOptions) {
   const { pipeText, ...o } = opts ?? {};
-  const hasPipeText = typeof pipeText === "string";
+  const hasPipeText = pipeText !== undefined;
   if (hasPipeText) {
-    if (!o.stdin) {
+    if (o.stdin === undefined) {
       o.stdin = "piped";
     } else if (o.stdin !== "piped") {
       throw new TypeError("`pipeText` only works when `stdin` is `piped`");
@@ -46,8 +46,8 @@ async function run(cmd: string[], opts?: RunOptions) {
 
   const [status, stdout, stderr] = await Promise.all([
     p.status(),
-    o.stdout === "piped" ? p.output() : null,
-    o.stderr === "piped" ? p.stderrOutput() : null,
+    o.stdout === "piped" ? p.output() : undefined,
+    o.stderr === "piped" ? p.stderrOutput() : undefined,
   ]);
   p.close();
 
@@ -55,8 +55,8 @@ async function run(cmd: string[], opts?: RunOptions) {
     stderr?: string;
     stdout?: string;
   } = status;
-  if (stderr !== null) result.stderr = decoder.decode(stderr);
-  if (stdout !== null) result.stdout = decoder.decode(stdout);
+  if (stderr !== undefined) result.stderr = decoder.decode(stderr);
+  if (stdout !== undefined) result.stdout = decoder.decode(stdout);
 
   if (o.check && !result.success) {
     throw new CalledProcessError();

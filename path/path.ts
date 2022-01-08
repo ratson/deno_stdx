@@ -124,6 +124,22 @@ export class Path {
     return Path.from(p, ...pathSegments);
   }
 
+  static async makeTempDir(options?: Deno.MakeTempOptions) {
+    return Path.from(await Deno.makeTempDir(options));
+  }
+
+  static makeTempDirSync(options?: Deno.MakeTempOptions) {
+    return Path.from(Deno.makeTempDirSync(options));
+  }
+
+  static async makeTempFile(options?: Deno.MakeTempOptions) {
+    return Path.from(await Deno.makeTempFile(options));
+  }
+
+  static makeTempFileSync(options?: Deno.MakeTempOptions) {
+    return Path.from(Deno.makeTempFileSync(options));
+  }
+
   get ext() {
     return extname(this.toString());
   }

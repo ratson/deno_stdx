@@ -257,10 +257,6 @@ export class Path {
     return this.#filepath;
   }
 
-  valueOf() {
-    return this.toString();
-  }
-
   async isDir() {
     try {
       const stat = await this.stat();

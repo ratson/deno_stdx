@@ -74,9 +74,9 @@ export { run };
 export async function output(
   cmd: string[],
   opts?: Omit<RunOptions, "stdout">,
-) {
+): Promise<string> {
   const r = await run(cmd, { stderr: "null", ...opts, stdout: "piped" });
-  return r.stdout!;
+  return r.stdout;
 }
 
 /**
@@ -87,9 +87,9 @@ export async function output(
 export async function stderrOutput(
   cmd: string[],
   opts?: Omit<RunOptions, "stderr">,
-) {
+): Promise<string> {
   const r = await run(cmd, { stdout: "null", ...opts, stderr: "piped" });
-  return r.stderr!;
+  return r.stderr;
 }
 
 /**
@@ -99,7 +99,7 @@ export async function pipeText(
   cmd: string[],
   text: string,
   opts?: Omit<RunOptions, "pipeText" | "stdin" | "stdout">,
-) {
+): Promise<string> {
   const r = await run(cmd, { ...opts, pipeText: text, stdout: "piped" });
   return r.stdout;
 }

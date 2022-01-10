@@ -162,9 +162,8 @@ export class Path {
   }
 
   equals(otherPath: Readonly<Path> | string | undefined | null) {
-    if (otherPath === undefined || otherPath === null) return false;
-
     if (this === otherPath) return true;
+    if (otherPath === undefined || otherPath === null) return false;
 
     const a = this.toString();
     const b = otherPath.toString();

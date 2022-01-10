@@ -287,31 +287,25 @@ export class Path {
     return this.#filepath;
   }
 
-  async isDir() {
+  async #statValue(key: "isDirectory" | "isFile" | "isSymlink") {
     try {
       const stat = await this.stat();
-      return stat.isDirectory;
+      return stat[key];
     } catch {
       return false;
     }
   }
 
-  async isFile() {
-    try {
-      const stat = await this.stat();
-      return stat.isFile;
-    } catch {
-      return false;
-    }
+  isDir(): Promise<boolean> {
+    return this.#statValue("isDirectory");
   }
 
-  async isSymlink() {
-    try {
-      const stat = await this.stat();
-      return stat.isSymlink;
-    } catch {
-      return false;
-    }
+  isFile(): Promise<boolean> {
+    return this.#statValue("isFile");
+  }
+
+  isSymlink(): Promise<boolean> {
+    return this.#statValue("isSymlink");
   }
 
   ensureDir() {

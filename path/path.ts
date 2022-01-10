@@ -233,7 +233,10 @@ export class Path {
     return isAbsolute(this.toString());
   }
 
-  relativeTo(otherPath: Path) {
+  relative(otherPath: Readonly<Path>) {
+    if (this.isAbsolute() !== otherPath.isAbsolute()) {
+      throw new Error("One path is relative and the other is absolute.");
+    }
     return Path.from(relative(this.toString(), otherPath.toString()));
   }
 

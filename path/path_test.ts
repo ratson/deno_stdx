@@ -232,6 +232,23 @@ Deno.test("glob", async () => {
   }
 });
 
+Deno.test("relative", () => {
+  const p = Path.from("/tmp/d/file.txt");
+  assertStrictEquals(p.relative(Path.from("/tmp/d")), Path.from(".."));
+  assertStrictEquals(p.relative(Path.from("/tmp/d/f")), Path.from("../f"));
+
+  assertThrows(() => {
+    p.relative(Path.from(".."));
+  });
+
+  assertThrows(() => {
+    Path.from("..").relative(Path.from("/"));
+  });
+
+  const r = Path.from(".");
+  assertStrictEquals(r.relative(Path.from("../f")), Path.from("../f"));
+});
+
 Deno.test("toJSON", () => {
   assertStrictEquals(JSON.stringify(Path.from("/")), '"/"');
   assertStrictEquals(

@@ -105,6 +105,10 @@ Deno.test("ext", () => {
   assertStrictEquals(Path.from("/dir/").ext, "");
 });
 
+Deno.test("stem", () => {
+  assertStrictEquals(Path.from("/file.ext").stem, "file");
+});
+
 Deno.test("equals()", () => {
   for (
     const [a, b] of [
@@ -207,6 +211,19 @@ Deno.test("expanduser", () => {
 
   const p = Path.from("/");
   assertStrictEquals(p.expanduser(), p);
+});
+
+Deno.test("parse", () => {
+  const p = Path.from("/root/file.txt");
+  assertEquals(p.parse(), {
+    base: "file.txt",
+    dir: "/root",
+    ext: ".txt",
+    name: "file",
+    root: "/",
+  });
+
+  assertStrictEquals(Path.fromPathObject(p.parse()), p);
 });
 
 Deno.test("glob", async () => {

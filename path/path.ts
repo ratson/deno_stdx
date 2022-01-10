@@ -11,9 +11,13 @@ import {
   basename,
   dirname,
   extname,
+  format,
+  FormatInputPathObject,
   fromFileUrl,
   isAbsolute,
   join,
+  parse,
+  relative,
   resolve,
   toFileUrl,
 } from "https://deno.land/std@0.120.0/path/mod.ts";
@@ -106,6 +110,10 @@ export class Path {
     return Path.fromFileUrl(new URL(url, importMeta.url));
   }
 
+  static fromPathObject(pathObject: FormatInputPathObject) {
+    return Path.from(format(pathObject));
+  }
+
   /**
    * Returns path representing the current directory.
    */
@@ -146,6 +154,10 @@ export class Path {
 
   get name() {
     return basename(this.toString());
+  }
+
+  get stem() {
+    return basename(this.toString(), this.ext);
   }
 
   equals(otherPath: Readonly<Path> | string | undefined | null) {
@@ -221,8 +233,16 @@ export class Path {
     return isAbsolute(this.toString());
   }
 
+  relativeTo(otherPath: Path) {
+    return Path.from(relative(this.toString(), otherPath.toString()));
+  }
+
   joinpath(...other: string[]) {
     return Path.from(this.#filepath, ...other);
+  }
+
+  parse() {
+    return parse(this.toString());
   }
 
   resolve() {

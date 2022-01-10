@@ -5,7 +5,8 @@ import {
   assertThrows,
   delay,
 } from "../deps_test.ts";
-import { isCI } from "../testing/mod.ts";
+import { range } from "../collections/range.ts";
+import { assertGreater, assertLess, isCI } from "../testing/mod.ts";
 import { userHomeDir } from "../os/mod.ts";
 import { DefaultCache, Path } from "./path.ts";
 
@@ -247,6 +248,30 @@ Deno.test("relative", () => {
 
   const r = Path.from(".");
   assertStrictEquals(r.relative(Path.from("../f")), Path.from("../f"));
+});
+
+Deno.test("stat", async () => {
+  const n = 10;
+  const p = Path.from("/tmp");
+  await p.stat();
+
+  const t1 = performance.now();
+  for (const _ of range(n)) {
+    await p.stat();
+  }
+  const d1 = (performance.now() - t1) / n;
+
+  const t2 = performance.now();
+  for (const _ of range(n)) {
+    await Promise.all([
+      p.isDir(),
+      p.isFile(),
+      p.isSymlink(),
+    ]);
+  }
+  const d2 = (performance.now() - t2) / n;
+  assertGreater(d1, d2);
+  assertLess(d1, d2 * 3);
 });
 
 Deno.test("toJSON", () => {

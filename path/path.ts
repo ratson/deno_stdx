@@ -74,6 +74,7 @@ export class DefaultCache implements Cache {
  */
 export class Path {
   readonly #filepath: string;
+  #stat?: Promise<Deno.FileInfo>;
 
   private constructor(filepath: string) {
     this.#filepath = filepath;
@@ -260,8 +261,15 @@ export class Path {
     return Deno.lstatSync(this.toString());
   }
 
-  stat() {
-    return Deno.stat(this.toString());
+  async stat() {
+    if (this.#stat !== undefined) return this.#stat;
+
+    try {
+      this.#stat = Deno.stat(this.toString());
+      return await this.#stat;
+    } finally {
+      this.#stat = undefined;
+    }
   }
 
   statSync() {

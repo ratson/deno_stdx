@@ -7,7 +7,7 @@ import {
 } from "../deps_test.ts";
 import { range } from "../collections/range.ts";
 import { assertGreater, assertLess, isCI } from "../testing/mod.ts";
-import { userHomeDir } from "../os/mod.ts";
+import { userHomeDir } from "../os/path.ts";
 import { DefaultCache, Path } from "./path.ts";
 
 Deno.test("Path.from()", async () => {

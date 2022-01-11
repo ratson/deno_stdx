@@ -21,7 +21,7 @@ import {
   resolve,
   toFileUrl,
 } from "https://deno.land/std@0.120.0/path/mod.ts";
-import { userHomeDir } from "../os/mod.ts";
+import { userHomeDir } from "../os/path.ts";
 import { JsonValue } from "../typing/json.ts";
 
 type GlobOptions = Omit<ExpandGlobOptions, "root">;

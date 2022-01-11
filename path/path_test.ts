@@ -251,7 +251,7 @@ Deno.test("relative", () => {
 });
 
 Deno.test("stat", async () => {
-  const n = 10;
+  const n = 30;
   const p = Path.from("/tmp");
   await p.stat();
 

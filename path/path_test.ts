@@ -251,7 +251,7 @@ Deno.test("relative", () => {
 });
 
 Deno.test("stat", async () => {
-  const n = 30;
+  const n = isCI() ? 100 : 50;
   const p = Path.from("/tmp");
   await p.stat();
 
@@ -270,8 +270,8 @@ Deno.test("stat", async () => {
     ]);
   }
   const d2 = (performance.now() - t2) / n;
-  assertGreater(d1, d2);
-  assertLess(d1, d2 * 3);
+  assertGreater(d1, d2 * 1.3);
+  assertLess(d1, d2 * 2);
 });
 
 Deno.test("toJSON", () => {

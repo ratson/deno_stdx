@@ -39,3 +39,7 @@ export function assertLessOrEqual(actual: any, expected: any, msg?: string) {
     msg ?? `Expect ${actualString} <= ${expectedString}`,
   );
 }
+
+export function assertType<T>(_: T) {
+  // noop
+}

@@ -4,6 +4,7 @@ import {
   assertGreaterOrEqual,
   assertLess,
   assertLessOrEqual,
+  assertType,
 } from "./asserts.ts";
 
 Deno.test("assertGreater", () => {
@@ -42,4 +43,12 @@ Deno.test("assertLessOrEqual", () => {
   assertThrows(() => {
     assertLessOrEqual(2, 1);
   }, AssertionError);
+});
+
+Deno.test("assertType", () => {
+  assertType<string>("");
+  assertType<number>(1);
+
+  // @ts-expect-error wrong type
+  assertType<number>("");
 });

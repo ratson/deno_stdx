@@ -313,8 +313,8 @@ Deno.test("DefaultCache", async () => {
   assertStrictEquals(cache.counter, 1);
   assertStrictEquals(cache.refs.size, 1);
 
+  if (!isCI()) return;
   // remove reference
-  if (!isCI) return;
   p1 = undefined;
   while (cache.get(p1k)) {
     await delay(100);

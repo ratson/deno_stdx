@@ -1,5 +1,5 @@
 import { assertStrictEquals } from "../deps_test.ts";
-import * as clipboard from "./clipboard.ts";
+import { clipboard } from "./clipboard.ts";
 
 Deno.test("clipboard", async () => {
   const s = "test";

@@ -1,12 +1,15 @@
 import {
   assert,
   assertEquals,
+  assertSpyCall,
+  assertSpyCalls,
   assertStrictEquals,
   assertThrows,
   delay,
+  spy,
 } from "../deps_test.ts";
 import { range } from "../collections/range.ts";
-import { assertGreater, assertLess, isCI } from "../testing/mod.ts";
+import { isCI } from "../testing/mod.ts";
 import { userHomeDir } from "../os/path.ts";
 import { DefaultCache, Path } from "./path.ts";
 
@@ -251,27 +254,21 @@ Deno.test("relative", () => {
 });
 
 Deno.test("stat", async () => {
-  const n = isCI() ? 100 : 50;
   const p = Path.from("/tmp");
-  await p.stat();
+  const stat = spy(Deno, "stat");
 
-  const t1 = performance.now();
-  for (const _ of range(n)) {
+  try {
     await p.stat();
-  }
-  const d1 = (performance.now() - t1) / n;
+    assertSpyCall(stat, 0, {
+      args: [p.toString()],
+    });
+    assertSpyCalls(stat, 1);
 
-  const t2 = performance.now();
-  for (const _ of range(n)) {
-    await Promise.all([
-      p.isDir(),
-      p.isFile(),
-      p.isSymlink(),
-    ]);
+    await Promise.all(Array.from(range(5)).map(() => p.stat()));
+    assertSpyCalls(stat, 2);
+  } finally {
+    stat.restore();
   }
-  const d2 = (performance.now() - t2) / n;
-  assertGreater(d1, d2 * 1.3);
-  assertLess(d1, d2 * 2);
 });
 
 Deno.test("toJSON", () => {

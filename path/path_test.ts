@@ -1,3 +1,4 @@
+import { SEP } from "https://deno.land/std@0.121.0/path/separator.ts";
 import {
   assert,
   assertEquals,
@@ -12,6 +13,8 @@ import { range } from "../collections/range.ts";
 import { isCI } from "../testing/mod.ts";
 import { userHomeDir } from "../os/path.ts";
 import { DefaultCache, Path } from "./path.ts";
+
+const isWin = Deno.build.os === "windows";
 
 Deno.test("Path.from()", async () => {
   const p = Path.from("/this/is/a/test/path/file.ext");
@@ -148,6 +151,12 @@ Deno.test("equals()", () => {
 Deno.test("path == string", () => {
   // deno-lint-ignore no-explicit-any
   const p = Path.from("/") as any;
+
+  if (isWin) {
+    assertStrictEquals(p == "\\", true);
+    return;
+  }
+
   assertStrictEquals(p == "/", true);
   assertStrictEquals("/" == p, true);
 
@@ -174,10 +183,13 @@ Deno.test("toString()", () => {
       // [".", "./"],
     ]
   ) {
-    assertStrictEquals(Path.from(a).toString(), b);
+    assertStrictEquals(
+      Path.from(a.replaceAll("/", SEP)).toString(),
+      b.replaceAll("/", SEP),
+    );
   }
 
-  assertStrictEquals(Path.from("/") + "", "/");
+  assertStrictEquals(Path.from(SEP) + "", SEP);
 });
 
 Deno.test("isDir()", async () => {
@@ -188,7 +200,7 @@ Deno.test("isDir()", async () => {
 });
 
 Deno.test("Deno.inspect()", () => {
-  assertStrictEquals(Deno.inspect(Path.from("/")), "Path { / }");
+  assertStrictEquals(Deno.inspect(Path.from(SEP)), `Path { ${SEP} }`);
 });
 
 Deno.test("toPrimitive", () => {
@@ -197,8 +209,8 @@ Deno.test("toPrimitive", () => {
   assertStrictEquals(isNaN(+p), true);
   assertStrictEquals(isNaN(Number(p)), true);
   // string
-  assertStrictEquals(`${p}`, "/");
-  assertStrictEquals(p + "", "/");
+  assertStrictEquals(`${p}`, SEP);
+  assertStrictEquals(p + "", SEP);
   // boolean
   assertStrictEquals(Boolean(p), true);
   assertStrictEquals(Boolean(Path.from("")), true);
@@ -206,6 +218,9 @@ Deno.test("toPrimitive", () => {
 
 Deno.test("expanduser", () => {
   assertStrictEquals(Path.from("~").expanduser(), Path.home());
+
+  if (isWin) return;
+
   assertStrictEquals(Path.from("~/").expanduser(), Path.home());
 
   assertStrictEquals(
@@ -219,12 +234,13 @@ Deno.test("expanduser", () => {
 
 Deno.test("parse", () => {
   const p = Path.from("/root/file.txt");
+
   assertEquals(p.parse(), {
     base: "file.txt",
-    dir: "/root",
+    dir: `${SEP}root`,
     ext: ".txt",
     name: "file",
-    root: "/",
+    root: SEP,
   });
 
   assertStrictEquals(Path.fromPathObject(p.parse()), p);
@@ -272,7 +288,12 @@ Deno.test("stat", async () => {
 });
 
 Deno.test("toJSON", () => {
-  assertStrictEquals(JSON.stringify(Path.from("/")), '"/"');
+  if (isWin) {
+    assertStrictEquals(JSON.stringify(Path.from("/")), `"\\\\"`);
+    return;
+  }
+
+  assertStrictEquals(JSON.stringify(Path.from("/")), `"/"`);
   assertStrictEquals(
     JSON.stringify({ path: Path.from('/"') }),
     '{"path":"/\\""}',

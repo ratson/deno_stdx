@@ -21,7 +21,7 @@ import {
   resolve,
   toFileUrl,
 } from "https://deno.land/std@0.120.0/path/mod.ts";
-import { userHomeDir } from "../os/path.ts";
+import { userCacheDir, userConfigDir, userHomeDir } from "../os/path.ts";
 import { JsonValue } from "../typing/json.ts";
 
 type GlobOptions = Omit<ExpandGlobOptions, "root">;
@@ -120,6 +120,16 @@ export class Path {
    */
   static cwd(...pathSegments: string[]) {
     return Path.from(Deno.cwd(), ...pathSegments);
+  }
+
+  static cacheDir(...pathSegments: string[]) {
+    const p = userCacheDir();
+    return Path.from(p, ...pathSegments);
+  }
+
+  static configDir(...pathSegments: string[]) {
+    const p = userConfigDir();
+    return Path.from(p, ...pathSegments);
   }
 
   /**

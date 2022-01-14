@@ -1,3 +1,4 @@
+import { osType } from "https://deno.land/std@0.121.0/_util/os.ts";
 import { output, run } from "../subprocess/mod.ts";
 
 interface Clipboard {
@@ -55,7 +56,7 @@ class GenericClipboard implements Clipboard {
   backend?: Clipboard;
 
   constructor() {
-    switch (Deno.build.os) {
+    switch (osType) {
       case "darwin":
         this.backend = darwin;
         break;

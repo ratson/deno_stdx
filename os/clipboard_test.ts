@@ -1,8 +1,8 @@
-import { assertStrictEquals, isCI } from "../deps_test.ts";
+import { assertStrictEquals, isCI, osType } from "../deps_test.ts";
 import { clipboard } from "./clipboard.ts";
 
 Deno.test("clipboard", async () => {
-  if (isCI() && ["linux", "windows"].includes(Deno.build.os)) return;
+  if (isCI() && ["linux", "windows"].includes(osType)) return;
 
   const s = "test";
   await clipboard.writeText(s);

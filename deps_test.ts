@@ -10,6 +10,8 @@ export {
   assertThrows,
 } from "https://deno.land/std@0.121.0/testing/asserts.ts";
 
+export { isWindows, osType } from "https://deno.land/std@0.121.0/_util/os.ts";
+
 export {
   assertSpyCall,
   assertSpyCalls,

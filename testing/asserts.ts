@@ -41,7 +41,7 @@ export function assertLessOrEqual(actual: any, expected: any, msg?: string) {
   );
 }
 
-export function assertFail(msg= "Failed") {
+export function assertFail(msg = "Failed") {
   assert(false, msg);
 }
 

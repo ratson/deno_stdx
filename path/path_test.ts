@@ -7,14 +7,13 @@ import {
   assertStrictEquals,
   assertThrows,
   delay,
+  isWindows,
   spy,
 } from "../deps_test.ts";
 import { range } from "../collections/range.ts";
 import { isCI } from "../testing/mod.ts";
 import { userCacheDir, userConfigDir, userHomeDir } from "../os/path.ts";
 import { DefaultCache, Path } from "./path.ts";
-
-const isWin = Deno.build.os === "windows";
 
 Deno.test("Path.from()", async () => {
   const p = Path.from("/this/is/a/test/path/file.ext");
@@ -87,7 +86,7 @@ Deno.test("Path.exe()", async () => {
 
   assertStrictEquals(
     (await Path.exe("deno"))?.toString(),
-    isWin ? undefined : Deno.execPath(),
+    isWindows ? undefined : Deno.execPath(),
   );
 });
 
@@ -169,7 +168,7 @@ Deno.test("path == string", () => {
   // deno-lint-ignore no-explicit-any
   const p = Path.from("/") as any;
 
-  if (isWin) {
+  if (isWindows) {
     assertStrictEquals(p == "\\", true);
     return;
   }
@@ -236,7 +235,7 @@ Deno.test("toPrimitive", () => {
 Deno.test("expanduser", () => {
   assertStrictEquals(Path.from("~").expanduser(), Path.home());
 
-  if (isWin) return;
+  if (isWindows) return;
 
   assertStrictEquals(Path.from("~/").expanduser(), Path.home());
 
@@ -305,7 +304,7 @@ Deno.test("stat", async () => {
 });
 
 Deno.test("toJSON", () => {
-  if (isWin) {
+  if (isWindows) {
     assertStrictEquals(JSON.stringify(Path.from("/")), `"\\\\"`);
     return;
   }

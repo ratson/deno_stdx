@@ -1,3 +1,5 @@
+import { osType } from "https://deno.land/std@0.121.0/_util/os.ts";
+
 /**
  * Returns the default root directory to use for user-specific cached data.
  * Users should create their own application-specific subdirectory within this one and use that.
@@ -14,7 +16,7 @@ export function userCacheDir() {
   const { env } = Deno;
   let dir: string | undefined;
 
-  switch (Deno.build.os) {
+  switch (osType) {
     case "darwin":
       dir = env.get("HOME");
       if (!dir) {
@@ -58,7 +60,7 @@ export function userConfigDir() {
   const { env } = Deno;
   let dir: string | undefined;
 
-  switch (Deno.build.os) {
+  switch (osType) {
     case "darwin":
       dir = env.get("HOME");
       if (!dir) {
@@ -100,7 +102,7 @@ export function userHomeDir() {
   const user = env.get("LOGNAME") || env.get("USER") || env.get("LNAME") ||
     env.get("USERNAME");
 
-  switch (Deno.build.os) {
+  switch (osType) {
     case "darwin":
       return home || (user ? `/Users/${user}` : null);
     case "linux":

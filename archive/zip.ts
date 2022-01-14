@@ -1,10 +1,11 @@
+import { isWindows } from "https://deno.land/std@0.121.0/_util/os.ts";
 import { run } from "../subprocess/mod.ts";
 
 export async function unzip(
   zipPath: string,
   destinationPath: string,
 ): Promise<void> {
-  const cmd = Deno.build.os === "windows"
+  const cmd = isWindows
     ? [
       "PowerShell",
       "Expand-Archive",

@@ -1,5 +1,6 @@
 import { AssertionError, assertThrows } from "../deps_test.ts";
 import {
+  assertFail,
   assertGreater,
   assertGreaterOrEqual,
   assertLess,
@@ -43,6 +44,16 @@ Deno.test("assertLessOrEqual", () => {
   assertThrows(() => {
     assertLessOrEqual(2, 1);
   }, AssertionError);
+});
+
+Deno.test("assertFail", () => {
+  assertThrows(
+    () => {
+      assertFail();
+    },
+    AssertionError,
+    "Failed",
+  );
 });
 
 Deno.test("assertType", () => {

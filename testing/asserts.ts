@@ -1,6 +1,7 @@
 // deno-lint-ignore-file no-explicit-any
 import {
   _format,
+  assert,
   AssertionError,
 } from "https://deno.land/std@0.121.0/testing/asserts.ts";
 
@@ -38,6 +39,10 @@ export function assertLessOrEqual(actual: any, expected: any, msg?: string) {
   throw new AssertionError(
     msg ?? `Expect ${actualString} <= ${expectedString}`,
   );
+}
+
+export function assertFail(msg= "Failed") {
+  assert(false, msg);
 }
 
 export function assertType<T>(_: T) {

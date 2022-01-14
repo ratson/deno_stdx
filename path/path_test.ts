@@ -85,7 +85,10 @@ Deno.test("Path.config()", () => {
 Deno.test("Path.exe()", async () => {
   assertStrictEquals(await Path.exe(crypto.randomUUID()), undefined);
 
-  assertStrictEquals((await Path.exe("deno"))?.toString(), Deno.execPath());
+  assertStrictEquals(
+    (await Path.exe("deno"))?.toString(),
+    isWin ? undefined : Deno.execPath(),
+  );
 });
 
 Deno.test("relative", () => {

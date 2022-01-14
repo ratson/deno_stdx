@@ -17,22 +17,22 @@ Deno.test("default", async () => {
 
 Deno.test("v = 4", async () => {
   const ip = await getPublicIP({ v: 4 });
-  assertStrictEquals(ip, publicIP);
+  assertIP(ip, publicIP);
 });
 
 Deno.test("v = 6", async () => {
   const ip = await getPublicIP({ v: 6 });
-  assertStrictEquals(ip, publicIP);
+  assertIP(ip, publicIP);
 });
 
 Deno.test("provider = ipify", async () => {
   const ip = await getPublicIP({ providers: ["ipify"] });
-  assertStrictEquals(ip, publicIP);
+  assertIP(ip, publicIP);
 });
 
 Deno.test("provider = icanhazip", async () => {
   const ip = await getPublicIP({ providers: ["icanhazip"] });
-  assertStrictEquals(ip, publicIP);
+  assertIP(ip, publicIP);
 });
 
 Deno.test("provider = icanhazip, v = 6", async () => {

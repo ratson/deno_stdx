@@ -80,11 +80,11 @@ export class Path {
     this.#filepath = filepath;
   }
 
-  static cache: Cache = new DefaultCache();
+  static _cache: Cache = new DefaultCache();
 
   static from(...pathSegments: string[]) {
     const k = join(...pathSegments);
-    const m = this.cache;
+    const m = this._cache;
 
     const v = m.get(k);
     if (v !== undefined) return v;
@@ -122,12 +122,12 @@ export class Path {
     return Path.from(Deno.cwd(), ...pathSegments);
   }
 
-  static cacheDir(...pathSegments: string[]) {
+  static cache(...pathSegments: string[]) {
     const p = userCacheDir();
     return Path.from(p, ...pathSegments);
   }
 
-  static configDir(...pathSegments: string[]) {
+  static config(...pathSegments: string[]) {
     const p = userConfigDir();
     return Path.from(p, ...pathSegments);
   }

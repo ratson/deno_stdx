@@ -11,7 +11,7 @@ import {
 } from "../deps_test.ts";
 import { range } from "../collections/range.ts";
 import { isCI } from "../testing/mod.ts";
-import { userHomeDir } from "../os/path.ts";
+import { userCacheDir, userConfigDir, userHomeDir } from "../os/path.ts";
 import { DefaultCache, Path } from "./path.ts";
 
 const isWin = Deno.build.os === "windows";
@@ -72,6 +72,14 @@ Deno.test("Path.cwd()", () => {
 
 Deno.test("Path.home()", () => {
   assertStrictEquals(Path.home().toString(), userHomeDir());
+});
+
+Deno.test("Path.cache()", () => {
+  assertStrictEquals(Path.cache().toString(), userCacheDir());
+});
+
+Deno.test("Path.config()", () => {
+  assertStrictEquals(Path.config().toString(), userConfigDir());
 });
 
 Deno.test("relative", () => {

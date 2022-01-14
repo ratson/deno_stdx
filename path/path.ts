@@ -9,6 +9,7 @@ import {
 } from "https://deno.land/std@0.121.0/fs/mod.ts";
 import {
   basename,
+  delimiter,
   dirname,
   extname,
   format,
@@ -157,6 +158,16 @@ export class Path {
 
   static makeTempFileSync(options?: Deno.MakeTempOptions) {
     return Path.from(Deno.makeTempFileSync(options));
+  }
+
+  static async exe(name: string) {
+    const s = Deno.env.get("PATH");
+    if (s === undefined) return undefined;
+    for (const p of s.split(delimiter).map((x) => Path.from(x, name))) {
+      if (await p.exists()) {
+        return p;
+      }
+    }
   }
 
   get ext() {

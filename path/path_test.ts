@@ -82,6 +82,12 @@ Deno.test("Path.config()", () => {
   assertStrictEquals(Path.config().toString(), userConfigDir());
 });
 
+Deno.test("Path.exe()", async () => {
+  assertStrictEquals(await Path.exe(crypto.randomUUID()), undefined);
+
+  assertStrictEquals((await Path.exe("deno"))?.toString(), Deno.execPath());
+});
+
 Deno.test("relative", () => {
   const p = Path.from("../", "p", "../.");
   assertEquals(p.resolve(), Path.from("..").resolve());

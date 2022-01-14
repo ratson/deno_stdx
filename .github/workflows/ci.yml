@@ -14,14 +14,25 @@ jobs:
       fail-fast: false
       matrix:
         deno: [v1.x]
-        os: [macOS-10.15, macOS-latest, ubuntu-latest, windows-2019]
+        os: [macOS-latest, ubuntu-latest, windows-latest, macOS-10.15, windows-2019]
+        include:
+        - os: ubuntu-latest
+          deno_dir: ~/.cache/deno
+        - os: macos-latest
+          deno_dir: ~/Library/Caches/deno
+        - os: windows-latest
+          deno_dir: ~\AppData\Local\deno
+        - os: macos-10.15
+          deno_dir: ~/Library/Caches/deno
+        - os: windows-2019
+          deno_dir: ~\AppData\Local\deno
 
     steps:
       - name: Cache
         uses: actions/cache@v2
         with:
           path: |
-            ~/.cache/deno
+            ${{ matrix.deno_dir }}
           key: ${{ runner.os }}-${{ matrix.deno }}-${{ hashFiles('**/*.ts') }}
 
       - name: Clone repository

@@ -104,8 +104,10 @@ export class Path {
    *
    * Example:
    * ```ts
-   *    Path.fromImportMeta(import.meta)  // current file path
-   *    Path.fromImportMeta(import.meta, ".")  // current directory path
+   * import { Path } from "https://deno.land/x/yxz/path/path.ts";
+   *
+   * Path.fromImportMeta(import.meta)  // current file path
+   * Path.fromImportMeta(import.meta, ".")  // current directory path
    * ```
    */
   static fromImportMeta(importMeta: ImportMeta, url = "") {

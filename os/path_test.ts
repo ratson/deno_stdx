@@ -33,7 +33,7 @@ Deno.test("denoDir()", async () => {
 });
 
 Deno.test("denoDir() - DENO_DIR env", async () => {
-  const expected = `/tmp/${crypto.randomUUID()}`;
+  const expected = await Deno.makeTempDir();
   await withEnv(async (env) => {
     env.set("DENO_DIR", expected);
 

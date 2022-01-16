@@ -1,15 +1,16 @@
 import { osType } from "https://deno.land/std@0.121.0/_util/os.ts";
+import { join } from "https://deno.land/std@0.121.0/path/mod.ts";
 
 /**
  * Returns the default root directory to use for user-specific cached data.
  * Users should create their own application-specific subdirectory within this one and use that.
- * 
+ *
  * On Unix systems, it returns $XDG_CACHE_HOME as specified by
  * https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html
  * if non-empty, else $HOME/.cache.
  * On Darwin, it returns $HOME/Library/Caches.
  * On Windows, it returns %LocalAppData%.
- * 
+ *
  * If the location cannot be determined (for example, $HOME is not defined), then it will throw an error.
  */
 export function userCacheDir() {
@@ -47,13 +48,13 @@ export function userCacheDir() {
 /**
  * Returns the default root directory to use for user-specific configuration data.
  * Users should create their own application-specific subdirectory within this one and use that.
- * 
+ *
  * On Unix systems, it returns $XDG_CONFIG_HOME as specified by
  * https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html
  * if non-empty, else $HOME/.config.
  * On Darwin, it returns $HOME/Library/Application Support.
  * On Windows, it returns %AppData%.
- * 
+ *
  * If the location cannot be determined (for example, $HOME is not defined), then it will throw an error.
  */
 export function userConfigDir() {
@@ -112,4 +113,13 @@ export function userHomeDir() {
     default:
       return home || null;
   }
+}
+
+export function denoDir() {
+  const { env } = Deno;
+
+  const deno = env.get("DENO_DIR");
+  if (deno) return deno;
+
+  return join(userCacheDir(), "deno");
 }

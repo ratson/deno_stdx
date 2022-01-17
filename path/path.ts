@@ -102,6 +102,8 @@ export class Path {
   /**
    * Returns path relative to `import.meta`.
    *
+   * Note: As hosted script don't reoslve to file system path, library should avoid this method.
+   *
    * Example:
    * ```ts
    * import { Path } from "https://deno.land/x/yxz/path/path.ts";

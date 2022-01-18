@@ -5,9 +5,9 @@ import {
   assertStrictEquals,
   assertThrows,
   delay,
+  randomInteger,
 } from "../deps_test.ts";
 import { config, ignore } from "../testing/helpers.ts";
-import { randomInt } from "../math/rand.ts";
 import { AsyncQueue } from "./queue.ts";
 
 interface Range {
@@ -98,10 +98,10 @@ Deno.test("add() - concurrency: 1", async () => {
   const end = timeSpan();
   const queue = new AsyncQueue({ concurrency: 1 });
 
-  const mapper = async ([value, ms]: readonly number[]) =>
+  const mapper = async ([value, ms]: number[]) =>
     queue.add(async () => {
-      await delay(ms!);
-      return value!;
+      await delay(ms);
+      return value;
     });
 
   assertEquals(await Promise.all(input.map(mapper)), [10, 20, 30]);
@@ -118,7 +118,7 @@ Deno.test("add() - concurrency: 5", async () => {
       running++;
       assertStrictEquals(running <= concurrency, true);
       assertStrictEquals(queue.pending <= concurrency, true);
-      await delay(randomInt(30, 200));
+      await delay(randomInteger(30, 200));
       running--;
     })
   );
@@ -138,7 +138,7 @@ Deno.test("add() - update concurrency", async () => {
       assertStrictEquals(running <= concurrency, true);
       assertStrictEquals(queue.pending <= concurrency, true);
 
-      await delay(randomInt(30, 200));
+      await delay(randomInteger(30, 200));
       running--;
 
       if (index % 30 === 0) {

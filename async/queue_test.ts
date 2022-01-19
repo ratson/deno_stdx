@@ -97,7 +97,7 @@ Deno.test("add() - concurrency: 1", async () => {
 
   const queue = new AsyncQueue({ concurrency: 1 });
 
-  const mapper = async ([value, ms]: number[]) =>
+  const mapper = ([value, ms]: number[]) =>
     queue.add(async () => {
       await delay(ms);
       return value;
@@ -108,7 +108,7 @@ Deno.test("add() - concurrency: 1", async () => {
   const elapsed = end();
 
   assertStrictEquals(
-    inRange(elapsed, { start: 590, end: 650 + 200 }), // TODO remove 200ms delay
+    inRange(elapsed, { start: 590, end: 650 }), // TODO remove 200ms delay
     true,
     `${elapsed} should within [590, 650]`,
   );
@@ -119,7 +119,7 @@ Deno.test("add() - concurrency: 5", async () => {
   const queue = new AsyncQueue({ concurrency });
   let running = 0;
 
-  const input = Array.from({ length: 100 }).fill(0).map(async () =>
+  const input = Array.from({ length: 100 }).fill(0).map(() =>
     queue.add(async () => {
       running++;
       assertStrictEquals(running <= concurrency, true);
@@ -130,6 +130,7 @@ Deno.test("add() - concurrency: 5", async () => {
   );
 
   await Promise.all(input);
+  assertStrictEquals(running, 0);
 });
 
 Deno.test("add() - update concurrency", async () => {

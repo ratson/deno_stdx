@@ -1,3 +1,4 @@
+// deno-lint-ignore-file require-await
 import { deadline } from "https://deno.land/std@0.121.0/async/deadline.ts";
 
 export type RunFunction = () => Promise<unknown>;
@@ -258,7 +259,7 @@ export class AsyncQueue<
   #next(): void {
     this.#pendingCount--;
     this.#tryToStartAnother();
-    this.dispatchEvent(new Event("next"));
+    this.emit("next");
   }
 
   #resolvePromises(): void {
@@ -268,7 +269,7 @@ export class AsyncQueue<
     if (this.#pendingCount === 0) {
       this.#resolveIdle();
       this.#resolveIdle = empty;
-      this.dispatchEvent(new Event("idle"));
+      this.emit("idle");
     }
   }
 
@@ -330,7 +331,7 @@ export class AsyncQueue<
           return false;
         }
 
-        this.dispatchEvent(new Event("active"));
+        this.emit("active");
         job();
 
         if (canInitializeInterval) {
@@ -401,11 +402,11 @@ export class AsyncQueue<
   /**
    * Adds a sync or async task to the queue. Always returns a promise.
    */
-  async add<TaskResultType>(
+  add<TaskResultType>(
     fn: Task<TaskResultType>,
     options: Partial<EnqueueOptionsType> = {},
   ): Promise<TaskResultType> {
-    return await new Promise<TaskResultType>((resolve, reject) => {
+    return new Promise<TaskResultType>((resolve, reject) => {
       const run = async (): Promise<void> => {
         this.#pendingCount++;
         this.#intervalCount++;
@@ -430,10 +431,10 @@ export class AsyncQueue<
 
           const result = await operation;
           resolve(result!);
-          this.dispatchEvent(new CustomEvent("completed", { detail: result }));
+          this.emit("completed", result);
         } catch (error: unknown) {
           reject(error);
-          this.dispatchEvent(new CustomEvent("error", { detail: error }));
+          this.emit("error", error);
         }
 
         this.#next();
@@ -441,7 +442,7 @@ export class AsyncQueue<
 
       this.#queue.enqueue(run, options);
       this.#tryToStartAnother();
-      this.dispatchEvent(new Event("add"));
+      this.emit("add");
     });
   }
 
@@ -450,13 +451,11 @@ export class AsyncQueue<
    *
    * @returns A promise that resolves when all functions are resolved.
    */
-  async addAll<TaskResultsType>(
+  addAll<TaskResultsType>(
     functions: ReadonlyArray<Task<TaskResultsType>>,
     options?: EnqueueOptionsType,
   ): Promise<TaskResultsType[]> {
-    return await Promise.all(
-      functions.map(async (function_) => await this.add(function_, options)),
-    );
+    return Promise.all(functions.map((f) => this.add(f, options)));
   }
 
   /**
@@ -498,7 +497,7 @@ export class AsyncQueue<
       return;
     }
 
-    return await new Promise<void>((resolve) => {
+    return new Promise<void>((resolve) => {
       const existingResolve = this.#resolveEmpty;
       this.#resolveEmpty = () => {
         existingResolve();
@@ -520,7 +519,7 @@ export class AsyncQueue<
       return;
     }
 
-    return await new Promise<void>((resolve) => {
+    return new Promise<void>((resolve) => {
       const listener = () => {
         if (this.#queue.size < limit) {
           this.removeEventListener("next", listener);
@@ -543,7 +542,7 @@ export class AsyncQueue<
       return;
     }
 
-    return await new Promise<void>((resolve) => {
+    return new Promise<void>((resolve) => {
       const existingResolve = this.#resolveIdle;
       this.#resolveIdle = () => {
         existingResolve();
@@ -595,5 +594,13 @@ export class AsyncQueue<
 
   on(...args: Parameters<typeof this.addEventListener>) {
     return this.addEventListener(...args);
+  }
+
+  private emit<T>(type: string, detail?: T) {
+    return this.dispatchEvent(
+      detail === undefined
+        ? new Event(type)
+        : new CustomEvent<T>(type, { detail }),
+    );
   }
 }

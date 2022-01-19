@@ -1,4 +1,5 @@
 // deno-lint-ignore-file require-await
+import { DeadlineError } from "https://deno.land/std@0.121.0/async/deadline.ts";
 import {
   assertEquals,
   assertRejects,
@@ -7,7 +8,7 @@ import {
   delay,
   randomInteger,
 } from "../deps_test.ts";
-import { config, ignore } from "../testing/helpers.ts";
+import { config } from "../testing/helpers.ts";
 import { AsyncQueue } from "./queue.ts";
 
 interface Range {
@@ -108,7 +109,7 @@ Deno.test("add() - concurrency: 1", async () => {
   const elapsed = end();
 
   assertStrictEquals(
-    inRange(elapsed, { start: 590, end: 650 }), // TODO remove 200ms delay
+    inRange(elapsed, { start: 590, end: 650 + 200 }), // TODO remove 200ms delay
     true,
     `${elapsed} should within [590, 650]`,
   );
@@ -200,22 +201,28 @@ config(Deno.test, { sanitizeOps: false, sanitizeResources: false })(
   },
 );
 
-ignore(Deno.test)("add() - timeout with throwing", async () => {
-  const result: string[] = [];
-  const queue = new AsyncQueue({ timeout: 300, throwOnTimeout: true });
-  await assertRejects(() =>
+config(Deno.test, { sanitizeOps: false, sanitizeResources: false })(
+  "add() - timeout with throwing",
+  async () => {
+    const result: string[] = [];
+    const queue = new AsyncQueue({ timeout: 300, throwOnTimeout: true });
+
+    const p = assertRejects(() =>
+      queue.add(async () => {
+        await delay(400);
+        result.push("🐌");
+      }), DeadlineError);
+
     queue.add(async () => {
-      await delay(400);
-      result.push("🐌");
-    })
-  );
-  queue.add(async () => {
-    await delay(200);
-    result.push("🦆");
-  });
-  await queue.onIdle();
-  assertEquals(result, ["🦆"]);
-});
+      await delay(200);
+      result.push("🦆");
+    });
+
+    await queue.onIdle();
+    assertEquals(result, ["🦆"]);
+    await p;
+  },
+);
 
 config(Deno.test, { sanitizeOps: false, sanitizeResources: false })(
   "add() - change timeout in between",
@@ -552,23 +559,22 @@ Deno.test("add() sync/async mixed tasks", async () => {
   assertStrictEquals(queue.pending, 0);
 });
 
-ignore(Deno.test)("add() - handle task throwing error", async () => {
+Deno.test("add() - handle task throwing error", async () => {
   const queue = new AsyncQueue({ concurrency: 1 });
 
   queue.add(() => "sync 1");
-  await assertRejects(
+  const p = assertRejects(
     () =>
-      queue.add(
-        () => {
-          throw new Error("broken");
-        },
-      ),
+      queue.add(() => {
+        throw new Error("broken");
+      }),
     Error,
     "broken",
   );
   queue.add(() => "sync 2");
 
   assertStrictEquals(queue.size, 2);
+  await p;
 
   await queue.onIdle();
 });
@@ -736,7 +742,7 @@ Deno.test("add() - throttled, carryoverConcurrencyCount true", async () => {
     assertEquals(result, [0], `result should be [0] after 1550ms: ${result}`);
   })();
 
-  await delay(1650 + 100); // TODO remove 100ms delay
+  await delay(1650 + 200); // TODO remove 200ms delay
   assertEquals(result, values);
 });
 

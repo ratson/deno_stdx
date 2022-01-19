@@ -6,10 +6,14 @@ import {
   assertStrictEquals,
   assertThrows,
   delay,
+  isCI,
   randomInteger,
 } from "../deps_test.ts";
 import { config } from "../testing/helpers.ts";
 import { AsyncQueue } from "./queue.ts";
+
+// TODO Avoid flaky for Gihub Actions macOS
+const ciDelay = isCI() && Deno.build.os === "darwin" ? 200 : 0;
 
 interface Range {
   readonly start?: number | BigInt;
@@ -109,7 +113,7 @@ Deno.test("add() - concurrency: 1", async () => {
   const elapsed = end();
 
   assertStrictEquals(
-    inRange(elapsed, { start: 590, end: 650 + 200 }), // TODO remove 200ms delay
+    inRange(elapsed, { start: 590, end: 650 + ciDelay }),
     true,
     `${elapsed} should within [590, 650]`,
   );
@@ -516,11 +520,11 @@ config(Deno.test, { sanitizeOps: false, sanitizeResources: false })(
     const queue = new AsyncQueue({ concurrency: 2 });
 
     queue.pause();
-    queue.add(async () => delay(20_000));
-    queue.add(async () => delay(20_000));
-    queue.add(async () => delay(20_000));
-    queue.add(async () => delay(20_000));
-    queue.add(async () => delay(20_000));
+    queue.add(() => delay(20_000));
+    queue.add(() => delay(20_000));
+    queue.add(() => delay(20_000));
+    queue.add(() => delay(20_000));
+    queue.add(() => delay(20_000));
     assertStrictEquals(queue.size, 5);
     assertStrictEquals(queue.pending, 0);
     assertStrictEquals(queue.isPaused, true);
@@ -530,7 +534,7 @@ config(Deno.test, { sanitizeOps: false, sanitizeResources: false })(
     assertStrictEquals(queue.pending, 2);
     assertStrictEquals(queue.isPaused, false);
 
-    queue.add(async () => delay(20_000));
+    queue.add(() => delay(20_000));
     queue.pause();
     assertStrictEquals(queue.size, 4);
     assertStrictEquals(queue.pending, 2);
@@ -549,7 +553,7 @@ config(Deno.test, { sanitizeOps: false, sanitizeResources: false })(
 Deno.test("add() sync/async mixed tasks", async () => {
   const queue = new AsyncQueue({ concurrency: 1 });
   queue.add(() => "sync 1");
-  queue.add(async () => delay(1000));
+  queue.add(() => delay(1000));
   queue.add(() => "sync 2");
   queue.add(() => fixture);
   assertStrictEquals(queue.size, 3);
@@ -742,7 +746,7 @@ Deno.test("add() - throttled, carryoverConcurrencyCount true", async () => {
     assertEquals(result, [0], `result should be [0] after 1550ms: ${result}`);
   })();
 
-  await delay(1650 + 200); // TODO remove 200ms delay
+  await delay(1650 + ciDelay);
   assertEquals(result, values);
 });
 
@@ -830,7 +834,7 @@ Deno.test("add() - throttled finish and resume", async () => {
     assertEquals(result, firstValue);
   })();
 
-  await delay(2200);
+  await delay(2200 + ciDelay);
   assertEquals(result, secondValue);
 });
 
@@ -897,7 +901,7 @@ Deno.test("clear interval on pause", async () => {
 
   queue.add(() => "task #1");
 
-  await delay(300);
+  await delay(300 + ciDelay);
 
   assertStrictEquals(queue.size, 1);
 });
@@ -933,8 +937,8 @@ Deno.test("should emit idle event when idle", async () => {
     timesCalled++;
   });
 
-  const job1 = queue.add(async () => delay(100));
-  const job2 = queue.add(async () => delay(100));
+  const job1 = queue.add(() => delay(100));
+  const job2 = queue.add(() => delay(100));
 
   assertStrictEquals(queue.pending, 1);
   assertStrictEquals(queue.size, 1);

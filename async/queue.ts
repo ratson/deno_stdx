@@ -203,49 +203,46 @@ export class AsyncQueue<
   constructor(options?: Options<QueueType, EnqueueOptionsType>) {
     super();
 
-    options = {
+    const opts = {
       carryoverConcurrencyCount: false,
       intervalCap: Number.POSITIVE_INFINITY,
       interval: 0,
       concurrency: Number.POSITIVE_INFINITY,
       autoStart: true,
-      queueClass: PriorityQueue,
+      queueClass: PriorityQueue as never,
       ...options,
-    } as Options<QueueType, EnqueueOptionsType>;
+    } as const;
 
-    if (
-      !(typeof options.intervalCap === "number" && options.intervalCap >= 1)
-    ) {
+    if (!(typeof opts.intervalCap === "number" && opts.intervalCap >= 1)) {
       throw new TypeError(
         `Expected \`intervalCap\` to be a number from 1 and up, got \`${
-          options.intervalCap?.toString() ?? ""
-        }\` (${typeof options.intervalCap})`,
+          opts.intervalCap?.toString() ?? ""
+        }\` (${typeof opts.intervalCap})`,
       );
     }
 
     if (
-      options.interval === undefined ||
-      !(Number.isFinite(options.interval) && options.interval >= 0)
+      opts.interval === undefined ||
+      !(Number.isFinite(opts.interval) && opts.interval >= 0)
     ) {
       throw new TypeError(
         `Expected \`interval\` to be a finite number >= 0, got \`${
-          options.interval?.toString() ?? ""
-        }\` (${typeof options.interval})`,
+          opts.interval?.toString() ?? ""
+        }\` (${typeof opts.interval})`,
       );
     }
 
-    this.#carryoverConcurrencyCount = options.carryoverConcurrencyCount!;
-    this.#isIntervalIgnored =
-      options.intervalCap === Number.POSITIVE_INFINITY ||
-      options.interval === 0;
-    this.#intervalCap = options.intervalCap;
-    this.#interval = options.interval;
-    this.#queue = new options.queueClass!();
-    this.#queueClass = options.queueClass!;
-    this.concurrency = options.concurrency!;
-    this.#timeout = options.timeout;
-    this.#throwOnTimeout = options.throwOnTimeout === true;
-    this.#isPaused = options.autoStart === false;
+    this.#carryoverConcurrencyCount = opts.carryoverConcurrencyCount;
+    this.#isIntervalIgnored = opts.intervalCap === Number.POSITIVE_INFINITY ||
+      opts.interval === 0;
+    this.#intervalCap = opts.intervalCap;
+    this.#interval = opts.interval;
+    this.#queue = new opts.queueClass();
+    this.#queueClass = opts.queueClass;
+    this.concurrency = opts.concurrency;
+    this.#timeout = opts.timeout;
+    this.#throwOnTimeout = opts.throwOnTimeout === true;
+    this.#isPaused = opts.autoStart === false;
   }
 
   get #doesIntervalAllowAnother(): boolean {
@@ -327,9 +324,7 @@ export class AsyncQueue<
       const canInitializeInterval = !this.#isIntervalPaused();
       if (this.#doesIntervalAllowAnother && this.#doesConcurrentAllowAnother) {
         const job = this.#queue.dequeue();
-        if (!job) {
-          return false;
-        }
+        if (!job) return false;
 
         this.emit("active");
         job();
@@ -402,7 +397,7 @@ export class AsyncQueue<
   /**
    * Adds a sync or async task to the queue. Always returns a promise.
    */
-  add<TaskResultType>(
+  async add<TaskResultType>(
     fn: Task<TaskResultType>,
     options: Partial<EnqueueOptionsType> = {},
   ): Promise<TaskResultType> {
@@ -427,10 +422,11 @@ export class AsyncQueue<
               reject(error);
               throw error;
             }
+            return undefined as never;
           });
 
           const result = await operation;
-          resolve(result!);
+          resolve(result);
           this.emit("completed", result);
         } catch (error: unknown) {
           reject(error);
@@ -451,7 +447,7 @@ export class AsyncQueue<
    *
    * @returns A promise that resolves when all functions are resolved.
    */
-  addAll<TaskResultsType>(
+  async addAll<TaskResultsType>(
     functions: ReadonlyArray<Task<TaskResultsType>>,
     options?: EnqueueOptionsType,
   ): Promise<TaskResultsType[]> {

@@ -886,7 +886,7 @@ Deno.test("pause should work when throttled", async () => {
     assertEquals(result, secondValue);
   })();
 
-  await delay(2500);
+  await delay(2500 + ciDelay);
 });
 
 Deno.test("clear interval on pause", async () => {
@@ -1010,6 +1010,8 @@ Deno.test("should emit add event when adding task", async () => {
   assertStrictEquals(queue.pending, 0);
   assertStrictEquals(queue.size, 0);
   assertStrictEquals(timesCalled, 3);
+
+  if (ciDelay > 0) await queue.onEmpty();
 });
 
 Deno.test("should emit next event when completing task", async () => {
@@ -1054,6 +1056,8 @@ Deno.test("should emit next event when completing task", async () => {
   assertStrictEquals(queue.pending, 0);
   assertStrictEquals(queue.size, 0);
   assertStrictEquals(timesCalled, 3);
+
+  if (ciDelay > 0) await queue.onEmpty();
 });
 
 Deno.test("should emit completed / error events", async () => {

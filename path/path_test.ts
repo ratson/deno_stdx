@@ -1,4 +1,4 @@
-import { SEP } from "https://deno.land/std@0.121.0/path/separator.ts";
+import { normalize, SEP } from "https://deno.land/std@0.121.0/path/mod.ts";
 import {
   assert,
   assertEquals,
@@ -359,4 +359,43 @@ Deno.test("DefaultCache", async () => {
   cache.gc();
   assertStrictEquals(cache.refs.size, 0);
   assertStrictEquals(cache.keys.length, 0);
+});
+
+Deno.test("parent", () => {
+  for (
+    const [p, expected] of [
+      ["/", "/"],
+      ["/..", "/"],
+      ["/a", "/"],
+      ["/a/b/c", "/a/b"],
+      [".", "."],
+      ["", "."],
+      ["./a", "."],
+      ["./a/b/c", "a/b"],
+    ] as const
+  ) {
+    const s = Path.from(p).parent.toString();
+    assertStrictEquals(
+      s,
+      normalize(expected),
+      `parent of "${p}" (${s}) != "${expected}"`,
+    );
+  }
+});
+
+Deno.test("parents", () => {
+  for (
+    const [p, expected] of [
+      ["/", []],
+      ["/..", []],
+      ["/a", ["/"]],
+      ["/a/b/c/d", ["/a/b/c", "/a/b", "/a", "/"]],
+      [".", []],
+      ["./a", ["."]],
+      ["./a/b/c", ["a/b", "a", "."]],
+      ["", []],
+    ] as const
+  ) {
+    assertEquals(Path.from(p).parents.map((x) => x.toString()), expected.map(normalize));
+  }
 });

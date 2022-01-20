@@ -12,7 +12,11 @@ import {
 import { AsyncQueue } from "./queue.ts";
 
 // TODO Avoid flaky for Gihub Actions macOS
-const ciDelay = isCI() && Deno.build.os === "darwin" ? 200 : 0;
+const ciDelay = isCI() && Deno.build.os === "darwin" ? 250 : 0;
+const ciOpts = {
+  sanitizeOps: ciDelay === 0,
+  sanitizeResources: ciDelay === 0,
+};
 
 interface Range {
   readonly start?: number | BigInt;
@@ -702,7 +706,9 @@ Deno.test("add() - throttled, carryoverConcurrencyCount false", async () => {
   assertEquals(result, values);
 });
 
-Deno.test("add() - throttled, carryoverConcurrencyCount true", async () => {
+Deno.test("add() - throttled, carryoverConcurrencyCount true", {
+  ...ciOpts,
+}, async () => {
   const result: number[] = [];
 
   const queue = new AsyncQueue({
@@ -749,7 +755,7 @@ Deno.test("add() - throttled, carryoverConcurrencyCount true", async () => {
   assertEquals(result, values);
 });
 
-Deno.test("add() - throttled 10, concurrency 5", async () => {
+Deno.test("add() - throttled 10, concurrency 5", ciOpts, async () => {
   const result: number[] = [];
 
   const queue = new AsyncQueue({
@@ -793,8 +799,6 @@ Deno.test("add() - throttled 10, concurrency 5", async () => {
 
   await delay(1400);
   assertEquals(result, thirdValue);
-
-  if (ciDelay > 0) await queue.onEmpty();
 });
 
 Deno.test("add() - throttled finish and resume", async () => {
@@ -839,7 +843,7 @@ Deno.test("add() - throttled finish and resume", async () => {
   assertEquals(result, secondValue);
 });
 
-Deno.test("pause should work when throttled", async () => {
+Deno.test("pause should work when throttled", ciOpts, async () => {
   const result: number[] = [];
 
   const queue = new AsyncQueue({
@@ -888,11 +892,9 @@ Deno.test("pause should work when throttled", async () => {
   })();
 
   await delay(2500);
-
-  if (ciDelay > 0) await queue.onEmpty();
 });
 
-Deno.test("clear interval on pause", async () => {
+Deno.test("clear interval on pause", ciOpts, async () => {
   const queue = new AsyncQueue({
     interval: 100,
     intervalCap: 1,
@@ -971,7 +973,7 @@ Deno.test("should emit idle event when idle", async () => {
   assertStrictEquals(timesCalled, 2);
 });
 
-Deno.test("should emit add event when adding task", async () => {
+Deno.test("should emit add event when adding task", ciOpts, async () => {
   const queue = new AsyncQueue({ concurrency: 1 });
 
   let timesCalled = 0;
@@ -1013,11 +1015,9 @@ Deno.test("should emit add event when adding task", async () => {
   assertStrictEquals(queue.pending, 0);
   assertStrictEquals(queue.size, 0);
   assertStrictEquals(timesCalled, 3);
-
-  if (ciDelay > 0) await queue.onEmpty();
 });
 
-Deno.test("should emit next event when completing task", async () => {
+Deno.test("should emit next event when completing task", ciOpts, async () => {
   const queue = new AsyncQueue({ concurrency: 1 });
 
   let timesCalled = 0;
@@ -1059,11 +1059,9 @@ Deno.test("should emit next event when completing task", async () => {
   assertStrictEquals(queue.pending, 0);
   assertStrictEquals(queue.size, 0);
   assertStrictEquals(timesCalled, 3);
-
-  if (ciDelay > 0) await queue.onEmpty();
 });
 
-Deno.test("should emit completed / error events", async () => {
+Deno.test("should emit completed / error events", ciOpts, async () => {
   const queue = new AsyncQueue({ concurrency: 1 });
 
   let errorEvents = 0;
@@ -1118,8 +1116,6 @@ Deno.test("should emit completed / error events", async () => {
   assertStrictEquals(queue.size, 0);
   assertStrictEquals(errorEvents, 1);
   assertStrictEquals(completedEvents, 2);
-
-  if (ciDelay > 0) await queue.onEmpty();
 });
 
 Deno.test("should verify timeout overrides passed to add", {

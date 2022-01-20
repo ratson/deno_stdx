@@ -186,6 +186,24 @@ export class Path {
     return basename(this.toString(), this.ext);
   }
 
+  get parent() {
+    return Path.from(dirname(this.toString()));
+  }
+
+  get parents() {
+    const ret: Readonly<Path>[] = [];
+
+    let last = this as Readonly<Path>;
+    let p = last.parent;
+    while (!last.equals(p)) {
+      ret.push(p);
+      last = p;
+      p = last.parent;
+    }
+
+    return ret;
+  }
+
   equals(otherPath: Readonly<Path> | string | undefined | null) {
     if (this === otherPath) return true;
     if (otherPath === undefined || otherPath === null) return false;

@@ -793,6 +793,8 @@ Deno.test("add() - throttled 10, concurrency 5", async () => {
 
   await delay(1400);
   assertEquals(result, thirdValue);
+
+  if (ciDelay > 0) await queue.onEmpty();
 });
 
 Deno.test("add() - throttled finish and resume", async () => {
@@ -885,7 +887,9 @@ Deno.test("pause should work when throttled", async () => {
     assertEquals(result, secondValue);
   })();
 
-  await delay(2500 + ciDelay);
+  await delay(2500);
+
+  if (ciDelay > 0) await queue.onEmpty();
 });
 
 Deno.test("clear interval on pause", async () => {
@@ -1114,6 +1118,8 @@ Deno.test("should emit completed / error events", async () => {
   assertStrictEquals(queue.size, 0);
   assertStrictEquals(errorEvents, 1);
   assertStrictEquals(completedEvents, 2);
+
+  if (ciDelay > 0) await queue.onEmpty();
 });
 
 Deno.test("should verify timeout overrides passed to add", {

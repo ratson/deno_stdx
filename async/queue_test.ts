@@ -9,7 +9,6 @@ import {
   isCI,
   randomInteger,
 } from "../deps_test.ts";
-import { config } from "../testing/helpers.ts";
 import { AsyncQueue } from "./queue.ts";
 
 // TODO Avoid flaky for Gihub Actions macOS
@@ -176,88 +175,88 @@ Deno.test("add() - priority", async () => {
   assertEquals(result, [1, 3, 1, 2, 0, 0]);
 });
 
-config(Deno.test, { sanitizeOps: false, sanitizeResources: false })(
-  "add() - timeout without throwing",
-  async () => {
-    const result: string[] = [];
-    const queue = new AsyncQueue({ timeout: 300, throwOnTimeout: false });
+Deno.test("add() - timeout without throwing", {
+  sanitizeOps: false,
+  sanitizeResources: false,
+}, async () => {
+  const result: string[] = [];
+  const queue = new AsyncQueue({ timeout: 300, throwOnTimeout: false });
+  queue.add(async () => {
+    await delay(400);
+    result.push("🐌");
+  });
+  queue.add(async () => {
+    await delay(250);
+    result.push("🦆");
+  });
+  queue.add(async () => {
+    await delay(310);
+    result.push("🐢");
+  });
+  queue.add(async () => {
+    await delay(100);
+    result.push("🐅");
+  });
+  queue.add(async () => {
+    result.push("⚡️");
+  });
+  await queue.onIdle();
+  assertEquals(result, ["⚡️", "🐅", "🦆"]);
+});
+
+Deno.test("add() - timeout with throwing", {
+  sanitizeOps: false,
+  sanitizeResources: false,
+}, async () => {
+  const result: string[] = [];
+  const queue = new AsyncQueue({ timeout: 300, throwOnTimeout: true });
+
+  const p = assertRejects(() =>
     queue.add(async () => {
       await delay(400);
       result.push("🐌");
-    });
-    queue.add(async () => {
-      await delay(250);
-      result.push("🦆");
-    });
-    queue.add(async () => {
-      await delay(310);
-      result.push("🐢");
-    });
-    queue.add(async () => {
-      await delay(100);
-      result.push("🐅");
-    });
-    queue.add(async () => {
-      result.push("⚡️");
-    });
-    await queue.onIdle();
-    assertEquals(result, ["⚡️", "🐅", "🦆"]);
-  },
-);
+    }), DeadlineError);
 
-config(Deno.test, { sanitizeOps: false, sanitizeResources: false })(
-  "add() - timeout with throwing",
-  async () => {
-    const result: string[] = [];
-    const queue = new AsyncQueue({ timeout: 300, throwOnTimeout: true });
+  queue.add(async () => {
+    await delay(200);
+    result.push("🦆");
+  });
 
-    const p = assertRejects(() =>
-      queue.add(async () => {
-        await delay(400);
-        result.push("🐌");
-      }), DeadlineError);
+  await queue.onIdle();
+  assertEquals(result, ["🦆"]);
+  await p;
+});
 
-    queue.add(async () => {
-      await delay(200);
-      result.push("🦆");
-    });
+Deno.test("add() - change timeout in between", {
+  sanitizeOps: false,
+  sanitizeResources: false,
+}, async () => {
+  const result: string[] = [];
+  const initialTimeout = 50;
+  const newTimeout = 200;
+  const queue = new AsyncQueue({
+    timeout: initialTimeout,
+    throwOnTimeout: false,
+    concurrency: 2,
+  });
+  queue.add(async () => {
+    const { timeout } = queue;
+    assertEquals(timeout, initialTimeout);
+    await delay(300);
+    result.push("🐌");
+  });
+  queue.timeout = newTimeout;
+  queue.add(async () => {
+    const { timeout } = queue;
+    assertEquals(timeout, newTimeout);
+    await delay(100);
+    result.push("🐅");
+  });
+  await queue.onIdle();
+  assertEquals(result, ["🐅"]);
+});
 
-    await queue.onIdle();
-    assertEquals(result, ["🦆"]);
-    await p;
-  },
-);
-
-config(Deno.test, { sanitizeOps: false, sanitizeResources: false })(
-  "add() - change timeout in between",
-  async () => {
-    const result: string[] = [];
-    const initialTimeout = 50;
-    const newTimeout = 200;
-    const queue = new AsyncQueue({
-      timeout: initialTimeout,
-      throwOnTimeout: false,
-      concurrency: 2,
-    });
-    queue.add(async () => {
-      const { timeout } = queue;
-      assertEquals(timeout, initialTimeout);
-      await delay(300);
-      result.push("🐌");
-    });
-    queue.timeout = newTimeout;
-    queue.add(async () => {
-      const { timeout } = queue;
-      assertEquals(timeout, newTimeout);
-      await delay(100);
-      result.push("🐅");
-    });
-    await queue.onIdle();
-    assertEquals(result, ["🐅"]);
-  },
-);
-
-config(Deno.test, { sanitizeOps: false })("onEmpty()", async () => {
+Deno.test("onEmpty()", { sanitizeOps: false }, async () => {
   const queue = new AsyncQueue({ concurrency: 1 });
 
   queue.add(async () => 0);
@@ -279,59 +278,59 @@ config(Deno.test, { sanitizeOps: false })("onEmpty()", async () => {
   assertStrictEquals(queue.size, 0);
 });
 
-config(Deno.test, { sanitizeOps: false, sanitizeResources: false })(
-  "onIdle()",
-  async () => {
-    const queue = new AsyncQueue({ concurrency: 2 });
+Deno.test("onIdle()", {
+  sanitizeOps: false,
+  sanitizeResources: false,
+}, async () => {
+  const queue = new AsyncQueue({ concurrency: 2 });
 
-    queue.add(async () => delay(100));
-    queue.add(async () => delay(100));
-    queue.add(async () => delay(100));
-    assertStrictEquals(queue.size, 1);
-    assertStrictEquals(queue.pending, 2);
-    await queue.onIdle();
-    assertStrictEquals(queue.size, 0);
-    assertStrictEquals(queue.pending, 0);
+  queue.add(async () => delay(100));
+  queue.add(async () => delay(100));
+  queue.add(async () => delay(100));
+  assertStrictEquals(queue.size, 1);
+  assertStrictEquals(queue.pending, 2);
+  await queue.onIdle();
+  assertStrictEquals(queue.size, 0);
+  assertStrictEquals(queue.pending, 0);
 
-    queue.add(async () => delay(100));
-    queue.add(async () => delay(100));
-    queue.add(async () => delay(100));
-    assertStrictEquals(queue.size, 1);
-    assertStrictEquals(queue.pending, 2);
-    await queue.onIdle();
-    assertStrictEquals(queue.size, 0);
-    assertStrictEquals(queue.pending, 0);
-  },
-);
+  queue.add(async () => delay(100));
+  queue.add(async () => delay(100));
+  queue.add(async () => delay(100));
+  assertStrictEquals(queue.size, 1);
+  assertStrictEquals(queue.pending, 2);
+  await queue.onIdle();
+  assertStrictEquals(queue.size, 0);
+  assertStrictEquals(queue.pending, 0);
+});
 
-config(Deno.test, { sanitizeOps: false, sanitizeResources: false })(
-  "onSizeLessThan()",
-  async () => {
-    const queue = new AsyncQueue({ concurrency: 1 });
+Deno.test("onSizeLessThan()", {
+  sanitizeOps: false,
+  sanitizeResources: false,
+}, async () => {
+  const queue = new AsyncQueue({ concurrency: 1 });
 
-    queue.add(async () => delay(100));
-    queue.add(async () => delay(100));
-    queue.add(async () => delay(100));
-    queue.add(async () => delay(100));
-    queue.add(async () => delay(100));
+  queue.add(async () => delay(100));
+  queue.add(async () => delay(100));
+  queue.add(async () => delay(100));
+  queue.add(async () => delay(100));
+  queue.add(async () => delay(100));
 
-    await queue.onSizeLessThan(4);
-    assertStrictEquals(queue.size, 3);
-    assertStrictEquals(queue.pending, 1);
+  await queue.onSizeLessThan(4);
+  assertStrictEquals(queue.size, 3);
+  assertStrictEquals(queue.pending, 1);
 
-    await queue.onSizeLessThan(2);
-    assertStrictEquals(queue.size, 1);
-    assertStrictEquals(queue.pending, 1);
+  await queue.onSizeLessThan(2);
+  assertStrictEquals(queue.size, 1);
+  assertStrictEquals(queue.pending, 1);
 
-    await queue.onSizeLessThan(10);
-    assertStrictEquals(queue.size, 1);
-    assertStrictEquals(queue.pending, 1);
+  await queue.onSizeLessThan(10);
+  assertStrictEquals(queue.size, 1);
+  assertStrictEquals(queue.pending, 1);
 
-    await queue.onSizeLessThan(1);
-    assertStrictEquals(queue.size, 0);
-    assertStrictEquals(queue.pending, 1);
-  },
-);
+  await queue.onSizeLessThan(1);
+  assertStrictEquals(queue.size, 0);
+  assertStrictEquals(queue.pending, 1);
+});
 
 Deno.test("onIdle() - no pending", async () => {
   const queue = new AsyncQueue();
@@ -341,24 +340,24 @@ Deno.test("onIdle() - no pending", async () => {
   assertStrictEquals(await queue.onIdle(), undefined);
 });
 
-config(Deno.test, { sanitizeOps: false, sanitizeResources: false })(
-  "clear()",
-  async () => {
-    const queue = new AsyncQueue({ concurrency: 2 });
-    queue.add(async () => delay(20_000));
-    queue.add(async () => delay(20_000));
-    queue.add(async () => delay(20_000));
-    queue.add(async () => delay(20_000));
-    queue.add(async () => delay(20_000));
-    queue.add(async () => delay(20_000));
-    assertStrictEquals(queue.size, 4);
-    assertStrictEquals(queue.pending, 2);
-    queue.clear();
-    assertStrictEquals(queue.size, 0);
+Deno.test("clear()", {
+  sanitizeOps: false,
+  sanitizeResources: false,
+}, async () => {
+  const queue = new AsyncQueue({ concurrency: 2 });
+  queue.add(async () => delay(20_000));
+  queue.add(async () => delay(20_000));
+  queue.add(async () => delay(20_000));
+  queue.add(async () => delay(20_000));
+  queue.add(async () => delay(20_000));
+  queue.add(async () => delay(20_000));
+  assertStrictEquals(queue.size, 4);
+  assertStrictEquals(queue.pending, 2);
+  queue.clear();
+  assertStrictEquals(queue.size, 0);
 
-    await queue.onEmpty();
-  },
-);
+  await queue.onEmpty();
+});
 
 Deno.test("addAll()", async () => {
   const queue = new AsyncQueue();
@@ -465,44 +464,44 @@ Deno.test("enforce finite in options.interval", () => {
   });
 });
 
-config(Deno.test, { sanitizeOps: false, sanitizeResources: false })(
-  "autoStart: false",
-  () => {
-    const queue = new AsyncQueue({ concurrency: 2, autoStart: false });
+Deno.test("autoStart: false", {
+  sanitizeOps: false,
+  sanitizeResources: false,
+}, () => {
+  const queue = new AsyncQueue({ concurrency: 2, autoStart: false });
 
-    queue.add(async () => delay(20_000));
-    queue.add(async () => delay(20_000));
-    queue.add(async () => delay(20_000));
-    queue.add(async () => delay(20_000));
-    assertStrictEquals(queue.size, 4);
-    assertStrictEquals(queue.pending, 0);
-    assertStrictEquals(queue.isPaused, true);
+  queue.add(async () => delay(20_000));
+  queue.add(async () => delay(20_000));
+  queue.add(async () => delay(20_000));
+  queue.add(async () => delay(20_000));
+  assertStrictEquals(queue.size, 4);
+  assertStrictEquals(queue.pending, 0);
+  assertStrictEquals(queue.isPaused, true);
 
-    queue.start();
-    assertStrictEquals(queue.size, 2);
-    assertStrictEquals(queue.pending, 2);
-    assertStrictEquals(queue.isPaused, false);
+  queue.start();
+  assertStrictEquals(queue.size, 2);
+  assertStrictEquals(queue.pending, 2);
+  assertStrictEquals(queue.isPaused, false);
 
-    queue.clear();
-    assertStrictEquals(queue.size, 0);
-  },
-);
+  queue.clear();
+  assertStrictEquals(queue.size, 0);
+});
 
-config(Deno.test, { sanitizeOps: false, sanitizeResources: false })(
-  "start() - return this",
-  async () => {
-    const queue = new AsyncQueue({ concurrency: 2, autoStart: false });
+Deno.test("start() - return this", {
+  sanitizeOps: false,
+  sanitizeResources: false,
+}, async () => {
+  const queue = new AsyncQueue({ concurrency: 2, autoStart: false });
 
-    queue.add(async () => delay(100));
-    queue.add(async () => delay(100));
-    queue.add(async () => delay(100));
-    assertStrictEquals(queue.size, 3);
-    assertStrictEquals(queue.pending, 0);
-    await queue.start().onIdle();
-    assertStrictEquals(queue.size, 0);
-    assertStrictEquals(queue.pending, 0);
-  },
-);
+  queue.add(async () => delay(100));
+  queue.add(async () => delay(100));
+  queue.add(async () => delay(100));
+  assertStrictEquals(queue.size, 3);
+  assertStrictEquals(queue.pending, 0);
+  await queue.start().onIdle();
+  assertStrictEquals(queue.size, 0);
+  assertStrictEquals(queue.pending, 0);
+});
 
 Deno.test("start() - not paused", () => {
   const queue = new AsyncQueue();
@@ -514,41 +513,41 @@ Deno.test("start() - not paused", () => {
   assertStrictEquals(queue.isPaused, false);
 });
 
-config(Deno.test, { sanitizeOps: false, sanitizeResources: false })(
-  "pause()",
-  () => {
-    const queue = new AsyncQueue({ concurrency: 2 });
+Deno.test("pause()", {
+  sanitizeOps: false,
+  sanitizeResources: false,
+}, () => {
+  const queue = new AsyncQueue({ concurrency: 2 });
 
-    queue.pause();
-    queue.add(() => delay(20_000));
-    queue.add(() => delay(20_000));
-    queue.add(() => delay(20_000));
-    queue.add(() => delay(20_000));
-    queue.add(() => delay(20_000));
-    assertStrictEquals(queue.size, 5);
-    assertStrictEquals(queue.pending, 0);
-    assertStrictEquals(queue.isPaused, true);
+  queue.pause();
+  queue.add(() => delay(20_000));
+  queue.add(() => delay(20_000));
+  queue.add(() => delay(20_000));
+  queue.add(() => delay(20_000));
+  queue.add(() => delay(20_000));
+  assertStrictEquals(queue.size, 5);
+  assertStrictEquals(queue.pending, 0);
+  assertStrictEquals(queue.isPaused, true);
 
-    queue.start();
-    assertStrictEquals(queue.size, 3);
-    assertStrictEquals(queue.pending, 2);
-    assertStrictEquals(queue.isPaused, false);
+  queue.start();
+  assertStrictEquals(queue.size, 3);
+  assertStrictEquals(queue.pending, 2);
+  assertStrictEquals(queue.isPaused, false);
 
-    queue.add(() => delay(20_000));
-    queue.pause();
-    assertStrictEquals(queue.size, 4);
-    assertStrictEquals(queue.pending, 2);
-    assertStrictEquals(queue.isPaused, true);
+  queue.add(() => delay(20_000));
+  queue.pause();
+  assertStrictEquals(queue.size, 4);
+  assertStrictEquals(queue.pending, 2);
+  assertStrictEquals(queue.isPaused, true);
 
-    queue.start();
-    assertStrictEquals(queue.size, 4);
-    assertStrictEquals(queue.pending, 2);
-    assertStrictEquals(queue.isPaused, false);
+  queue.start();
+  assertStrictEquals(queue.size, 4);
+  assertStrictEquals(queue.pending, 2);
+  assertStrictEquals(queue.isPaused, false);
 
-    queue.clear();
-    assertStrictEquals(queue.size, 0);
-  },
-);
+  queue.clear();
+  assertStrictEquals(queue.size, 0);
+});
 
 Deno.test("add() sync/async mixed tasks", async () => {
   const queue = new AsyncQueue({ concurrency: 1 });
@@ -1117,35 +1116,35 @@ Deno.test("should emit completed / error events", async () => {
   assertStrictEquals(completedEvents, 2);
 });
 
-config(Deno.test, { sanitizeOps: false, sanitizeResources: false })(
-  "should verify timeout overrides passed to add",
-  async () => {
-    const queue = new AsyncQueue({ timeout: 200, throwOnTimeout: true });
+Deno.test("should verify timeout overrides passed to add", {
+  sanitizeOps: false,
+  sanitizeResources: false,
+}, async () => {
+  const queue = new AsyncQueue({ timeout: 200, throwOnTimeout: true });
 
-    await assertRejects(() =>
-      queue.add(async () => {
-        await delay(400);
-      })
-    );
-
-    await queue.add(async () => {
+  await assertRejects(() =>
+    queue.add(async () => {
       await delay(400);
-    }, { throwOnTimeout: false });
+    })
+  );
 
-    await queue.add(async () => {
-      await delay(400);
-    }, { timeout: 600 });
+  await queue.add(async () => {
+    await delay(400);
+  }, { throwOnTimeout: false });
 
-    await queue.add(async () => {
+  await queue.add(async () => {
+    await delay(400);
+  }, { timeout: 600 });
+
+  await queue.add(async () => {
+    await delay(100);
+  });
+
+  await assertRejects(() =>
+    queue.add(async () => {
       await delay(100);
-    });
+    }, { timeout: 50 })
+  );
 
-    await assertRejects(() =>
-      queue.add(async () => {
-        await delay(100);
-      }, { timeout: 50 })
-    );
-
-    await queue.onIdle();
-  },
-);
+  await queue.onIdle();
+});

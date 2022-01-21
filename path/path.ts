@@ -79,13 +79,12 @@ const filepathSymbol = Symbol.for("filepath");
  * A class to represent filesystem path.
  */
 export class Path {
-  readonly #filepath: string;
   readonly [filepathSymbol]: string;
 
   #stat?: Promise<Deno.FileInfo>;
 
   private constructor(filepath: string) {
-    this.#filepath = this[filepathSymbol] = filepath;
+    this[filepathSymbol] = filepath;
 
     Object.freeze(this);
   }
@@ -314,7 +313,7 @@ export class Path {
   }
 
   joinpath(...other: string[]) {
-    return Path.from(this.#filepath, ...other);
+    return Path.from(this.toString(), ...other);
   }
 
   parse() {
@@ -357,7 +356,7 @@ export class Path {
   }
 
   toString() {
-    return this.#filepath;
+    return this[filepathSymbol];
   }
 
   async #statValue(key: "isDirectory" | "isFile" | "isSymlink") {

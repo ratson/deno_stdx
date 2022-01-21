@@ -1,5 +1,5 @@
 // deno-lint-ignore-file require-await
-import { deadline } from "https://deno.land/std@0.121.0/async/deadline.ts";
+import { deadline } from "https://deno.land/std@0.122.0/async/deadline.ts";
 
 export type RunFunction = () => Promise<unknown>;
 

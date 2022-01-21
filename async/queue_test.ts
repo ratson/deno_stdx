@@ -1,5 +1,5 @@
 // deno-lint-ignore-file require-await
-import { DeadlineError } from "https://deno.land/std@0.121.0/async/deadline.ts";
+import { DeadlineError } from "https://deno.land/std@0.122.0/async/deadline.ts";
 import {
   assertEquals,
   assertRejects,

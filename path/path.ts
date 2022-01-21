@@ -6,7 +6,7 @@ import {
   expandGlob,
   ExpandGlobOptions,
   expandGlobSync,
-} from "https://deno.land/std@0.121.0/fs/mod.ts";
+} from "https://deno.land/std@0.122.0/fs/mod.ts";
 import {
   basename,
   delimiter,
@@ -22,7 +22,7 @@ import {
   resolve,
   sep,
   toFileUrl,
-} from "https://deno.land/std@0.121.0/path/mod.ts";
+} from "https://deno.land/std@0.122.0/path/mod.ts";
 import { userCacheDir, userConfigDir, userHomeDir } from "../os/path.ts";
 import { JsonValue } from "../typing/json.ts";
 

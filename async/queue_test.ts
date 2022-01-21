@@ -1,3 +1,5 @@
+// Copyright the p-queue authors. MIT License.
+// Ported from https://github.com/sindresorhus/p-queue
 // deno-lint-ignore-file require-await
 import { DeadlineError } from "https://deno.land/std@0.122.0/async/deadline.ts";
 import {

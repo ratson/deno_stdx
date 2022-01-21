@@ -1,3 +1,5 @@
+// Copyright the dotenv authors. MIT License.
+// Ported mostly from https://github.com/motdotla/dotenv
 import { assertEquals, assertStrictEquals, unreachable } from "../deps_test.ts";
 import { dataPath } from "./deps_test.ts";
 import { parse } from "./parse.ts";

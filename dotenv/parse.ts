@@ -1,3 +1,6 @@
+// Copyright the dotenv authors. MIT License.
+// Ported mostly from https://github.com/motdotla/dotenv
+
 const NEWLINE = "\n";
 const RE_INI_KEY_VAL =
   /^\s*([\w.-]+)\s*=\s*("[^"]*"|'[^']*'|[^#]*)?(\s*|\s*#.*)?$/;

@@ -730,31 +730,35 @@ Deno.test("add() - throttled, carryoverConcurrencyCount true", {
 
   queue.start();
 
-  (async () => {
-    await delay(100);
-    assertEquals(result, []);
-    assertStrictEquals(queue.pending, 1, `pending != 1 after 100ms`);
-  })();
+  const promises = [
+    (async () => {
+      await delay(100);
+      assertEquals(result, []);
+      assertStrictEquals(queue.pending, 1, `pending != 1 after 100ms`);
+    })(),
 
-  (async () => {
-    await delay(550);
-    assertEquals(result, []);
-    assertStrictEquals(queue.pending, 1);
-  })();
+    (async () => {
+      await delay(550);
+      assertEquals(result, []);
+      assertStrictEquals(queue.pending, 1);
+    })(),
 
-  (async () => {
-    await delay(650);
-    assertEquals(result, [0], `result should be [0] after 650ms: ${result}`);
-    assertStrictEquals(queue.pending, 0);
-  })();
+    (async () => {
+      await delay(650);
+      assertEquals(result, [0], `result should be [0] after 650ms: ${result}`);
+      assertStrictEquals(queue.pending, 0);
+    })(),
 
-  (async () => {
-    await delay(1550);
-    assertEquals(result, [0], `result should be [0] after 1550ms: ${result}`);
-  })();
+    (async () => {
+      await delay(1550);
+      assertEquals(result, [0], `result should be [0] after 1550ms: ${result}`);
+    })(),
+  ];
 
   await delay(1650 + ciDelay);
   assertEquals(result, values);
+
+  await Promise.all(promises);
 });
 
 Deno.test("add() - throttled 10, concurrency 5", ciOpts, async () => {
@@ -830,23 +834,27 @@ Deno.test("add() - throttled finish and resume", async () => {
 
   queue.start();
 
-  (async () => {
-    await delay(1000);
-    assertEquals(result, firstValue);
+  const promises = [
+    (async () => {
+      await delay(1000);
+      assertEquals(result, firstValue);
 
-    queue.add(async () => {
-      await delay(100);
-      result.push(2);
-    });
-  })();
+      queue.add(async () => {
+        await delay(100);
+        result.push(2);
+      });
+    })(),
 
-  (async () => {
-    await delay(1500);
-    assertEquals(result, firstValue);
-  })();
+    (async () => {
+      await delay(1500);
+      assertEquals(result, firstValue);
+    })(),
+  ];
 
   await delay(2200 + ciDelay);
   assertEquals(result, secondValue);
+
+  await Promise.all(promises);
 });
 
 Deno.test("pause should work when throttled", ciOpts, async () => {
@@ -872,32 +880,36 @@ Deno.test("pause should work when throttled", ciOpts, async () => {
 
   queue.start();
 
-  (async () => {
-    await delay(300);
-    assertEquals(result, firstValue);
-  })();
+  const promises = [
+    (async () => {
+      await delay(300);
+      assertEquals(result, firstValue);
+    })(),
 
-  (async () => {
-    await delay(600);
-    queue.pause();
-  })();
+    (async () => {
+      await delay(600);
+      queue.pause();
+    })(),
 
-  (async () => {
-    await delay(1400);
-    assertEquals(result, firstValue);
-  })();
+    (async () => {
+      await delay(1400);
+      assertEquals(result, firstValue);
+    })(),
 
-  (async () => {
-    await delay(1500);
-    queue.start();
-  })();
+    (async () => {
+      await delay(1500);
+      queue.start();
+    })(),
 
-  (async () => {
-    await delay(2200);
-    assertEquals(result, secondValue);
-  })();
+    (async () => {
+      await delay(2200);
+      assertEquals(result, secondValue);
+    })(),
+  ];
 
   await delay(2500);
+
+  await Promise.all(promises);
 });
 
 Deno.test("clear interval on pause", ciOpts, async () => {
@@ -940,7 +952,7 @@ Deno.test("should emit active event per item", async () => {
   assertStrictEquals(eventCount, items.length);
 });
 
-Deno.test("should emit idle event when idle", async () => {
+Deno.test("should emit idle event when idle", ciOpts, async () => {
   const queue = new AsyncQueue({ concurrency: 1 });
 
   let timesCalled = 0;
@@ -977,8 +989,6 @@ Deno.test("should emit idle event when idle", async () => {
   assertStrictEquals(queue.pending, 0);
   assertStrictEquals(queue.size, 0);
   assertStrictEquals(timesCalled, 2);
-
-  if (ciDelay > 0) await queue.onIdle();
 });
 
 Deno.test("should emit add event when adding task", ciOpts, async () => {

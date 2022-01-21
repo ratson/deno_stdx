@@ -71,15 +71,19 @@ export class DefaultCache implements Cache {
   }
 }
 
+const filepathSymbol = Symbol.for("filepath");
+
 /**
  * A class to represent filesystem path.
  */
 export class Path {
   readonly #filepath: string;
+  readonly [filepathSymbol]: string;
+
   #stat?: Promise<Deno.FileInfo>;
 
   private constructor(filepath: string) {
-    this.#filepath = filepath;
+    this.#filepath = this[filepathSymbol] = filepath;
   }
 
   static _cache: Cache = new DefaultCache();

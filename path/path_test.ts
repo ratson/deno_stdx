@@ -1,7 +1,7 @@
 import { normalize, SEP } from "https://deno.land/std@0.121.0/path/mod.ts";
 import {
-  assert,
   assertEquals,
+  assertNotEquals,
   assertSpyCall,
   assertSpyCalls,
   assertStrictEquals,
@@ -14,6 +14,17 @@ import { range } from "../collections/range.ts";
 import { isCI } from "../testing/mod.ts";
 import { userCacheDir, userConfigDir, userHomeDir } from "../os/path.ts";
 import { DefaultCache, Path } from "./path.ts";
+
+Deno.test("Object", () => {
+  const p = Path.from("/");
+
+  assertEquals(Object.keys(p), []);
+  assertEquals(Object.getOwnPropertyNames(p), []);
+
+  const s = Object.getOwnPropertySymbols(p)[0];
+  assertEquals(Object.getOwnPropertySymbols(p), [s]);
+  assertEquals({ ...p }, { [s]: SEP });
+});
 
 Deno.test("Path.from()", async () => {
   const p = Path.from("/this/is/a/test/path/file.ext");
@@ -40,9 +51,9 @@ Deno.test("Path.from() returns same instance if filepath is the same", () => {
   assertStrictEquals(Path.from("./a"), Path.from("./b", "../a"));
 
   assertStrictEquals(Path.cwd(), Path.from(".").resolve());
-  assert(Path.cwd() !== Path.from("."));
+  assertNotEquals(Path.cwd(), Path.from("."));
 
-  assert(Path.from("/a") != Path.from("/b"));
+  assertNotEquals(Path.from("/a"), Path.from("/b"));
 });
 
 Deno.test("Path.fromImportMeta()", async () => {
@@ -192,6 +203,8 @@ Deno.test("toFileUrl()", () => {
 });
 
 Deno.test("toString()", () => {
+  assertStrictEquals(String(Path.from("/")), SEP);
+
   for (
     const [a, b] of [
       ["/", "/"],
@@ -203,8 +216,8 @@ Deno.test("toString()", () => {
     ]
   ) {
     assertStrictEquals(
-      Path.from(a.replaceAll("/", SEP)).toString(),
-      b.replaceAll("/", SEP),
+      Path.from(normalize(a)).toString(),
+      normalize(b),
     );
   }
 
@@ -396,6 +409,9 @@ Deno.test("parents", () => {
       ["", []],
     ] as const
   ) {
-    assertEquals(Path.from(p).parents.map((x) => x.toString()), expected.map(normalize));
+    assertEquals(
+      Path.from(p).parents.map((x) => x.toString()),
+      expected.map(normalize),
+    );
   }
 });

@@ -20,6 +20,7 @@ import {
   parse,
   relative,
   resolve,
+  sep,
   toFileUrl,
 } from "https://deno.land/std@0.121.0/path/mod.ts";
 import { userCacheDir, userConfigDir, userHomeDir } from "../os/path.ts";
@@ -82,6 +83,14 @@ export class Path {
   }
 
   static _cache: Cache = new DefaultCache();
+
+  static get delimiter() {
+    return delimiter;
+  }
+
+  static get sep() {
+    return sep;
+  }
 
   static from(...pathSegments: string[]) {
     const k = join(...pathSegments);

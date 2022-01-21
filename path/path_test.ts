@@ -219,7 +219,7 @@ Deno.test("isDir()", async () => {
 });
 
 Deno.test("Deno.inspect()", () => {
-  assertStrictEquals(Deno.inspect(Path.from(SEP)), `Path { ${SEP} }`);
+  assertStrictEquals(Deno.inspect(Path.from(Path.sep)), `Path { ${SEP} }`);
 });
 
 Deno.test("toPrimitive", () => {

@@ -173,10 +173,23 @@ export class Path {
     return Path.from(Deno.makeTempFileSync(options));
   }
 
-  static async exe(name: string) {
+  /**
+   * Converts the PATH environment variable into an array of Path instances.
+   *
+   * @returns An Array of Path instances of the filepaths recorded in PATH.
+   */
+  static splitPATH() {
     const s = Deno.env.get("PATH");
-    if (s === undefined) return undefined;
-    for (const p of s.split(delimiter).map((x) => Path.from(x, name))) {
+    if (s === undefined) return [];
+    return s.split(delimiter).map((x) => Path.from(x));
+  }
+
+  /**
+   * Searches for an executable named file in the directories named by the PATH environment variable.
+   */
+  static async exe(name: string): Promise<Readonly<Path> | undefined> {
+    for (const x of this.splitPATH()) {
+      const p = x.joinpath(name);
       if (await p.exists()) {
         return p;
       }

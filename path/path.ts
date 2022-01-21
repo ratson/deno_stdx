@@ -35,12 +35,12 @@ export class HomePathError extends Error {
 }
 
 export interface Cache {
-  get(key: string): Readonly<Path> | undefined;
-  set(key: string, value: Readonly<Path>): void;
+  get(key: string): Path | undefined;
+  set(key: string, value: Path): void;
 }
 
 export class DefaultCache implements Cache {
-  readonly refs = new Map<string, WeakRef<Readonly<Path>>>();
+  readonly refs = new Map<string, WeakRef<Path>>();
   readonly keys = new Array<string>();
   readonly gcInterval = 128;
   counter = 0;
@@ -49,7 +49,7 @@ export class DefaultCache implements Cache {
     return this.refs.get(key)?.deref();
   }
 
-  set(key: string, value: Readonly<Path>) {
+  set(key: string, value: Path) {
     this.refs.set(key, new WeakRef(value));
     this.keys.push(key);
 
@@ -86,6 +86,8 @@ export class Path {
 
   private constructor(filepath: string) {
     this.#filepath = this[filepathSymbol] = filepath;
+
+    Object.freeze(this);
   }
 
   static _cache: Cache = new DefaultCache();
@@ -105,7 +107,7 @@ export class Path {
     const v = m.get(k);
     if (v !== undefined) return v;
 
-    const p = Object.freeze(new this(k));
+    const p = new this(k);
     m.set(k, p);
     return p;
   }
@@ -193,7 +195,7 @@ export class Path {
   /**
    * Searches for an executable named file in the directories named by the PATH environment variable.
    */
-  static async exe(name: string): Promise<Readonly<Path> | undefined> {
+  static async exe(name: string): Promise<Path | undefined> {
     for (const x of this.splitPATH()) {
       const p = x.joinpath(name);
       if (await p.exists()) {
@@ -218,12 +220,12 @@ export class Path {
     return Path.from(dirname(this.toString()));
   }
 
-  get parents(): Array<Readonly<Path>> {
+  get parents(): Array<Path> {
     return Array.from(this.#iterParents());
   }
 
   *#iterParents() {
-    let last = this as Readonly<Path>;
+    let last = this as Path;
     let p = last.parent;
     while (!last.equals(p)) {
       yield p;
@@ -232,7 +234,7 @@ export class Path {
     }
   }
 
-  equals(otherPath: Readonly<Path> | string | undefined | null) {
+  equals(otherPath: Path | string | undefined | null) {
     if (this === otherPath) return true;
     if (otherPath === undefined || otherPath === null) return false;
 
@@ -281,7 +283,7 @@ export class Path {
   async *glob(
     glob: string,
     opts: GlobOptions = {},
-  ): AsyncIterableIterator<Readonly<Path>> {
+  ): AsyncIterableIterator<Path> {
     for await (
       const file of expandGlob(glob, { ...opts, root: this.toString() })
     ) {
@@ -292,7 +294,7 @@ export class Path {
   *globSync(
     glob: string,
     opts: GlobOptions = {},
-  ): IterableIterator<Readonly<Path>> {
+  ): IterableIterator<Path> {
     for (
       const file of expandGlobSync(glob, { ...opts, root: this.toString() })
     ) {
@@ -304,7 +306,7 @@ export class Path {
     return isAbsolute(this.toString());
   }
 
-  relative(otherPath: Readonly<Path>) {
+  relative(otherPath: Path) {
     if (this.isAbsolute() !== otherPath.isAbsolute()) {
       throw new Error("One path is relative and the other is absolute.");
     }

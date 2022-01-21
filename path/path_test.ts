@@ -26,6 +26,41 @@ Deno.test("Object", () => {
   assertEquals({ ...p }, { [s]: SEP });
 });
 
+Deno.test("immutable", () => {
+  // @ts-expect-error new-private-constructor
+  const p = new Path("/");
+  assertStrictEquals(Object.isFrozen(p), true);
+  assertStrictEquals(Object.isExtensible(p), false);
+
+  assertThrows(
+    () => {
+      // deno-lint-ignore no-explicit-any
+      (p as any).a = 1;
+    },
+    TypeError,
+    "object is not extensible",
+  );
+});
+
+Deno.test("can not be extended", () => {
+  // @ts-expect-error private-constructor
+  class P extends Path {
+    a = 1;
+    constructor() {
+      super("/");
+      this.a = 2;
+    }
+  }
+
+  assertThrows(
+    () => {
+      new P();
+    },
+    TypeError,
+    "object is not extensible",
+  );
+});
+
 Deno.test("Path.from()", async () => {
   const p = Path.from("/this/is/a/test/path/file.ext");
   assertStrictEquals(p.name, "file.ext");

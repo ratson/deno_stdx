@@ -53,8 +53,10 @@ export class DefaultCache implements Cache {
     this.refs.set(key, new WeakRef(value));
     this.keys.push(key);
 
-    this.counter = (this.counter + 1) % this.gcInterval;
-    if (this.counter === 0) this.gc();
+    if (++this.counter > this.gcInterval) {
+      this.counter = 0;
+      this.gc();
+    }
   }
 
   gc() {

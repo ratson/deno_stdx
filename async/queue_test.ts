@@ -977,6 +977,8 @@ Deno.test("should emit idle event when idle", async () => {
   assertStrictEquals(queue.pending, 0);
   assertStrictEquals(queue.size, 0);
   assertStrictEquals(timesCalled, 2);
+
+  if (ciDelay > 0) await queue.onIdle();
 });
 
 Deno.test("should emit add event when adding task", ciOpts, async () => {

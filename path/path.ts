@@ -1,11 +1,20 @@
 import {
+  emptyDir,
+  emptyDirSync,
   ensureDir,
   ensureDirSync,
   ensureFile,
   ensureFileSync,
+  ensureSymlink,
+  ensureSymlinkSync,
   expandGlob,
   ExpandGlobOptions,
   expandGlobSync,
+  move,
+  moveSync,
+  walk,
+  WalkOptions,
+  walkSync,
 } from "https://deno.land/std@0.122.0/fs/mod.ts";
 import {
   basename,
@@ -361,7 +370,7 @@ export class Path {
 
   async #statValue(key: "isDirectory" | "isFile" | "isSymlink") {
     try {
-      const stat = await this.stat();
+      const stat = await this.lstat();
       return stat[key];
     } catch {
       return false;
@@ -380,6 +389,14 @@ export class Path {
     return this.#statValue("isSymlink");
   }
 
+  emptyDir() {
+    return emptyDir(this.toString());
+  }
+
+  emptyDirSync() {
+    return emptyDirSync(this.toString());
+  }
+
   ensureDir() {
     return ensureDir(this.toString());
   }
@@ -394,6 +411,14 @@ export class Path {
 
   ensureFileSync() {
     return ensureFileSync(this.toString());
+  }
+
+  ensureSymlink(dest: string) {
+    return ensureSymlink(this.toString(), dest);
+  }
+
+  ensureSymlinkSync(dest: string) {
+    return ensureSymlinkSync(this.toString(), dest);
   }
 
   chmod(mode: number) {
@@ -442,6 +467,14 @@ export class Path {
 
   mkdirSync(options?: Deno.MkdirOptions) {
     return Deno.mkdirSync(this.toString(), options);
+  }
+
+  move(dest: string, options?: { overwrite?: boolean }) {
+    return move(this.toString(), dest, options);
+  }
+
+  moveSync(dest: string, options?: { overwrite?: boolean }) {
+    return moveSync(this.toString(), dest, options);
   }
 
   open(options?: Deno.OpenOptions) {
@@ -508,6 +541,14 @@ export class Path {
 
   truncateSync(len?: number) {
     return Deno.truncateSync(this.toString(), len);
+  }
+
+  walk(options?: WalkOptions) {
+    return walk(this.toString(), options);
+  }
+
+  walkSync(options?: WalkOptions) {
+    return walkSync(this.toString(), options);
   }
 
   watch(options?: { recursive: boolean }) {

@@ -1,5 +1,6 @@
 import { normalize, SEP } from "https://deno.land/std@0.122.0/path/mod.ts";
 import {
+  assertArrayIncludes,
   assertEquals,
   assertNotEquals,
   assertSpyCall,
@@ -449,4 +450,59 @@ Deno.test("parents", () => {
       expected.map(normalize),
     );
   }
+});
+
+Deno.test("fs", async () => {
+  const [d1, f1] = await Promise.all([
+    Path.makeTempDir(),
+    Path.makeTempFile(),
+  ]);
+  const [d2, f2] = [
+    Path.makeTempDirSync(),
+    Path.makeTempFileSync(),
+  ];
+
+  assertEquals(d1.lstatSync(), await d1.lstat());
+  assertEquals(d1.statSync(), await d1.stat());
+  assertEquals(d1.realPathSync(), await d1.realPath());
+  assertEquals(f1.readFileSync(), await f1.readFile());
+  assertEquals(f1.readTextFileSync(), await f1.readTextFile());
+
+  await f1.writeTextFile("null");
+  assertEquals(await f1.readJsonFile(), null);
+  await f1.truncate();
+
+  await f2.writeJsonFile(null);
+
+  const [d1d, d1f, d1l] = ["d", "f", "l"].map((x) => d1.joinpath(x));
+
+  await d1d.ensureDir();
+  assertStrictEquals(await d1d.isDir(), true);
+
+  await d1f.ensureFile();
+  assertStrictEquals(await d1f.isFile(), true);
+
+  assertStrictEquals(await d1l.exists(), false);
+  await f1.ensureSymlink(d1l.toString());
+  assertStrictEquals(await d1l.exists(), true);
+  assertStrictEquals(await d1l.isSymlink(), true);
+  assertStrictEquals(await d1l.readLink(), f1);
+
+  let c = 0;
+  for await (const p of d1.glob("*")) {
+    assertArrayIncludes([d1d, d1f, d1l], [p]);
+    c++;
+  }
+  assertStrictEquals(c, 2);
+
+  c = 0;
+  for await (const _ of d1.walk()) {
+    c++;
+  }
+  assertStrictEquals(c, 3);
+
+  await d1f.copyFile(d2.joinpath("copied").toString());
+
+  await d1.emptyDir();
+  d2.emptyDirSync();
 });

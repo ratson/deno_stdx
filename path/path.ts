@@ -88,7 +88,7 @@ const filepathSymbol = Symbol.for("filepath");
  * A class to represent filesystem path.
  */
 export class Path {
-  readonly [filepathSymbol]: string;
+  private readonly [filepathSymbol]: string;
 
   #stat?: Promise<Deno.FileInfo>;
 

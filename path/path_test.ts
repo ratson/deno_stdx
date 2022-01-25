@@ -483,7 +483,7 @@ Deno.test("fs", async () => {
   assertStrictEquals(await d1f.isFile(), true);
 
   assertStrictEquals(await d1l.exists(), false);
-  await f1.ensureSymlink(d1l.toString());
+  await f1.ensureSymlink(d1l);
   assertStrictEquals(await d1l.exists(), true);
   assertStrictEquals(await d1l.isSymlink(), true);
   assertStrictEquals(await d1l.readLink(), f1);
@@ -501,8 +501,10 @@ Deno.test("fs", async () => {
   }
   assertStrictEquals(c, 3);
 
-  await d1f.copyFile(d2.joinpath("copied").toString());
+  await d1f.copyFile(d2.joinpath("copied"));
+
+  await d1l.move(d2.joinpath("moved"));
 
   await d1.emptyDir();
-  d2.emptyDirSync();
+  d1.emptyDirSync();
 });

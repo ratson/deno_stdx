@@ -84,6 +84,11 @@ export class DefaultCache implements Cache {
 
 const filepathSymbol = Symbol.for("filepath");
 
+function pathString<T>(s: Path | T) {
+  if (s instanceof Path) return s.toString();
+  return s;
+}
+
 /**
  * A class to represent filesystem path.
  */
@@ -413,12 +418,12 @@ export class Path {
     return ensureFileSync(this.toString());
   }
 
-  ensureSymlink(dest: string) {
-    return ensureSymlink(this.toString(), dest);
+  ensureSymlink(dest: Path | string) {
+    return ensureSymlink(this.toString(), pathString(dest));
   }
 
-  ensureSymlinkSync(dest: string) {
-    return ensureSymlinkSync(this.toString(), dest);
+  ensureSymlinkSync(dest: Path | string) {
+    return ensureSymlinkSync(this.toString(), pathString(dest));
   }
 
   chmod(mode: number) {
@@ -437,12 +442,12 @@ export class Path {
     return Deno.chownSync(this.toString(), uid, gid);
   }
 
-  copyFile(toPath: string | URL) {
-    return Deno.copyFile(this.toString(), toPath);
+  copyFile(toPath: Path | string | URL) {
+    return Deno.copyFile(this.toString(), pathString(toPath));
   }
 
-  copyFileSync(toPath: string | URL) {
-    return Deno.copyFileSync(this.toString(), toPath);
+  copyFileSync(toPath: Path | string | URL) {
+    return Deno.copyFileSync(this.toString(), pathString(toPath));
   }
 
   create() {
@@ -453,12 +458,12 @@ export class Path {
     return Deno.createSync(this.toString());
   }
 
-  link(newpath: string) {
-    return Deno.link(this.toString(), newpath);
+  link(newpath: Path | string) {
+    return Deno.link(this.toString(), pathString(newpath));
   }
 
-  linkSync(newpath: string) {
-    return Deno.linkSync(this.toString(), newpath);
+  linkSync(newpath: Path | string) {
+    return Deno.linkSync(this.toString(), pathString(newpath));
   }
 
   mkdir(options?: Deno.MkdirOptions) {
@@ -469,12 +474,12 @@ export class Path {
     return Deno.mkdirSync(this.toString(), options);
   }
 
-  move(dest: string, options?: { overwrite?: boolean }) {
-    return move(this.toString(), dest, options);
+  move(dest: Path | string, options?: { overwrite?: boolean }) {
+    return move(this.toString(), pathString(dest), options);
   }
 
-  moveSync(dest: string, options?: { overwrite?: boolean }) {
-    return moveSync(this.toString(), dest, options);
+  moveSync(dest: Path | string, options?: { overwrite?: boolean }) {
+    return moveSync(this.toString(), pathString(dest), options);
   }
 
   open(options?: Deno.OpenOptions) {
@@ -485,12 +490,12 @@ export class Path {
     return Deno.openSync(this.toString(), options);
   }
 
-  symlink(newpath: string | URL, options?: Deno.SymlinkOptions) {
-    return Deno.symlink(this.toString(), newpath, options);
+  symlink(newpath: Path | string | URL, options?: Deno.SymlinkOptions) {
+    return Deno.symlink(this.toString(), pathString(newpath), options);
   }
 
-  symlinkSync(newpath: string | URL, options?: Deno.SymlinkOptions) {
-    return Deno.symlinkSync(this.toString(), newpath, options);
+  symlinkSync(newpath: Path | string | URL, options?: Deno.SymlinkOptions) {
+    return Deno.symlinkSync(this.toString(), pathString(newpath), options);
   }
 
   readDir() {
@@ -519,12 +524,12 @@ export class Path {
     return Path.from(Deno.realPathSync(this.toString()));
   }
 
-  rename(newpath: string | URL) {
-    return Deno.rename(this.toString(), newpath);
+  rename(newpath: Path | string | URL) {
+    return Deno.rename(this.toString(), pathString(newpath));
   }
 
-  renameSync(newpath: string | URL) {
-    return Deno.renameSync(this.toString(), newpath);
+  renameSync(newpath: Path | string | URL) {
+    return Deno.renameSync(this.toString(), pathString(newpath));
   }
 
   remove(options?: Deno.RemoveOptions) {

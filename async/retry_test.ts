@@ -1,7 +1,9 @@
 import {
   assertEquals,
+  assertLess,
   assertRejects,
   assertStrictEquals,
+  delay,
 } from "../deps_test.ts";
 import { retry, TooManyAttemptsError } from "./retry.ts";
 
@@ -67,4 +69,49 @@ Deno.test("options.onError", async () => {
   assertStrictEquals(errors[0][1], 0);
   assertStrictEquals(errors[1][1], 1);
   assertEquals(results, [0, 1]);
+});
+
+Deno.test("options.delay", async () => {
+  const start = performance.now();
+
+  await assertRejects(async () => {
+    await retry(() => {
+      throw new Error();
+    }, { maxAttempts: 3, delay: 200 });
+  }, TooManyAttemptsError);
+
+  assertLess(performance.now() - start, 800);
+});
+
+Deno.test("options.signal - abort retry", async () => {
+  const abort = new AbortController();
+  const { signal } = abort;
+  setTimeout(() => abort.abort(), 0);
+
+  await assertRejects(
+    async () => {
+      await retry(async () => {
+        await delay(10);
+        throw new Error();
+      }, { signal });
+    },
+    DOMException,
+    "Retry was aborted",
+  );
+});
+
+Deno.test("options.signal - abort during delay", async () => {
+  const abort = new AbortController();
+  const { signal } = abort;
+  setTimeout(() => abort.abort(), 0);
+
+  await assertRejects(
+    async () => {
+      await retry(() => {
+        throw new Error();
+      }, { signal, delay: 100 });
+    },
+    DOMException,
+    "Delay was aborted",
+  );
 });

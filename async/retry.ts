@@ -29,20 +29,21 @@ export async function retry<T>(
     onError(_error, _attemptCount) {},
     ...options,
   };
+  const { signal } = opts;
 
   let cause: Error | undefined;
   for (let i = 0; i <= opts.maxAttempts; ++i) {
-    if (opts.signal?.aborted) {
-      return Promise.reject(creatAbortError());
-    }
+    if (signal?.aborted) throw creatAbortError();
+
     try {
       return await fn(i);
     } catch (err) {
       opts.onError(err, i);
       cause = err;
     }
+
     if (opts.delay && i < opts.maxAttempts) {
-      await delay(opts.delay, { signal: opts.signal });
+      await delay(opts.delay, { signal });
     }
   }
 

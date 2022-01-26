@@ -115,3 +115,19 @@ Deno.test("options.signal - abort during delay", async () => {
     "Delay was aborted",
   );
 });
+
+Deno.test("options.signal - abort in fn", async () => {
+  const abort = new AbortController();
+  const { signal } = abort;
+
+  await assertRejects(
+    async () => {
+      await retry(() => {
+        abort.abort();
+        throw new Error();
+      }, { signal });
+    },
+    DOMException,
+    "Retry was aborted",
+  );
+});

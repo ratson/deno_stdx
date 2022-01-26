@@ -2,8 +2,7 @@
 // Ported mostly from https://github.com/motdotla/dotenv
 
 const NEWLINE = "\n";
-const RE_INI_KEY_VAL =
-  /^\s*([\w.-]+)\s*=\s*("[^"]*"|'[^']*'|[^#]*)?(\s*|\s*#.*)?$/;
+const RE_INI_KEY_VAL = /^\s*([\w.-]+)\s*=\s*("[^"]*"|'[^']*'|.*?)(\s+#.*)?$/;
 const RE_NEWLINES = /\\n/g;
 const NEWLINES_MATCH = /\r\n|\n|\r/;
 

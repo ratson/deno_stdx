@@ -4,6 +4,7 @@ import {
   assertRejects,
   assertStrictEquals,
   delay,
+  isCI,
 } from "../deps_test.ts";
 import { retry, TooManyAttemptsError } from "./retry.ts";
 
@@ -80,7 +81,10 @@ Deno.test("options.delay", async () => {
     }, { maxAttempts: 3, delay: 200 });
   }, TooManyAttemptsError);
 
-  assertLess(performance.now() - start, 800);
+  assertLess(
+    performance.now() - start,
+    800 + (isCI() && Deno.build.os === "darwin" ? 0 : 100),
+  );
 });
 
 Deno.test("options.signal - abort retry", async () => {

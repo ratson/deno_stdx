@@ -93,6 +93,12 @@ Deno.test("parse .env", async () => {
   );
 
   assertStrictEquals(
+    parsed.INLINE_COMMENTS_SPACE,
+    "inline comments must start with#space",
+    "respects # character in values when it is not preceded by a space character",
+  );
+
+  assertStrictEquals(
     parsed.EQUAL_SIGNS,
     "equals==",
     "respects equals signs in values",

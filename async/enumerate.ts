@@ -1,7 +1,6 @@
 export async function* enumerate<T>(iterable: AsyncIterable<T> | Iterable<T>) {
-  let i = 0;
+  let i = -1;
   for await (const x of iterable) {
-    yield [i, x] as const;
-    i++;
+    yield [++i, x] as const;
   }
 }

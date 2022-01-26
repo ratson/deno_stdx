@@ -2,12 +2,12 @@ import { assertEquals, assertRejects } from "../deps_test.ts";
 import { toArray } from "./to_array.ts";
 
 async function* asyncGen(n = 4) {
-  for (let i = 0; i < n; i++) {
+  for (let i = 0; i < n; ++i) {
     yield i * 2;
   }
 }
 function* genPromises(n = 4) {
-  for (let i = 0; i < n; i++) {
+  for (let i = 0; i < n; ++i) {
     yield Promise.resolve(i * 2);
   }
 }

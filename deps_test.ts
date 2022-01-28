@@ -1,4 +1,8 @@
-export { delay } from "https://deno.land/std@0.122.0/async/mod.ts";
+export {
+  deadline,
+  DeadlineError,
+  delay,
+} from "https://deno.land/std@0.122.0/async/mod.ts";
 export * from "https://deno.land/std@0.122.0/testing/asserts.ts";
 
 export { isWindows, osType } from "https://deno.land/std@0.122.0/_util/os.ts";

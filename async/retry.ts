@@ -14,8 +14,8 @@ type Options = {
   signal?: AbortSignal;
 };
 
-function creatAbortError() {
-  return new DOMException("Retry was aborted.", "AbortError");
+export function creatAbortError(msg: string) {
+  return new DOMException(msg, "AbortError");
 }
 
 export type RetryOptions = Partial<Options>;
@@ -33,7 +33,7 @@ export async function retry<T>(
 
   let cause: Error | undefined;
   for (let i = 0; i <= opts.maxAttempts; ++i) {
-    if (signal?.aborted) throw creatAbortError();
+    if (signal?.aborted) throw creatAbortError("Retry was aborted.");
 
     try {
       return await fn(i);

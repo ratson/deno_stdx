@@ -83,7 +83,7 @@ Deno.test("options.delay", async () => {
 
   assertLess(
     performance.now() - start,
-    800 + (isCI() && Deno.build.os === "darwin" ? 0 : 100),
+    800 + (isCI() && Deno.build.os === "darwin" ? 250 : 0),
   );
 });
 

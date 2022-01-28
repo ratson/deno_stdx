@@ -1,9 +1,9 @@
 import {
   ConsoleHandler,
   HandlerOptions,
-} from "https://deno.land/std@0.122.0/log/handlers.ts";
-import type { LevelName } from "https://deno.land/std@0.122.0/log/levels.ts";
-import type { LogConfig } from "https://deno.land/std@0.122.0/log/mod.ts";
+} from "https://deno.land/std@0.123.0/log/handlers.ts";
+import type { LevelName } from "https://deno.land/std@0.123.0/log/levels.ts";
+import type { LogConfig } from "https://deno.land/std@0.123.0/log/mod.ts";
 
 export function basicConfig(
   { level = "INFO", formatter, ...config }:

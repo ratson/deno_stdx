@@ -2,11 +2,11 @@ export {
   deadline,
   DeadlineError,
   delay,
-} from "https://deno.land/std@0.122.0/async/mod.ts";
-export * from "https://deno.land/std@0.122.0/testing/asserts.ts";
+} from "https://deno.land/std@0.123.0/async/mod.ts";
+export * from "https://deno.land/std@0.123.0/testing/asserts.ts";
 
-export { isWindows, osType } from "https://deno.land/std@0.122.0/_util/os.ts";
-export { randomInteger } from "https://deno.land/std@0.122.0/collections/_utils.ts";
+export { isWindows, osType } from "https://deno.land/std@0.123.0/_util/os.ts";
+export { randomInteger } from "https://deno.land/std@0.123.0/collections/_utils.ts";
 
 export {
   assertSpyCall,

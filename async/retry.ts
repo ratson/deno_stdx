@@ -1,4 +1,4 @@
-import { delay } from "https://deno.land/std@0.122.0/async/delay.ts";
+import { delay } from "https://deno.land/std@0.123.0/async/delay.ts";
 import type { PromiseOr } from "../typing/promise.ts";
 
 export class TooManyAttemptsError extends Error {

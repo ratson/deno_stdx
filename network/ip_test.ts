@@ -46,3 +46,8 @@ Deno.test("provider = ifconfig", async () => {
   const ip = await getPublicIP({ providers: ["ifconfig"] });
   assertIP(ip, publicIP);
 });
+
+Deno.test("provider = httpbin", async () => {
+  const ip = await getPublicIP({ providers: ["httpbin"] });
+  assertIP(ip, publicIP);
+});

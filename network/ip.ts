@@ -34,6 +34,16 @@ export abstract class IpProvider {
   }
 }
 
+class HttpbinProvider extends IpProvider {
+  static id = "httpbin" as const;
+
+  async ip() {
+    const res = await fetch(`https://httpbin.org/ip`);
+    const { origin } = await res.json();
+    return origin as string;
+  }
+}
+
 class IcanhazipProvider extends IpProvider {
   static id = "icanhazip" as const;
 
@@ -65,7 +75,12 @@ class IpifyProvider extends IpProvider {
   }
 }
 
-const providers = [IpifyProvider, IcanhazipProvider, IfconfigProvider] as const;
+const providers = [
+  IpifyProvider,
+  IcanhazipProvider,
+  IfconfigProvider,
+  HttpbinProvider,
+] as const;
 
 export const defaultProviders = providers.map((C) => new C());
 

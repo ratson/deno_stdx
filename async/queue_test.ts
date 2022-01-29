@@ -808,6 +808,7 @@ Deno.test("add() - throttled 10, concurrency 5", ciOpts, async () => {
   await delay(1400);
   assertEquals(result, thirdValue);
 
+  promises.push(queue.onIdle());
   await Promise.all(promises);
 });
 
@@ -854,6 +855,7 @@ Deno.test("add() - throttled finish and resume", async () => {
   await delay(2200 + ciDelay);
   assertEquals(result, secondValue);
 
+  promises.push(queue.onIdle());
   await Promise.all(promises);
 });
 

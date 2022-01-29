@@ -22,7 +22,7 @@ export abstract class IpProvider {
   }
 
   constructor() {
-    if (!this.id) throw new Error("id is requried");
+    if (this.id === undefined) return;
 
     const { registry } = IpProvider;
     if (registry.has(this.id)) throw new Error(`id "${this.id}" is registered`);

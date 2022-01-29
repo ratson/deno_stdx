@@ -1,6 +1,6 @@
 import { isIP } from "https://deno.land/std@0.123.0/node/net.ts";
 import { assertRejects, assertStrictEquals, isCI } from "../deps_test.ts";
-import { getPublicIP, IpNotFoundError } from "./ip.ts";
+import { getPublicIP, IpNotFoundError, IpProvider } from "./ip.ts";
 
 let publicIP: string;
 
@@ -50,4 +50,15 @@ Deno.test("provider = ifconfig", async () => {
 Deno.test("provider = httpbin", async () => {
   const ip = await getPublicIP({ providers: ["httpbin"] });
   assertIP(ip, publicIP);
+});
+
+Deno.test("custom provider", async () => {
+  class C extends IpProvider {
+    ip() {
+      return "testing";
+    }
+  }
+
+  const ip = await getPublicIP({ providers: [new C()] });
+  assertStrictEquals(ip, "testing");
 });

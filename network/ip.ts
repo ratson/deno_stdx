@@ -90,14 +90,16 @@ interface Options extends ProviderOptions {
 
 export async function getPublicIP(options?: Options): Promise<string> {
   const opts = { providers: defaultProviders, ...options } as const;
+  let cause: Error | undefined;
   for (const k of opts.providers) {
     const provider = typeof k === "string" ? IpProvider.registry.get(k) : k;
     if (!provider) continue;
     try {
       return await provider.ip(opts);
-    } catch {
+    } catch (err) {
+      cause = err;
       continue;
     }
   }
-  throw new IpNotFoundError();
+  throw new IpNotFoundError(undefined, { cause });
 }

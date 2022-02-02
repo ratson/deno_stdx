@@ -6,7 +6,7 @@ import {
   DeadlineError,
   delay,
 } from "../deps_test.ts";
-import { waitUntil } from "./util.ts";
+import { waitUntil } from "./until.ts";
 
 Deno.test("return truthy value", async () => {
   assertStrictEquals(await waitUntil(() => true), true);

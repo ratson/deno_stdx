@@ -1,5 +1,6 @@
 import { delay } from "https://deno.land/std@0.123.0/async/delay.ts";
 import type { PromiseOr } from "../typing/promise.ts";
+import { createAbortError } from "./util.ts";
 
 export class TooManyAttemptsError extends Error {
   constructor(init?: ErrorInit | undefined) {
@@ -13,10 +14,6 @@ type Options = {
   delay?: number;
   signal?: AbortSignal;
 };
-
-export function creatAbortError(msg: string) {
-  return new DOMException(msg, "AbortError");
-}
 
 export type RetryOptions = Partial<Options>;
 
@@ -33,7 +30,7 @@ export async function retry<T>(
 
   let cause: Error | undefined;
   for (let i = 0; i <= opts.maxAttempts; ++i) {
-    if (signal?.aborted) throw creatAbortError("Retry was aborted.");
+    if (signal?.aborted) throw createAbortError("Retry was aborted.");
 
     try {
       return await fn(i);

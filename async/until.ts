@@ -1,7 +1,7 @@
 import { deadline } from "https://deno.land/std@0.123.0/async/deadline.ts";
 import { delay } from "https://deno.land/std@0.123.0/async/delay.ts";
 import type { PromiseOr } from "../typing/promise.ts";
-import { creatAbortError } from "./retry.ts";
+import { createAbortError } from "./util.ts";
 
 type Options = {
   retryDelay?: number;
@@ -17,7 +17,7 @@ export async function waitUntil<T>(
 
   const f = async () => {
     while (true) {
-      if (signal?.aborted) throw creatAbortError("Wait was aborted.");
+      if (signal?.aborted) throw createAbortError("Wait was aborted.");
 
       const reuslt = await fn();
       if (reuslt) return reuslt;

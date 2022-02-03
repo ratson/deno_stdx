@@ -2,6 +2,7 @@
 // Ported from https://github.com/sindresorhus/p-queue
 // deno-lint-ignore-file require-await
 import { deadline } from "https://deno.land/std@0.123.0/async/deadline.ts";
+import { createAbortError } from "./util.ts";
 
 export type RunFunction = () => Promise<unknown>;
 
@@ -12,12 +13,40 @@ export interface Queue<Element, Options> {
   enqueue(run: Element, options?: Partial<Options>): void;
 }
 
-export type QueueAddOptions = Readonly<Record<string, unknown>>;
+export interface TaskOptions {
+  /**
+   * [`AbortSignal`](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal) for cancellation of the operation.
+   * When aborted, it will be removed from the queue and the `queue.add()` call will reject with an `AbortError`.
+   * If the operation is already running, the signal will need to be handled by the operation itself.
+   **/
+  readonly signal?: AbortSignal;
+}
+
+interface TimeoutOptions {
+  /**
+   * Per-operation timeout in milliseconds. Operations fulfill once `timeout` elapses if they haven't already.
+   */
+  timeout?: number;
+
+  /**
+   * Whether or not a timeout is considered an exception.
+   * @default false
+   */
+  throwOnTimeout?: boolean;
+}
+
+export interface QueueAddOptions extends TaskOptions, TimeoutOptions {
+  /**
+   * Priority of operation. Operations with greater priority will be scheduled first.
+   * @default 0
+   **/
+  readonly priority?: number;
+}
 
 export interface Options<
   QueueType extends Queue<RunFunction, QueueOptions>,
   QueueOptions extends QueueAddOptions,
-> {
+> extends TimeoutOptions {
   /**
    * Concurrency limit.
    * Minimum: `1`.
@@ -55,25 +84,6 @@ export interface Options<
    * @default false
    */
   readonly carryoverConcurrencyCount?: boolean;
-
-  /**
-   * Per-operation timeout in milliseconds. Operations fulfill once `timeout` elapses if they haven't already.
-   */
-  timeout?: number;
-
-  /**
-   * Whether or not a timeout is considered an exception.
-   * @default false
-   */
-  throwOnTimeout?: boolean;
-}
-
-export interface DefaultAddOptions extends QueueAddOptions {
-  /**
-   * Priority of operation. Operations with greater priority will be scheduled first.
-   * @default 0
-   */
-  readonly priority?: number;
 }
 
 // Port of lower_bound from https://en.cppreference.com/w/cpp/algorithm/lower_bound
@@ -155,8 +165,8 @@ class PriorityQueue implements Queue<RunFunction, PriorityQueueOptions> {
 type ResolveFunction<T = void> = (value?: T | PromiseLike<T>) => void;
 
 type Task<TaskResultType> =
-  | (() => PromiseLike<TaskResultType>)
-  | (() => TaskResultType);
+  | ((options: TaskOptions) => PromiseLike<TaskResultType>)
+  | ((options: TaskOptions) => TaskResultType);
 
 const empty = (): void => {};
 
@@ -165,7 +175,7 @@ const empty = (): void => {};
  */
 export class AsyncQueue<
   QueueType extends Queue<RunFunction, EnqueueOptionsType> = PriorityQueue,
-  EnqueueOptionsType extends QueueAddOptions = DefaultAddOptions,
+  EnqueueOptionsType extends QueueAddOptions = QueueAddOptions,
 > extends EventTarget {
   readonly #carryoverConcurrencyCount: boolean;
 
@@ -412,20 +422,27 @@ export class AsyncQueue<
           ? this.#timeout
           : options.timeout;
         try {
-          const operation = timeout === undefined ? fn() : deadline(
-            Promise.resolve(fn()),
-            +timeout,
-          ).catch((error) => {
-            if (
-              options.throwOnTimeout === undefined
-                ? this.#throwOnTimeout
-                : options.throwOnTimeout
-            ) {
-              reject(error);
-              throw error;
-            }
-            return undefined as never;
-          });
+          if (options.signal?.aborted) {
+            reject(createAbortError("The task was aborted."));
+            return;
+          }
+
+          const operation = timeout === undefined
+            ? fn({ signal: options.signal })
+            : deadline(
+              Promise.resolve(fn({ signal: options.signal })),
+              +timeout,
+            ).catch((error) => {
+              if (
+                options.throwOnTimeout === undefined
+                  ? this.#throwOnTimeout
+                  : options.throwOnTimeout
+              ) {
+                reject(error);
+                throw error;
+              }
+              return undefined as never;
+            });
 
           const result = await operation;
           resolve(result);

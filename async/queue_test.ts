@@ -1170,3 +1170,25 @@ Deno.test("should verify timeout overrides passed to add", {
 
   await queue.onIdle();
 });
+
+Deno.test("should skip an aborted job", async () => {
+  const queue = new AsyncQueue();
+
+  const controller = new AbortController();
+
+  controller.abort();
+  await assertRejects(
+    () => queue.add(() => {}, { signal: controller.signal }),
+    DOMException,
+  );
+});
+
+Deno.test("should pass AbortSignal instance to job", async () => {
+  const queue = new AsyncQueue();
+
+  const controller = new AbortController();
+
+  await queue.add(async ({ signal }) => {
+    assertStrictEquals(controller.signal, signal);
+  }, { signal: controller.signal });
+});

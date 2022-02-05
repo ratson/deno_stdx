@@ -1,39 +1,29 @@
 // Copyright the dotenv authors. MIT License.
 // Ported mostly from https://github.com/motdotla/dotenv
 
-const NEWLINE = "\n";
-const RE_INI_KEY_VAL = /^\s*([\w.-]+)\s*=\s*("[^"]*"|'[^']*'|.*?)(\s+#.*)?$/;
-const RE_NEWLINES = /\\n/g;
-const NEWLINES_MATCH = /\r\n|\n|\r/;
+const LINE =
+  /(?:^|^)\s*(?:export\s+)?([\w.-]+)(?:\s*=\s*?|:\s+?)(\s*'(?:\\'|[^'])*'|\s*"(?:\\"|[^"])*"|\s*`(?:\\`|[^`])*`|[^#\r\n]+)?\s*(?:#.*)?(?:$|$)/mg;
 
 export function parse(content: string): Record<string, string> {
   const ret: Record<string, string> = {};
 
-  for (const line of content.split(NEWLINES_MATCH)) {
-    // matching "KEY' and 'VAL' in 'KEY=VAL'
-    const keyValueArr = line.match(RE_INI_KEY_VAL);
-    if (keyValueArr === null) continue;
+  // Convert line breaks to same format
+  const lines = content.replace(/\r\n?/mg, "\n");
 
-    const [, key, v = ""] = keyValueArr;
-    let val = v;
-    const valFirst = val[0];
-    const valLast = val.slice(-1);
-    const isDoubleQuoted = valFirst === '"' && valLast === '"';
-    const isSingleQuoted = valFirst === "'" && valLast === "'";
+  let match;
+  while ((match = LINE.exec(lines)) !== null) {
+    const [, key, v = ""] = match;
+    const trimmed = v.trim();
 
-    if (isDoubleQuoted || isSingleQuoted) {
-      val = val.slice(1, -1);
+    // Remove surrounding quotes
+    let value = trimmed.replace(/^(['"`])([\s\S]*)\1$/mg, "$2");
 
-      // if double quoted, expand newlines
-      if (isDoubleQuoted) {
-        val = val.replace(RE_NEWLINES, NEWLINE);
-      }
-    } else {
-      // remove surrounding whitespace
-      val = val.trim();
+    // Expand newlines if double quoted
+    if (trimmed[0] === '"') {
+      value = value.replace(/\\n/g, "\n").replace(/\\r/g, "\r");
     }
 
-    ret[key] = val;
+    ret[key] = value;
   }
 
   return ret;

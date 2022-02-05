@@ -1,6 +1,11 @@
 // Copyright the dotenv authors. MIT License.
 // Ported mostly from https://github.com/motdotla/dotenv
-import { assertEquals, assertStrictEquals, unreachable } from "../deps_test.ts";
+import {
+  assertEquals,
+  assertStrictEquals,
+  assertThrows,
+  unreachable,
+} from "../deps_test.ts";
 import { dataPath } from "./deps_test.ts";
 import { parse } from "./parse.ts";
 
@@ -17,6 +22,24 @@ Deno.test("parse .env", async () => {
   );
 
   assertStrictEquals(parsed.EMPTY, "", "defaults empty values to empty string");
+
+  assertStrictEquals(
+    parsed.EMPTY_SINGLE_QUOTES,
+    "",
+    "defaults empty values to empty string",
+  );
+
+  assertStrictEquals(
+    parsed.EMPTY_DOUBLE_QUOTES,
+    "",
+    "defaults empty values to empty string",
+  );
+
+  assertStrictEquals(
+    parsed.EMPTY_BACKTICKS,
+    "",
+    "defaults empty values to empty string",
+  );
 
   assertStrictEquals(
     parsed.SINGLE_QUOTES,
@@ -55,6 +78,40 @@ Deno.test("parse .env", async () => {
   );
 
   assertStrictEquals(
+    parsed.BACKTICKS_INSIDE_SINGLE,
+    "`backticks` work inside single quotes",
+    "respects backticks inside single quotes",
+  );
+
+  assertStrictEquals(
+    parsed.BACKTICKS_INSIDE_DOUBLE,
+    "`backticks` work inside double quotes",
+    "respects backticks inside double quotes",
+  );
+
+  assertStrictEquals(parsed.BACKTICKS, "backticks");
+
+  assertStrictEquals(parsed.BACKTICKS_SPACED, "    backticks    ");
+
+  assertStrictEquals(
+    parsed.DOUBLE_QUOTES_INSIDE_BACKTICKS,
+    'double "quotes" work inside backticks',
+    "respects double quotes inside backticks",
+  );
+
+  assertStrictEquals(
+    parsed.SINGLE_QUOTES_INSIDE_BACKTICKS,
+    "single 'quotes' work inside backticks",
+    "respects single quotes inside backticks",
+  );
+
+  assertStrictEquals(
+    parsed.DOUBLE_AND_SINGLE_QUOTES_INSIDE_BACKTICKS,
+    "double \"quotes\" and single 'quotes' work inside backticks",
+    "respects single quotes inside backticks",
+  );
+
+  assertStrictEquals(
     parsed.EXPAND_NEWLINES,
     "expand\nnew\nlines",
     "expands newlines but only if double quoted",
@@ -83,20 +140,33 @@ Deno.test("parse .env", async () => {
   assertStrictEquals(
     parsed.INLINE_COMMENTS_SINGLE_QUOTES,
     "inline comments outside of #singlequotes",
-    "ignores inline comments, but respects # character inside of single quotes",
+    "ignores inline comments and respects # character inside of single quotes",
   );
 
   assertStrictEquals(
     parsed.INLINE_COMMENTS_DOUBLE_QUOTES,
     "inline comments outside of #doublequotes",
-    "ignores inline comments, but respects # character inside of double quotes",
+    "ignores inline comments and respects # character inside of double quotes",
+  );
+
+  assertStrictEquals(
+    parsed.INLINE_COMMENTS_BACKTICKS,
+    "inline comments outside of #backticks",
+    "ignores inline comments and respects # character inside of backticks",
   );
 
   assertStrictEquals(
     parsed.INLINE_COMMENTS_SPACE,
-    "inline comments must start with#space",
-    "respects # character in values when it is not preceded by a space character",
+    "inline comments start with a",
+    "treats # character as start of comment",
   );
+  assertThrows(() => {
+    assertStrictEquals(
+      parsed.INLINE_COMMENTS_SPACE,
+      "inline comments start with a#space",
+      "respects # character in values when it is not preceded by a space character",
+    );
+  });
 
   assertStrictEquals(
     parsed.EQUAL_SIGNS,
@@ -110,28 +180,46 @@ Deno.test("parse .env", async () => {
     "retains inner quotes",
   );
 
-  assertStrictEquals(
-    parsed.RETAIN_LEADING_DQUOTE,
-    '"retained',
-    "retains leading double quote",
-  );
+  assertThrows(() => {
+    assertStrictEquals(
+      parsed.RETAIN_LEADING_DQUOTE,
+      '"retained',
+      "retains leading double quote",
+    );
+  });
 
-  assertStrictEquals(
-    parsed.RETAIN_LEADING_SQUOTE,
-    "'retained",
-    "retains leading single quote",
-  );
+  assertThrows(() => {
+    assertStrictEquals(
+      parsed.RETAIN_LEADING_SQUOTE,
+      "'retained",
+      "retains leading single quote",
+    );
+  });
 
-  assertStrictEquals(
-    parsed.RETAIN_TRAILING_DQUOTE,
-    'retained"',
-    "reatins trailing double quote",
-  );
+  assertThrows(() => {
+    assertStrictEquals(
+      parsed.RETAIN_TRAILING_DQUOTE,
+      'retained"',
+      "reatins trailing double quote",
+    );
+  });
 
   assertStrictEquals(
     parsed.RETAIN_TRAILING_SQUOTE,
     "retained'",
     "retains trailing single quote",
+  );
+
+  assertStrictEquals(
+    parsed.EQUAL_SIGNS,
+    "equals==",
+    "respects equals signs in values",
+  );
+
+  assertStrictEquals(
+    parsed.RETAIN_INNER_QUOTES,
+    '{"foo": "bar"}',
+    "retains inner quotes",
   );
 
   assertStrictEquals(
@@ -276,12 +364,6 @@ Deno.test("parse .env-multiline", async () => {
     "parses keys and values surrounded by spaces",
   );
 
-  if (parsed.MULTI_DOUBLE_QUOTED !== "THIS\nIS\nA\nMULTILINE\nSTRING") {
-    assertStrictEquals(parsed.MULTI_DOUBLE_QUOTED, '"THIS');
-    return;
-  }
-  unreachable(); // multiline support is not implemented
-
   assertStrictEquals(
     parsed.MULTI_DOUBLE_QUOTED,
     "THIS\nIS\nA\nMULTILINE\nSTRING",
@@ -295,8 +377,16 @@ Deno.test("parse .env-multiline", async () => {
   );
 
   assertStrictEquals(
-    parsed.MULTI_UNENDED,
-    "THIS\nLINE HAS\nNO END QUOTE",
-    "parses multi-line strings when using single quotes",
+    parsed.MULTI_BACKTICKED,
+    'THIS\nIS\nA\n"MULTILINE\'S"\nSTRING',
+    "parses multi-line strings when using backticks",
   );
+
+  assertThrows(() => {
+    assertStrictEquals(
+      parsed.MULTI_UNENDED,
+      "THIS\nLINE HAS\nNO END QUOTE",
+      "parses multi-line strings when using quote is not ended",
+    );
+  });
 });

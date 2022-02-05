@@ -1171,7 +1171,7 @@ Deno.test("should verify timeout overrides passed to add", {
   await queue.onIdle();
 });
 
-Deno.test("should skip an aborted job", async () => {
+Deno.test("skip an aborted job", async () => {
   const queue = new AsyncQueue();
 
   const controller = new AbortController();
@@ -1183,7 +1183,9 @@ Deno.test("should skip an aborted job", async () => {
   );
 });
 
-Deno.test("should pass AbortSignal instance to job", async () => {
+Deno.test("pass AbortSignal instance to job", {
+  sanitizeOps: false,
+}, async () => {
   const queue = new AsyncQueue();
 
   const controller = new AbortController();

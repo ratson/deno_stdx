@@ -808,8 +808,8 @@ Deno.test("add() - throttled 10, concurrency 5", ciOpts, async () => {
   await delay(1400);
   assertEquals(result, thirdValue);
 
-  promises.push(queue.onIdle());
   await Promise.all(promises);
+  await queue.onIdle();
 });
 
 Deno.test("add() - throttled finish and resume", async () => {
@@ -1171,7 +1171,9 @@ Deno.test("should verify timeout overrides passed to add", {
   await queue.onIdle();
 });
 
-Deno.test("skip an aborted job", async () => {
+Deno.test("skip an aborted job", {
+  sanitizeResources: false,
+}, async () => {
   const queue = new AsyncQueue();
 
   const controller = new AbortController();

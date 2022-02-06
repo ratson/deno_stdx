@@ -1,10 +1,13 @@
 const encoder = new TextEncoder();
-const decoder = new TextDecoder();
+const defaultDecoder = new TextDecoder();
 
 export class CalledProcessError extends Error {
 }
 
-type RunOptionsBase = Omit<Deno.RunOptions, "cmd"> & { check?: boolean };
+type RunOptionsBase = Omit<Deno.RunOptions, "cmd"> & {
+  check?: boolean;
+  decoder?: TextDecoder;
+};
 export type RunOptions =
   | (RunOptionsBase & { pipeText: string; stdin?: "piped" })
   | (RunOptionsBase & { pipeText?: undefined })
@@ -28,7 +31,7 @@ function run(
  * @param cmd An array of program arguments, the first of which is the binary
  */
 async function run(cmd: string[], opts?: RunOptions) {
-  const { pipeText, ...o } = opts ?? {};
+  const { pipeText, ...o } = { decoder: defaultDecoder, ...(opts ?? {}) };
   const hasPipeText = pipeText !== undefined;
   if (hasPipeText) {
     if (o.stdin === undefined) {
@@ -55,8 +58,8 @@ async function run(cmd: string[], opts?: RunOptions) {
     stderr?: string;
     stdout?: string;
   } = status;
-  if (stderr !== undefined) result.stderr = decoder.decode(stderr);
-  if (stdout !== undefined) result.stdout = decoder.decode(stdout);
+  if (stderr !== undefined) result.stderr = o.decoder.decode(stderr);
+  if (stdout !== undefined) result.stdout = o.decoder.decode(stdout);
 
   if (o.check && !result.success) {
     throw new CalledProcessError();

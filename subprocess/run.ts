@@ -30,8 +30,8 @@ function run(
  *
  * @param cmd An array of program arguments, the first of which is the binary
  */
-async function run(cmd: string[], opts?: RunOptions) {
-  const { pipeText, ...o } = { decoder: defaultDecoder, ...(opts ?? {}) };
+async function run(cmd: string[], opts: RunOptions = {}) {
+  const { pipeText, ...o } = { decoder: defaultDecoder, ...opts };
   const hasPipeText = pipeText !== undefined;
   if (hasPipeText) {
     if (o.stdin === undefined) {

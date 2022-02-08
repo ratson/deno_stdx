@@ -2,6 +2,8 @@
 
 [![deno doc](https://doc.deno.land/badge.svg)](https://doc.deno.land/https/deno.land/x/yxz/subprocess/mod.ts)
 
+This module minic the API from [Python subprocess](https://docs.python.org/3/library/subprocess.html) with amendments for Deno when it fits.
+
 Usage:
 
 ```typescript

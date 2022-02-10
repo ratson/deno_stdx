@@ -1,3 +1,5 @@
+import { dirname } from "https://deno.land/std@0.123.0/path/mod.ts";
+import { ensureDir } from "https://deno.land/std@0.123.0/fs/ensure_dir.ts";
 import { writeAll } from "https://deno.land/std@0.123.0/streams/conversion.ts";
 
 async function free(response: Response) {
@@ -29,6 +31,7 @@ export async function download(
   let downloadedBytes = 0;
   const totalBytes = parseInt(response.headers.get("content-length") ?? "", 10);
 
+  await ensureDir(dirname(outputPath));
   const file = await Deno.create(outputPath);
   try {
     for await (const chunk of response.body) {

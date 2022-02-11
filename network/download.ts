@@ -8,6 +8,7 @@ async function free(response: Response) {
 }
 
 export type DownloadOptions = {
+  createDirs?: boolean;
   onProgress?: (downloadedBytes: number, totalBytes: number) => void;
 };
 
@@ -35,7 +36,8 @@ export async function download(
   let downloadedBytes = 0;
   const totalBytes = parseInt(response.headers.get("content-length") ?? "", 10);
 
-  await ensureDir(dirname(outputPath));
+  if (options?.createDirs) await ensureDir(dirname(outputPath));
+
   const file = await Deno.create(outputPath);
   try {
     for await (const chunk of response.body) {

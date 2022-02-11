@@ -7,10 +7,14 @@ async function free(response: Response) {
   await response.arrayBuffer();
 }
 
+export type DownloadOptions = {
+  onProgress?: (downloadedBytes: number, totalBytes: number) => void;
+};
+
 export async function download(
   url: string | Request | URL,
   outputPath: string,
-  progressCallback?: (downloadedBytes: number, totalBytes: number) => void,
+  options?: DownloadOptions,
 ): Promise<void> {
   const response = await fetch(url);
 
@@ -36,7 +40,7 @@ export async function download(
   try {
     for await (const chunk of response.body) {
       downloadedBytes += chunk.length;
-      progressCallback?.(downloadedBytes, totalBytes);
+      options?.onProgress?.(downloadedBytes, totalBytes);
       await writeAll(file, chunk);
     }
   } finally {

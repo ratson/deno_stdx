@@ -134,7 +134,7 @@ export class Path {
    *
    * Note: As hosted script don't reoslve to file system path, library should avoid this method.
    *
-   * Example:
+   * @example
    * ```ts
    * import { Path } from "https://deno.land/x/yxz/path/path.ts";
    *
@@ -217,6 +217,15 @@ export class Path {
     }
   }
 
+  /**
+   * Return the extension.
+   *
+   * @example
+   * ```
+   * Path.from("/tmp/a.txt")
+   * // .txt
+   * ```
+   */
   get ext() {
     return extname(this.toString());
   }

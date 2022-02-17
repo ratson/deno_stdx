@@ -1,9 +1,10 @@
 import type { PromiseOr } from "../typing/promise.ts";
 
 export class IpNotFoundError extends Error {
-  constructor(message?: string, init?: ErrorInit) {
-    super(message ?? "Could not get the public IP address", init);
-    this.name = "IpNotFoundError";
+  override readonly name = "IpNotFoundError";
+
+  constructor(message?: string, options?: ErrorOptions) {
+    super(message ?? "Could not get the public IP address", options);
   }
 }
 

@@ -38,8 +38,8 @@ import { JsonValue } from "../typing/json.ts";
 type GlobOptions = Omit<ExpandGlobOptions, "root">;
 
 export class HomePathError extends Error {
-  constructor(message?: string, init?: ErrorInit) {
-    super(message ?? "Can't determine user home path", init);
+  constructor(message?: string, options?: ErrorOptions) {
+    super(message ?? "Can't determine user home path", options);
   }
 }
 

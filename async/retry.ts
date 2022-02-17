@@ -3,8 +3,8 @@ import type { PromiseOr } from "../typing/promise.ts";
 import { createAbortError } from "./util.ts";
 
 export class TooManyAttemptsError extends Error {
-  constructor(init?: ErrorInit | undefined) {
-    super("too many retry attempts", init);
+  constructor(options?: ErrorOptions) {
+    super("too many retry attempts", options);
   }
 }
 

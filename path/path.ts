@@ -218,11 +218,11 @@ export class Path {
   }
 
   /**
-   * Return the extension.
+   * Return the extension of path.
    *
    * @example
    * ```
-   * Path.from("/tmp/a.txt")
+   * Path.from("/tmp/file.txt").ext
    * // .txt
    * ```
    */
@@ -230,10 +230,28 @@ export class Path {
     return extname(this.toString());
   }
 
+  /**
+   * Return the name of path.
+   *
+   * @example
+   * ```
+   * Path.from("/tmp/file.txt").name
+   * // file.txt
+   * ```
+   */
   get name() {
     return basename(this.toString());
   }
 
+  /**
+   * Return the name of the path, without extension.
+   *
+   * @example
+   * ```
+   * Path.from("/tmp/file.txt").stem
+   * // file
+   * ```
+   */
   get stem() {
     return basename(this.toString(), this.ext);
   }

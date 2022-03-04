@@ -4,6 +4,7 @@
 const LINE =
   /(?:^|^)\s*(?:export\s+)?([\w.-]+)(?:\s*=\s*?|:\s+?)(\s*'(?:\\'|[^'])*'|\s*"(?:\\"|[^"])*"|\s*`(?:\\`|[^`])*`|[^#\r\n]+)?\s*(?:#.*)?(?:$|$)/mg;
 
+/** @deprecated use `std/dotenv` instead */
 export function parse(content: string): Record<string, string> {
   const ret: Record<string, string> = {};
 

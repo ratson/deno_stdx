@@ -7,6 +7,7 @@ interface Options {
 
 export type ReadOptions = Partial<Options>;
 
+/** @deprecated use `std/dotenv` instead */
 export async function read(options?: ReadOptions) {
   const opts: Options = { path: ".env", export: false, ...options };
 

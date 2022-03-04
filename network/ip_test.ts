@@ -61,4 +61,18 @@ Deno.test("custom provider", async () => {
 
   const ip = await getPublicIP({ providers: [new C()] });
   assertStrictEquals(ip, "testing");
+
+  const registrySize = IpProvider.registry.size;
+  assertStrictEquals(registrySize, 4);
+
+  class D extends IpProvider {
+  }
+  new D();
+  assertStrictEquals(IpProvider.registry.size, registrySize);
+
+  class E extends IpProvider {
+    static id = "E";
+  }
+  new E();
+  assertStrictEquals(IpProvider.registry.size, registrySize + 1);
 });

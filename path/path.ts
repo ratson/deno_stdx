@@ -221,9 +221,13 @@ export class Path {
    * Return the extension of path.
    *
    * @example
-   * ```
-   * Path.from("/tmp/file.txt").ext
-   * // .txt
+   * ```ts
+   * import { assertEquals } from "https://deno.land/std/testing/asserts.ts";
+   * import { Path } from "https://deno.land/x/yxz/path/mod.ts";
+   *
+   * const ext = Path.from("/tmp/file.txt").ext;
+   *
+   * assertEquals(ext, ".txt");
    * ```
    */
   get ext() {
@@ -234,9 +238,13 @@ export class Path {
    * Return the name of path.
    *
    * @example
-   * ```
-   * Path.from("/tmp/file.txt").name
-   * // file.txt
+   * ```ts
+   * import { assertEquals } from "https://deno.land/std/testing/asserts.ts";
+   * import { Path } from "https://deno.land/x/yxz/path/mod.ts";
+   *
+   * const name = Path.from("/tmp/file.txt").name;
+   *
+   * assertEquals(name, "file.txt");
    * ```
    */
   get name() {
@@ -247,9 +255,13 @@ export class Path {
    * Return the name of the path, without extension.
    *
    * @example
-   * ```
-   * Path.from("/tmp/file.txt").stem
-   * // file
+   * ```ts
+   * import { assertEquals } from "https://deno.land/std/testing/asserts.ts";
+   * import { Path } from "https://deno.land/x/yxz/path/mod.ts";
+   *
+   * const stem = Path.from("/tmp/file.txt").stem;
+   *
+   * assertEquals(stem, "file");
    * ```
    */
   get stem() {

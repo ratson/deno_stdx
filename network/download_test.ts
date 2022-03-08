@@ -8,6 +8,7 @@ Deno.test("download", async () => {
   await download(
     "https://deno.land/logo.svg",
     outputPath.toString(),
+    { createDirs: true },
   );
 
   assert(await outputPath.exists());

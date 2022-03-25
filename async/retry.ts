@@ -1,4 +1,4 @@
-import { delay } from "https://deno.land/std@0.123.0/async/delay.ts";
+import { delay } from "https://deno.land/std@0.132.0/async/delay.ts";
 import type { PromiseOr } from "../typing/promise.ts";
 import { createAbortError } from "./util.ts";
 

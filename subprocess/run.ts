@@ -16,11 +16,11 @@ export type RunOptions =
 function run(
   cmd: string[],
   opts: RunOptions & { stderr: "piped" },
-): Promise<Deno.ProcessStatus & { stderr: string }>;
+): Promise<Deno.ProcessStatus & { stderr: string; stdout: undefined }>;
 function run(
   cmd: string[],
   opts: RunOptions & { stdout: "piped" },
-): Promise<Deno.ProcessStatus & { stdout: string }>;
+): Promise<Deno.ProcessStatus & { stdout: string; stderr: undefined }>;
 function run(
   cmd: string[],
   opts?: RunOptions,

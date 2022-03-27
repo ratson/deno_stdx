@@ -51,7 +51,7 @@ jobs:
 
       - name: Run tests
         run: |
-          deno test --unstable -A --coverage=./cov --import-map=.github/import_map.json --doc
+          deno test --unstable -A --coverage=./cov --doc
 
       - name: Generate lcov
         shell: bash

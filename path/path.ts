@@ -84,8 +84,9 @@ export class DefaultCache implements Cache {
 
 const filepathSymbol = Symbol.for("filepath");
 
-function pathString<T>(s: Path | T) {
+function pathString(s: Path | URL | string): string {
   if (s instanceof Path) return s.toString();
+  if (s instanceof URL) return fromFileUrl(s);
   return s;
 }
 
@@ -563,12 +564,14 @@ export class Path {
     return Path.from(Deno.realPathSync(this.toString()));
   }
 
-  rename(newpath: Path | string | URL) {
-    return Deno.rename(this.toString(), pathString(newpath));
+  async rename(newpath: Path | string | URL) {
+    const s = resolve(pathString(newpath));
+    await Deno.rename(this.toString(), s);
   }
 
   renameSync(newpath: Path | string | URL) {
-    return Deno.renameSync(this.toString(), pathString(newpath));
+    const s = resolve(pathString(newpath));
+    return Deno.renameSync(this.toString(), s);
   }
 
   remove(options?: Deno.RemoveOptions) {

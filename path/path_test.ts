@@ -508,3 +508,33 @@ Deno.test("fs", async () => {
   await d1.emptyDir();
   d1.emptyDirSync();
 });
+
+Deno.test("rename", async () => {
+  const tempDir = await Path.makeTempDir();
+  const tempFile = tempDir.joinpath("a.txt");
+
+  await tempFile.ensureFile();
+
+  const renamedFile = tempDir.joinpath("b.txt");
+  assertStrictEquals(await renamedFile.exists(), false);
+
+  await tempFile.rename(renamedFile.toFileUrl());
+
+  assertStrictEquals(tempFile.name, "a.txt");
+  assertStrictEquals(await tempFile.exists(), false);
+
+  assertStrictEquals(await renamedFile.exists(), true);
+
+  // relative path
+  const relativePath = Path.cwd().relative(tempFile);
+  assertStrictEquals(relativePath.equals(tempFile), true);
+  assertNotEquals(relativePath, tempFile);
+  assertStrictEquals(await relativePath.exists(), false);
+
+  await renamedFile.rename(relativePath);
+
+  assertStrictEquals(await renamedFile.exists(), false);
+
+  assertStrictEquals(await relativePath.exists(), true);
+  assertStrictEquals(await tempFile.exists(), true);
+});

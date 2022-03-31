@@ -21,15 +21,19 @@ export class Tail extends EventTarget {
     for await (const event of this.#watcher) {
       if (event.kind !== "modify") continue;
 
-      for await (const line of readLines(this.#file)) {
-        this.dispatchEvent(new CustomEvent("line", { detail: line }));
-        yield line;
+      try {
+        for await (const line of readLines(this.#file)) {
+          this.dispatchEvent(new CustomEvent("line", { detail: line }));
+          yield line;
+        }
+      } catch {
+        continue;
       }
     }
   }
 
   close() {
-    this.#file?.close();
     this.#watcher?.close();
+    this.#file?.close();
   }
 }

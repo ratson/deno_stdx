@@ -26,7 +26,8 @@ export class Tail extends EventTarget {
           this.dispatchEvent(new CustomEvent("line", { detail: line }));
           yield line;
         }
-      } catch {
+      } catch (error) {
+        this.dispatchEvent(new CustomEvent("error", { detail: { error } }));
         continue;
       }
     }

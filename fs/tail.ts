@@ -36,5 +36,7 @@ export class Tail extends EventTarget {
   close() {
     this.#watcher?.close();
     this.#file?.close();
+
+    this.dispatchEvent(new Event("close"));
   }
 }

@@ -1,4 +1,4 @@
-import { withoutAll } from "https://deno.land/std@0.132.0/collections/without_all.ts";
+import { withoutAll } from "https://deno.land/std@0.133.0/collections/without_all.ts";
 import { PromiseOr } from "../typing/promise.ts";
 
 export async function withEnv(f: (env: typeof Deno.env) => PromiseOr<void>) {

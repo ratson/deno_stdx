@@ -23,7 +23,7 @@ export class Tail extends EventTarget {
 
       try {
         for await (const line of readLines(this.#file)) {
-          this.dispatchEvent(new CustomEvent("line", { detail: line }));
+          this.dispatchEvent(new CustomEvent("line", { detail: { line } }));
           yield line;
         }
       } catch (error) {

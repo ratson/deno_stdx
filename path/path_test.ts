@@ -518,12 +518,13 @@ Deno.test("rename", async () => {
   const renamedFile = tempDir.joinpath("b.txt");
   assertStrictEquals(await renamedFile.exists(), false);
 
-  await tempFile.rename(renamedFile.toFileUrl());
+  const renamedPath = await tempFile.rename(renamedFile.toFileUrl());
 
   assertStrictEquals(tempFile.name, "a.txt");
   assertStrictEquals(await tempFile.exists(), false);
 
   assertStrictEquals(await renamedFile.exists(), true);
+  assertStrictEquals(renamedPath, renamedFile);
 
   // relative path
   const relativePath = Path.cwd().relative(tempFile);

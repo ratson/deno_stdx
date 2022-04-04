@@ -564,14 +564,16 @@ export class Path {
     return Path.from(Deno.realPathSync(this.toString()));
   }
 
-  async rename(newpath: Path | string | URL) {
+  async rename(newpath: Path | string | URL): Promise<Path> {
     const s = resolve(pathString(newpath));
     await Deno.rename(this.toString(), s);
+    return Path.from(s);
   }
 
-  renameSync(newpath: Path | string | URL) {
+  renameSync(newpath: Path | string | URL): Path {
     const s = resolve(pathString(newpath));
-    return Deno.renameSync(this.toString(), s);
+    Deno.renameSync(this.toString(), s);
+    return Path.from(s);
   }
 
   remove(options?: Deno.RemoveOptions) {

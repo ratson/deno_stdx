@@ -7,7 +7,7 @@ type WildcardListener<Events> = (
 ) => void;
 
 /**
- * Strongly typed event emitter.
+ * Strongly typed event emitter with wildcard support.
  */
 export class EventEmitter<Events extends Record<string, unknown>> {
   #listeners = new Map<keyof Events, Array<EventListener<Events>>>();
@@ -79,10 +79,12 @@ export class EventEmitter<Events extends Record<string, unknown>> {
       }
     }
 
-    const wildcard = this.#listeners.get("*");
+    const wildcard = this.#listeners.get("*") as
+      | WildcardListener<Events>[]
+      | undefined;
     if (wildcard) {
       for (const f of wildcard) {
-        (f as unknown as WildcardListener<Events>)(type, e);
+        f(type, e);
       }
     }
   }

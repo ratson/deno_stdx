@@ -6,7 +6,7 @@ function* randomInts(max: number, n: number) {
   }
 }
 
-export function* sampleIndex<T>(items: Array<T>, n: number) {
+export function* sampleIndex<T>(items: readonly T[], n: number) {
   if (!Number.isInteger(n)) {
     throw new TypeError(`n must be an integer. Received ${n}`);
   }
@@ -23,7 +23,7 @@ export function* sampleIndex<T>(items: Array<T>, n: number) {
   }
 }
 
-export function* sample<T>(items: Array<T>, n: number) {
+export function* sample<T>(items: readonly T[], n: number) {
   for (const i of sampleIndex(items, n)) {
     yield items[i];
   }

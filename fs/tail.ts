@@ -1,4 +1,4 @@
-import { readLines } from "https://deno.land/std@0.133.0/io/buffer.ts";
+import { readLines } from "https://deno.land/std@0.134.0/io/buffer.ts";
 
 export class Tail extends EventTarget {
   #filename: string;

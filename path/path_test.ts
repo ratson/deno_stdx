@@ -1,4 +1,4 @@
-import { normalize, SEP } from "https://deno.land/std@0.133.0/path/mod.ts";
+import { normalize, SEP } from "https://deno.land/std@0.134.0/path/mod.ts";
 import {
   assertArrayIncludes,
   assertEquals,

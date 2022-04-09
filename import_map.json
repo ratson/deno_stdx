@@ -1,6 +1,7 @@
 {
   "imports": {
     "https://deno.land/x/yxz/": "./",
+    "https://deno.land/std/": "https://deno.land/std@0.133.0/",
     "https://deno.land/std@0.120.0/": "https://deno.land/std@0.133.0/"
   }
 }

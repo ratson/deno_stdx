@@ -1,3 +1,6 @@
+// Ported from https://github.com/vercel/ms
+// Copyright 2022 Vercel, Inc. All rights reserved. MIT license.
+
 // Helpers.
 const s = 1000;
 const m = s * 60;

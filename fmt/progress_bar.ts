@@ -1,4 +1,4 @@
-// Ported from https://github.com/deno-library/progress/blob/master/mod.ts
+// Ported from https://github.com/deno-library/progress
 // Copyright 2020 zfx. All rights reserved. MIT license.
 import { bgGreen, bgWhite } from "https://deno.land/std@0.134.0/fmt/colors.ts";
 import { writeAllSync } from "https://deno.land/std@0.134.0/streams/conversion.ts";

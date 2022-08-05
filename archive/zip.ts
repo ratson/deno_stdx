@@ -1,4 +1,4 @@
-import { isWindows } from "https://deno.land/std@0.134.0/_util/os.ts";
+import { isWindows } from "https://deno.land/std@0.151.0/_util/os.ts";
 import { run } from "../subprocess/mod.ts";
 
 export async function unzip(

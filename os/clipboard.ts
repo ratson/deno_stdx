@@ -1,4 +1,4 @@
-import { osType } from "https://deno.land/std@0.134.0/_util/os.ts";
+import { osType } from "https://deno.land/std@0.151.0/_util/os.ts";
 import { output, run } from "../subprocess/mod.ts";
 
 interface Clipboard {

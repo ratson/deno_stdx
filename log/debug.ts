@@ -1,5 +1,5 @@
-import { getColorEnabled } from "https://deno.land/std@0.149.0/fmt/colors.ts";
-import { ms } from "../strings/ms.ts";
+import { getColorEnabled } from "https://deno.land/std@0.151.0/fmt/colors.ts";
+import { ms } from "../fmt/ms.ts";
 import { camelCase } from "../strings/camel_case.ts";
 
 const canReadEnv = await Deno.permissions.query({ name: "env" }).then(

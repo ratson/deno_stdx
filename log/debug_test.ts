@@ -37,7 +37,7 @@ describe("debug", () => {
     log.enabled = true;
 
     const messages = [];
-    log.log = (...args: any) => messages.push(args);
+    log.log = (...args: never) => messages.push(args);
 
     log("using custom log function");
     log("using custom log function again");

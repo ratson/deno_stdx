@@ -1,3 +1,4 @@
+// deno-lint-ignore-file no-explicit-any
 import { getColorEnabled } from "https://deno.land/std@0.151.0/fmt/colors.ts";
 import { ms } from "../fmt/ms.ts";
 import { camelCase } from "../strings/camel_case.ts";
@@ -238,7 +239,7 @@ let skips: RegExp[] = [];
  *
  * Valid key names are a single, lower or upper-case letter, i.e. "n" and "N".
  */
-let formatters: Formatters = {};
+const formatters: Formatters = {};
 
 /**
  * Create a debugger with the given `namespace`.
@@ -246,10 +247,7 @@ let formatters: Formatters = {};
 function createDebug(namespace: string): DebugInstance {
   let prevTime: number;
 
-  let debug: DebugInstance;
-
-  // @ts-ignore-next-line
-  debug = function (log: string | Error, ...args: any[]) {
+  const debug: DebugInstance = function (log: string | Error, ...args: any[]) {
     // Skip if debugger is disabled
     if (!debug.enabled) {
       return;
@@ -395,9 +393,9 @@ export function enable(namespaces: string) {
     .forEach((ns) => {
       // If a namespace starts with `-`, we should disable that namespace
       if (ns[0] === "-") {
-        skips.push(new RegExp("^" + ns.slice(1) + "$"));
+        skips.push(new RegExp(`^${ns.slice(1)}$`));
       } else {
-        names.push(new RegExp("^" + ns + "$"));
+        names.push(new RegExp(`^${ns}$`));
       }
     });
 

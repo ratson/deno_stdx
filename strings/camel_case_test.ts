@@ -222,8 +222,8 @@ Deno.test("locale option", () => {
   );
 });
 
-Deno.test("locale=disabled", (t) => {
-  const withLocaleCaseFunctionsMocked = (fn) => {
+Deno.test("locale=disabled", () => {
+  const withLocaleCaseFunctionsMocked = (fn: () => void) => {
     const throwWhenBeingCalled = () => {
       throw new Error("Should not be called");
     };

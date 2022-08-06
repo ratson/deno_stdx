@@ -12,6 +12,6 @@ Deno.test("omit", () => {
   ] as const;
 
   tests.forEach(([keys, expected]) => {
-    assertEquals(omit(obj, keys), expected);
+    assertEquals(omit(obj, keys), expected as never);
   });
 });

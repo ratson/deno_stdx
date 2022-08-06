@@ -14,7 +14,7 @@ Deno.test("range(stop)", () => {
       [-10, []],
     ] as const
   ) {
-    assertEquals(Array.from(range(n)), expected);
+    assertEquals(Array.from(range(n)), expected as never);
   }
 
   for (const x of range(1)) {
@@ -32,7 +32,7 @@ Deno.test("range(start, stop)", () => {
       [-3, -1, [-3, -2]],
     ] as const
   ) {
-    assertEquals(Array.from(range(start, stop)), expected);
+    assertEquals(Array.from(range(start, stop)), expected as never);
   }
 });
 
@@ -50,7 +50,7 @@ Deno.test("step", () => {
       [0, -3, -1, [0, -1, -2]],
     ] as const
   ) {
-    assertEquals(Array.from(range(start, stop, step)), expected);
+    assertEquals(Array.from(range(start, stop, step)), expected as never);
   }
 });
 

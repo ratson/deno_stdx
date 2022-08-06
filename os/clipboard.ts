@@ -1,5 +1,5 @@
 import { osType } from "https://deno.land/std@0.151.0/_util/os.ts";
-import { output, run } from "../subprocess/mod.ts";
+import { output, pipeText } from "../subprocess/mod.ts";
 
 interface Clipboard {
   readText(): Promise<string>;
@@ -20,7 +20,7 @@ const darwin: Clipboard = {
     return output(["pbpaste"]);
   },
   async writeText(text: string) {
-    await run(["pbcopy"], { pipeText: text });
+    await pipeText(["pbcopy"], text);
   },
 };
 
@@ -29,7 +29,7 @@ const linux_xclip: Clipboard = {
     return output(["xclip", "-selection", "clipboard", "-o"]);
   },
   async writeText(text: string) {
-    await run(["xclip", "-selection", "clipboard", "-i"], { pipeText: text });
+    await pipeText(["xclip", "-selection", "clipboard", "-i"], text);
   },
 };
 
@@ -38,7 +38,7 @@ const linux_xsel: Clipboard = {
     return output(["xsel", "--clipboard", "--output"]);
   },
   async writeText(text: string) {
-    await run(["xsel", "--clipboard", "--input"], { pipeText: text });
+    await pipeText(["xsel", "--clipboard", "--input"], text);
   },
 };
 
@@ -47,7 +47,7 @@ const windows: Clipboard = {
     return output(["PowerShell", "-Command", "Get-Clipboard"]);
   },
   async writeText(text: string) {
-    await run(["PowerShell", "-Command", "Set-Clipboard"], { pipeText: text });
+    await pipeText(["PowerShell", "-Command", "Set-Clipboard"], text);
   },
 };
 

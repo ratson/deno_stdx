@@ -13,6 +13,7 @@ Deno.test("json", async () => {
   assertEquals(Object.keys(o), [
     "denoDir",
     "modulesCache",
+    "npmCache",
     "typescriptCache",
     "registryCache",
     "originStorage",

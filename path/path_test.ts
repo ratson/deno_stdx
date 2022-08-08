@@ -134,8 +134,11 @@ Deno.test("Path.config()", () => {
 Deno.test("Path.exe()", async () => {
   assertStrictEquals(await Path.exe(crypto.randomUUID()), undefined);
 
+  const p = await Path.exe("deno");
+  if (p === undefined) return;
+
   assertStrictEquals(
-    (await Path.exe("deno"))?.toString(),
+    await Deno.realPath(p.toString()),
     isWindows ? undefined : Deno.execPath(),
   );
 });

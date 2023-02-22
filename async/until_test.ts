@@ -66,6 +66,7 @@ Deno.test("options.signal", {
 Deno.test("options.signal - abort during retry", {
   sanitizeOps: false,
   sanitizeResources: false,
+  // ignore: true,
 }, async () => {
   const abort = new AbortController();
   const { signal } = abort;

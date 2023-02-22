@@ -1,4 +1,4 @@
-import { assertStrictEquals } from "https://deno.land/std@0.174.0/testing/asserts.ts";
+import { assertStrictEquals } from "https://deno.land/std@0.178.0/testing/asserts.ts";
 import { withEnv } from "./env.ts";
 
 Deno.test("withEnv", async () => {

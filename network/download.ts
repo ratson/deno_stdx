@@ -1,6 +1,6 @@
-import { dirname } from "https://deno.land/std@0.174.0/path/mod.ts";
-import { ensureDir } from "https://deno.land/std@0.174.0/fs/ensure_dir.ts";
-import { writeAll } from "https://deno.land/std@0.174.0/streams/write_all.ts";
+import { dirname } from "https://deno.land/std@0.178.0/path/mod.ts";
+import { ensureDir } from "https://deno.land/std@0.178.0/fs/ensure_dir.ts";
+import { writeAll } from "https://deno.land/std@0.178.0/streams/write_all.ts";
 
 async function free(response: Response) {
   // consume response data to free up memory

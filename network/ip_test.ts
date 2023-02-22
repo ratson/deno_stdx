@@ -1,4 +1,4 @@
-import { isIP } from "https://deno.land/std@0.174.0/node/net.ts";
+import { isIP } from "node:net";
 import { assertRejects, assertStrictEquals, isCI } from "../deps_test.ts";
 import { getPublicIP, IpNotFoundError, IpProvider } from "./ip.ts";
 

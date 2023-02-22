@@ -1,4 +1,4 @@
-import { getLogger, setup } from "https://deno.land/std@0.174.0/log/mod.ts";
+import { getLogger, setup } from "https://deno.land/std@0.178.0/log/mod.ts";
 import { assertEquals } from "../deps_test.ts";
 import { BufferHandler } from "./handlers.ts";
 

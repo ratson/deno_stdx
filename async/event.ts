@@ -1,5 +1,5 @@
-import { deadline } from "https://deno.land/std@0.174.0/async/deadline.ts";
-import { deferred } from "https://deno.land/std@0.174.0/async/deferred.ts";
+import { deadline } from "https://deno.land/std@0.178.0/async/deadline.ts";
+import { deferred } from "https://deno.land/std@0.178.0/async/deferred.ts";
 
 export async function waitEvent(
   target: EventTarget,

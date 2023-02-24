@@ -10,6 +10,7 @@ export class IpNotFoundError extends Error {
 
 type ProviderOptions = {
   v?: 4 | 6;
+  signal?: AbortSignal;
 };
 
 export abstract class IpProvider {
@@ -38,8 +39,10 @@ export abstract class IpProvider {
 class HttpbinProvider extends IpProvider {
   static id = "httpbin" as const;
 
-  async ip() {
-    const res = await fetch(`https://httpbin.org/ip`);
+  async ip(options: ProviderOptions) {
+    const res = await fetch(`https://httpbin.org/ip`, {
+      signal: options.signal,
+    });
     const { origin } = await res.json();
     return origin as string;
   }
@@ -50,7 +53,9 @@ class IcanhazipProvider extends IpProvider {
 
   async ip(options: ProviderOptions) {
     const s = options.v ? `ipv${options.v}.` : "";
-    const res = await fetch(`https://${s}icanhazip.com`);
+    const res = await fetch(`https://${s}icanhazip.com`, {
+      signal: options.signal,
+    });
     const ip = await res.text();
     return ip.trimEnd();
   }
@@ -59,8 +64,10 @@ class IcanhazipProvider extends IpProvider {
 class IfconfigProvider extends IpProvider {
   static id = "ifconfig" as const;
 
-  async ip() {
-    const res = await fetch(`https://ifconfig.co/ip`);
+  async ip(options: ProviderOptions) {
+    const res = await fetch(`https://ifconfig.co/ip`, {
+      signal: options.signal,
+    });
     const ip = await res.text();
     return ip.trimEnd();
   }
@@ -71,8 +78,10 @@ class IpifyProvider extends IpProvider {
 
   async ip(options: ProviderOptions) {
     const s = options.v === 4 ? "" : 64;
-    const res = await fetch(`https://api${s}.ipify.org?format=text`);
-    return res.text();
+    const res = await fetch(`https://api${s}.ipify.org?format=text`, {
+      signal: options.signal,
+    });
+    return await res.text();
   }
 }
 
@@ -95,11 +104,17 @@ export async function getPublicIP(options?: Options): Promise<string> {
   for (const k of opts.providers) {
     const provider = typeof k === "string" ? IpProvider.registry.get(k) : k;
     if (!provider) continue;
+
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 5_000);
     try {
-      return await provider.ip(opts);
+      const ip = await provider.ip({ signal: controller.signal, ...opts });
+      return ip;
     } catch (err) {
       cause = err;
       continue;
+    } finally {
+      clearTimeout(timer);
     }
   }
   throw new IpNotFoundError(undefined, { cause });

@@ -9,6 +9,7 @@ type Options = {
   signal?: AbortSignal;
 };
 
+/** @deprecated use `std/async/retry.ts` instead */
 export async function waitUntil<T>(
   fn: () => PromiseOr<T>,
   options?: Options,
@@ -19,8 +20,8 @@ export async function waitUntil<T>(
     while (true) {
       if (signal?.aborted) throw createAbortError("Wait was aborted.");
 
-      const reuslt = await fn();
-      if (reuslt) return reuslt;
+      const result = await fn();
+      if (result) return result;
 
       if (retryDelay > 0) await delay(retryDelay, { signal });
     }

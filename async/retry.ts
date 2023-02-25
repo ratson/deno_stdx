@@ -17,6 +17,7 @@ type Options = {
 
 export type RetryOptions = Partial<Options>;
 
+/** @deprecated use `std/async/retry.ts` instead */
 export async function retry<T>(
   fn: (attemptCount: number) => PromiseOr<T>,
   options?: RetryOptions,

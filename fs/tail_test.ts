@@ -38,16 +38,21 @@ Deno.test("start", async () => {
   assertStrictEquals(c, 10);
 });
 
-Deno.test("file not exists", { sanitizeOps: false }, async () => {
+Deno.test("file not exists", async () => {
   const tempFile = await Path.makeTempFile();
   const tail = new Tail(tempFile.toString());
 
-  assertRejects(() => tail.start().next(), Deno.errors.NotFound);
+  try {
+    await tempFile.remove();
+    assertStrictEquals(await tempFile.exists(), false);
 
-  tail.close();
+    assertRejects(() => tail.start().next(), Deno.errors.NotFound);
+  } finally {
+    tail.close();
+  }
 });
 
-Deno.test("rename", { sanitizeResources: false }, async () => {
+Deno.test("rename", async () => {
   const tempDir = await Path.makeTempDir();
   const tempFile = tempDir.joinpath("temp.log");
   const tail = new Tail(tempFile.toString());
@@ -59,9 +64,9 @@ Deno.test("rename", { sanitizeResources: false }, async () => {
     await f.write(encoder.encode(`before rename\n`));
     f.close();
 
-    const renmaedFile = tempDir.joinpath("renamed.log");
-    await tempFile.rename(renmaedFile);
-    const f2 = await renmaedFile.open({ append: true });
+    const renamedFile = tempDir.joinpath("renamed.log");
+    await tempFile.rename(renamedFile);
+    const f2 = await renamedFile.open({ append: true });
     await f2.write(encoder.encode(`after rename\n`));
     f2.close();
   }, 100);

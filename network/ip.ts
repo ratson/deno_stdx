@@ -1,4 +1,5 @@
 import type { PromiseOr } from "../typing/promise.ts";
+import fetchIPFromHttpbinOrg from "./ip/httpbin_org.ts";
 
 export class IpNotFoundError extends Error {
   override readonly name = "IpNotFoundError";
@@ -39,12 +40,8 @@ export abstract class IpProvider {
 class HttpbinProvider extends IpProvider {
   static id = "httpbin" as const;
 
-  async ip(options: ProviderOptions) {
-    const res = await fetch(`https://httpbin.org/ip`, {
-      signal: options.signal,
-    });
-    const { origin } = await res.json();
-    return origin as string;
+  ip(options: ProviderOptions) {
+    return fetchIPFromHttpbinOrg(options);
   }
 }
 

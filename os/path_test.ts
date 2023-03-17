@@ -1,4 +1,4 @@
-import { exists } from "https://deno.land/std@0.178.0/fs/exists.ts";
+import { exists } from "https://deno.land/std@0.180.0/fs/exists.ts";
 import { assert, assertStrictEquals } from "../deps_test.ts";
 import { json } from "../subprocess/json.ts";
 import { withEnv } from "../testing/env.ts";

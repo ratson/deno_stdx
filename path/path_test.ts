@@ -1,4 +1,5 @@
 import { normalize, SEP } from "https://deno.land/std@0.180.0/path/mod.ts";
+import { range } from "../collections/range.ts";
 import {
   assertArrayIncludes,
   assertEquals,
@@ -11,9 +12,8 @@ import {
   isWindows,
   spy,
 } from "../deps_test.ts";
-import { range } from "../collections/range.ts";
-import { isCI } from "../testing/mod.ts";
 import { userCacheDir, userConfigDir, userHomeDir } from "../os/path.ts";
+import { isCI } from "../testing/mod.ts";
 import { DefaultCache, Path } from "./path.ts";
 
 Deno.test("Object", () => {
@@ -292,7 +292,8 @@ Deno.test("expanduser", () => {
 
   if (isWindows) return;
 
-  assertStrictEquals(Path.from("~/").expanduser(), Path.home());
+  assertStrictEquals(Path.from("~/").expanduser(), Path.home().joinpath("./"));
+  assertStrictEquals(Path.from("~/.cache/").expanduser(), Path.home().joinpath(".cache/"));
 
   assertStrictEquals(
     Path.from("~user/").expanduser().equals(Path.home().joinpath("..", "user")),

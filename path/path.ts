@@ -328,7 +328,9 @@ export class Path {
       s.replace(
         /^~([a-z]+|\/?)/,
         (_, $1) =>
-          ["", "/"].includes($1) ? homeDir : `${dirname(homeDir)}/${$1}`,
+          (["", "/"].includes($1)
+            ? `${homeDir}${$1}`
+            : `${dirname(homeDir)}/${$1}`),
       ),
     );
   }

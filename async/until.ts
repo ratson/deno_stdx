@@ -1,5 +1,5 @@
-import { deadline } from "https://deno.land/std@0.180.0/async/deadline.ts";
-import { delay } from "https://deno.land/std@0.180.0/async/delay.ts";
+import { deadline } from "https://deno.land/std@0.190.0/async/deadline.ts";
+import { delay } from "https://deno.land/std@0.190.0/async/delay.ts";
 import type { PromiseOr } from "../typing/promise.ts";
 import { createAbortError } from "./util.ts";
 

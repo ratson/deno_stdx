@@ -15,7 +15,7 @@ import {
   walk,
   WalkOptions,
   walkSync,
-} from "https://deno.land/std@0.190.0/fs/mod.ts";
+} from "https://deno.land/std@0.192.0/fs/mod.ts";
 import {
   basename,
   delimiter,
@@ -29,9 +29,9 @@ import {
   parse,
   relative,
   resolve,
-  sep,
+  SEP,
   toFileUrl,
-} from "https://deno.land/std@0.190.0/path/mod.ts";
+} from "https://deno.land/std@0.192.0/path/mod.ts";
 import { userCacheDir, userConfigDir, userHomeDir } from "../os/path.ts";
 import { JsonValue } from "../typing/json.ts";
 
@@ -111,7 +111,7 @@ export class Path {
   }
 
   static get sep() {
-    return sep;
+    return SEP;
   }
 
   static from(...pathSegments: string[]) {
@@ -327,10 +327,12 @@ export class Path {
     return Path.from(
       s.replace(
         /^~([a-z]+|\/?)/,
-        (_, $1) =>
-          (["", "/"].includes($1)
-            ? `${homeDir}${$1}`
-            : `${dirname(homeDir)}/${$1}`),
+        (
+          _,
+          $1,
+        ) => (["", "/"].includes($1)
+          ? `${homeDir}${$1}`
+          : `${dirname(homeDir)}/${$1}`),
       ),
     );
   }

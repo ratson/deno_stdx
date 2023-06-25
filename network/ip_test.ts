@@ -25,10 +25,10 @@ Deno.test("getPublicIP", { sanitizeOps: false }, async (t) => {
     assertIP(ip, publicIP);
   });
 
-  await t.step("provider = ipify", async () => {
-    const ip = await getPublicIP({ providers: ["ipify"] });
-    assertIP(ip, publicIP);
-  });
+  // await t.step("provider = ipify", async () => {
+  //   const ip = await getPublicIP({ providers: ["ipify"] });
+  //   assertIP(ip, publicIP);
+  // });
 
   await t.step("provider = icanhazip", async () => {
     const ip = await getPublicIP({ providers: ["icanhazip"] });

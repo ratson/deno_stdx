@@ -7,8 +7,9 @@ const CTRL_D = 0x04;
 const LF = 0x0A;
 
 export async function inputPassword(prompt = "Password: ") {
+  const istty = Deno.isatty(Deno.stdin.rid);
   try {
-    Deno.stdin.setRaw(true);
+    if (istty) Deno.stdin.setRaw(true);
     Deno.stdout.write(new TextEncoder().encode(prompt));
 
     const ret: number[] = [];
@@ -31,9 +32,10 @@ export async function inputPassword(prompt = "Password: ") {
           }
         }
       }
+      if (!istty) break;
     }
   } finally {
-    Deno.stdin.setRaw(false);
+    if (istty) Deno.stdin.setRaw(false);
     await Deno.stdout.write(Uint8Array.of(CR, LF));
   }
 }

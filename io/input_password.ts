@@ -8,11 +8,11 @@ const LF = 0x0A;
 
 export async function inputPassword(prompt = "Password: ") {
   const istty = Deno.isatty(Deno.stdin.rid);
+  const ret: number[] = [];
   try {
     if (istty) Deno.stdin.setRaw(true);
     Deno.stdout.write(new TextEncoder().encode(prompt));
 
-    const ret: number[] = [];
     for await (const chunk of iterateReader(Deno.stdin)) {
       for (const ch of chunk) {
         switch (ch) {
@@ -38,4 +38,5 @@ export async function inputPassword(prompt = "Password: ") {
     if (istty) Deno.stdin.setRaw(false);
     await Deno.stdout.write(Uint8Array.of(CR, LF));
   }
+  return new TextDecoder().decode(Uint8Array.from(ret));
 }

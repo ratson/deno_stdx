@@ -2,8 +2,8 @@
 import {
   assert,
   AssertionError,
-} from "https://deno.land/std@0.192.0/testing/asserts.ts";
-import { format } from "https://deno.land/std@0.192.0/testing/_format.ts";
+} from "https://deno.land/std@0.193.0/testing/asserts.ts";
+import { format } from "https://deno.land/std@0.193.0/testing/_format.ts";
 
 export function assertGreater(actual: any, expected: any, msg?: string) {
   if (actual > expected) return;

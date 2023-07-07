@@ -1,5 +1,5 @@
-import { osType } from "https://deno.land/std@0.192.0/_util/os.ts";
-import { join } from "https://deno.land/std@0.192.0/path/mod.ts";
+import { osType } from "https://deno.land/std@0.193.0/_util/os.ts";
+import { join } from "https://deno.land/std@0.193.0/path/mod.ts";
 
 /**
  * Returns the default root directory to use for user-specific cached data.

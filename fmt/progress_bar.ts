@@ -1,8 +1,8 @@
 // Ported from https://github.com/deno-library/progress
 // Copyright 2020 zfx. All rights reserved. MIT license.
-import { bgGreen, bgWhite } from "https://deno.land/std@0.192.0/fmt/colors.ts";
-import { writeAllSync } from "https://deno.land/std@0.192.0/streams/write_all.ts";
-import { isWindows } from "https://deno.land/std@0.192.0/_util/os.ts";
+import { bgGreen, bgWhite } from "https://deno.land/std@0.193.0/fmt/colors.ts";
+import { writeAllSync } from "https://deno.land/std@0.193.0/streams/write_all.ts";
+import { isWindows } from "https://deno.land/std@0.193.0/_util/os.ts";
 import { ms } from "./ms.ts";
 
 const encoder = new TextEncoder();

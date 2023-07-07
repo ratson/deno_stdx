@@ -1,7 +1,7 @@
 // Copyright the p-queue authors. MIT License.
 // Ported from https://github.com/sindresorhus/p-queue
 // deno-lint-ignore-file require-await
-import { deadline } from "https://deno.land/std@0.192.0/async/deadline.ts";
+import { deadline } from "https://deno.land/std@0.193.0/async/deadline.ts";
 import { createAbortError } from "./util.ts";
 
 export type RunFunction = () => Promise<unknown>;

@@ -22,6 +22,6 @@ Deno.test("inputPassword()", async () => {
   const { code, stdout, stderr } = await process.output();
 
   assertStrictEquals(code, 0);
-  assertStrictEquals(new TextDecoder().decode(stderr), "");
-  assertStrictEquals(new TextDecoder().decode(stdout), `Password: \r\nPassword = ${password}\n`);
+  assertStrictEquals(new TextDecoder().decode(stderr), "Password: \r\n");
+  assertStrictEquals(new TextDecoder().decode(stdout), `Password = ${password}\n`);
 });

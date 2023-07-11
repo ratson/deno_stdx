@@ -7,9 +7,9 @@ import ipify from "./ipify.ts";
 export * from "./base.ts";
 
 export default {
-  httpbin,
-  icanhazip,
   "ifconfig.co": ifconfig_co,
+  icanhazip,
   "ifconfig.io": ifconfig_io,
   ipify,
+  httpbin,
 } as const;

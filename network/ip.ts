@@ -1,6 +1,8 @@
 import type { PromiseOr } from "../typing/promise.ts";
 import fetchIP_HttpbinOrg from "./ip/httpbin.ts";
+import fetchIP_icanhazip from "./ip/icanhazip.ts";
 import fetchIP_IfconfigCo from "./ip/ifconfig.ts";
+import fetchIP_ipify from "./ip/ipify.ts";
 
 export class IpNotFoundError extends Error {
   override readonly name = "IpNotFoundError";
@@ -49,13 +51,8 @@ class HttpbinProvider extends IpProvider {
 class IcanhazipProvider extends IpProvider {
   static id = "icanhazip" as const;
 
-  async ip(options: ProviderOptions) {
-    const s = options.v ? `ipv${options.v}.` : "";
-    const res = await fetch(`https://${s}icanhazip.com`, {
-      signal: options.signal,
-    });
-    const ip = await res.text();
-    return ip.trimEnd();
+  ip(options: ProviderOptions) {
+    return fetchIP_icanhazip(options);
   }
 }
 
@@ -72,12 +69,8 @@ class IfconfigProvider extends IpProvider {
 class IpifyProvider extends IpProvider {
   static id = "ipify" as const;
 
-  async ip(options: ProviderOptions) {
-    const s = options.v === 4 ? "" : 64;
-    const res = await fetch(`https://api${s}.ipify.org?format=text`, {
-      signal: options.signal,
-    });
-    return await res.text();
+  ip(options: ProviderOptions) {
+    return fetchIP_ipify(options);
   }
 }
 

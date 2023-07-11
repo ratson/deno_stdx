@@ -5,6 +5,8 @@ export * from "./run.ts";
 /**
  * Capture `stdout` output from a command.
  *
+ * @deprecated Use `stdoutText` from `os/run` instead.
+ *
  * `stderr` is default to `null`.
  */
 export async function output(
@@ -18,6 +20,8 @@ export async function output(
 /**
  * Capture `stderr` output from a command.
  *
+ * @deprecated Use `stderrText` from `os/run` instead.
+ *
  * `stdout` is default to `null`.
  */
 export async function stderrOutput(
@@ -30,6 +34,8 @@ export async function stderrOutput(
 
 /**
  * Similar to `echo "text" | cmd`.
+ *
+ * @deprecated Use `input` option from `os/run` instead.
  */
 export async function pipeText(
   cmd: string[],

@@ -28,6 +28,8 @@ function run(
 /**
  * Spawns a subprocess to run `cmd`.
  *
+ * @deprecated Use `os/run` instead.
+ *
  * @param cmd An array of program arguments, the first of which is the binary
  */
 async function run(cmd: string[], opts: RunOptions = {}) {

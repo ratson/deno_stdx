@@ -1,3 +1,5 @@
+import { JsonValue } from "../typing/mod.ts";
+
 export interface RunOptions extends Deno.CommandOptions {
   check?: boolean;
   decoder?: TextDecoder;
@@ -39,23 +41,29 @@ async function run(cmd: string[], options: RunOptions = {}) {
     throw new CalledProcessError();
   }
 
+  const handler = {
+    get pid() {
+      return process.pid;
+    },
+    get stdoutText() {
+      return decoder.decode(result.stdout);
+    },
+    get stderrText() {
+      return decoder.decode(result.stderr);
+    },
+    stdoutJSON<T = JsonValue>() {
+      return JSON.parse(this.stdoutText) as T;
+    },
+    stderrJSON<T = JsonValue>() {
+      return JSON.parse(this.stderrText) as T;
+    },
+  };
+
   return new Proxy(result, {
     get(target, prop: never) {
-      switch (prop) {
-        case "pid":
-          return process[prop];
-        case "stdoutText":
-          return decoder.decode(result.stdout);
-        case "stderrText":
-          return decoder.decode(result.stderr);
-      }
-      return target[prop];
+      return target[prop] ?? handler[prop];
     },
-  }) as Deno.CommandOutput & {
-    pid: number;
-    stdoutText?: string;
-    stderrText?: string;
-  };
+  }) as Deno.CommandOutput & typeof handler;
 }
 
 export { run };

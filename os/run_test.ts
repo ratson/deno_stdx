@@ -2,7 +2,7 @@ import { assertEquals, assertRejects, assertGreater } from "../deps_test.ts";
 import { CalledProcessError, run } from "./run.ts";
 
 Deno.test("exit with 0", async () => {
-  const r = await run(["deno", "--version"], { stdout: "null" });
+  const r = await run([Deno.execPath(), "--version"], { stdout: "null" });
   assertEquals(r.code, 0);
   assertEquals(r.success, true);
   assertGreater(r.pid, 0);
@@ -36,4 +36,17 @@ Deno.test("options.input", async () => {
       }),
     TypeError,
   );
+});
+
+Deno.test("stdoutJSON()", async () => {
+  const r = await run([Deno.execPath(), "info", "--json"], { stdout: "piped" });
+  assertEquals(r.code, 0);
+  assertEquals(Object.keys(r.stdoutJSON()), [
+    "denoDir",
+    "modulesCache",
+    "npmCache",
+    "typescriptCache",
+    "registryCache",
+    "originStorage",
+  ]);
 });

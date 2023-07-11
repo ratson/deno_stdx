@@ -2,8 +2,9 @@ import {
   StringReader,
   StringWriter,
 } from "https://deno.land/std@0.193.0/io/mod.ts";
-import { inputPassword } from "./input_password.ts";
 import { assertStrictEquals } from "../deps_test.ts";
+import { run } from "../os/run.ts";
+import { inputPassword } from "./input_password.ts";
 
 Deno.test("inputPassword()", async () => {
   class DummyReader extends StringReader {
@@ -27,30 +28,14 @@ Deno.test("inputPassword()", async () => {
 });
 
 Deno.test("inputPassword() example", async () => {
-  const command = new Deno.Command(Deno.execPath(), {
-    args: [
-      "run",
-      "./examples/getpass.ts",
-    ],
-    stdin: "piped",
+  const password = "testing";
+  const r = await run([Deno.execPath(), "run", "./examples/getpass.ts"], {
+    input: password,
     stdout: "piped",
     stderr: "piped",
   });
 
-  const password = "testing";
-  const process = command.spawn();
-
-  const writer = process.stdin.getWriter();
-  writer.write(new TextEncoder().encode(password));
-  writer.releaseLock();
-  await process.stdin.close();
-
-  const { code, stdout, stderr } = await process.output();
-
-  assertStrictEquals(code, 0);
-  assertStrictEquals(new TextDecoder().decode(stderr), "Password: \r\n");
-  assertStrictEquals(
-    new TextDecoder().decode(stdout),
-    `Password = ${password}\n`,
-  );
+  assertStrictEquals(r.code, 0);
+  assertStrictEquals(r.stderrText, "Password: \r\n");
+  assertStrictEquals(r.stdoutText, `Password = ${password}\n`);
 });

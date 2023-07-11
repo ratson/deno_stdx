@@ -1,6 +1,10 @@
 import { assert } from "../deps_test.ts";
-import { isRunning } from "./is_running.ts";
+import { isRunning, isRunningSync } from "./is_running.ts";
 
-Deno.test("isRunning", () => {
-  assert(isRunning(Deno.pid));
+Deno.test("isRunning", async () => {
+  assert(await isRunning(Deno.pid));
+});
+
+Deno.test("isRunningSync", () => {
+  assert(isRunningSync(Deno.pid));
 });

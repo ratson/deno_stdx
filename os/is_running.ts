@@ -1,5 +1,7 @@
+import { osType } from "https://deno.land/std@0.193.0/_util/os.ts";
+
 function checkCommand(pid: number) {
-  switch (Deno.build.os) {
+  switch (osType) {
     case "windows":
       return new Deno.Command("powershell.exe", {
         args: ["Get-Process", "-pid", `${pid}`],
@@ -12,6 +14,11 @@ function checkCommand(pid: number) {
   }
 }
 
-export function isRunning(pid: number) {
+export async function isRunning(pid: number) {
+  const result = await checkCommand(pid).output()
+  return result.success;
+}
+
+export function isRunningSync(pid: number) {
   return checkCommand(pid).outputSync().success;
 }

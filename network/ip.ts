@@ -1,8 +1,4 @@
-import type { PromiseOr } from "../typing/promise.ts";
-import fetchIP_HttpbinOrg from "./ip/httpbin.ts";
-import fetchIP_icanhazip from "./ip/icanhazip.ts";
-import fetchIP_IfconfigCo from "./ip/ifconfig.ts";
-import fetchIP_ipify from "./ip/ipify.ts";
+import ipProviders, { type Provider, type ProviderOptions } from "./ip/mod.ts";
 
 export class IpNotFoundError extends Error {
   override readonly name = "IpNotFoundError";
@@ -12,92 +8,21 @@ export class IpNotFoundError extends Error {
   }
 }
 
-type ProviderOptions = {
-  v?: 4 | 6;
-  signal?: AbortSignal;
-};
-
-export abstract class IpProvider {
-  static registry = new Map<string, IpProvider>();
-
-  static id = "";
-
-  get id(): string {
-    // @ts-expect-error dynamic-prop
-    return this.constructor.id;
-  }
-
-  constructor() {
-    if (!this.id) return;
-
-    const { registry } = IpProvider;
-    if (registry.has(this.id)) throw new Error(`id "${this.id}" is registered`);
-    registry.set(this.id, this);
-  }
-
-  ip(_options: ProviderOptions): PromiseOr<string> {
-    throw new Error("Not implemented");
-  }
-}
-
-class HttpbinProvider extends IpProvider {
-  static id = "httpbin" as const;
-
-  ip(options: ProviderOptions) {
-    return fetchIP_HttpbinOrg(options);
-  }
-}
-
-class IcanhazipProvider extends IpProvider {
-  static id = "icanhazip" as const;
-
-  ip(options: ProviderOptions) {
-    return fetchIP_icanhazip(options);
-  }
-}
-
-class IfconfigProvider extends IpProvider {
-  static id = "ifconfig" as const;
-
-  ip(options: ProviderOptions) {
-    return fetchIP_IfconfigCo({
-      signal: options.signal,
-    });
-  }
-}
-
-class IpifyProvider extends IpProvider {
-  static id = "ipify" as const;
-
-  ip(options: ProviderOptions) {
-    return fetchIP_ipify(options);
-  }
-}
-
-const providers = [
-  IpifyProvider,
-  IcanhazipProvider,
-  IfconfigProvider,
-  HttpbinProvider,
-] as const;
-
-export const defaultProviders = providers.map((C) => new C());
-
 interface Options extends ProviderOptions {
-  providers?: Array<IpProvider | typeof providers[number]["id"]>;
+  providers?: Array<Provider | keyof typeof ipProviders>;
 }
 
 export async function getPublicIP(options?: Options): Promise<string> {
-  const opts = { providers: defaultProviders, ...options } as const;
+  const { providers = Object.values(ipProviders), ...opts } = options ?? {};
   let cause: Error | undefined;
-  for (const k of opts.providers) {
-    const provider = typeof k === "string" ? IpProvider.registry.get(k) : k;
+  for (const k of providers) {
+    const provider = typeof k === "string" ? ipProviders[k] : k;
     if (!provider) continue;
 
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), 10_000);
     try {
-      const ip = await provider.ip({ signal: controller.signal, ...opts });
+      const ip = await provider({ signal: controller.signal, ...opts });
       return ip;
     } catch (err) {
       cause = err;

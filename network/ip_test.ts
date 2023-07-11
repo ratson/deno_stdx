@@ -1,8 +1,6 @@
 import { isIP } from "node:net";
 import { assertRejects, assertStrictEquals, isCI } from "../deps_test.ts";
-import { getPublicIP, IpNotFoundError, IpProvider } from "./ip.ts";
-import fetchIP_HttpbinOrg from "./ip/httpbin.ts";
-import fetchIP_IfconfigCo from "./ip/ifconfig.ts";
+import { getPublicIP, IpNotFoundError } from "./ip.ts";
 
 const assertIP = (a: string, b: string) =>
   isCI()
@@ -28,7 +26,7 @@ Deno.test("getPublicIP", { sanitizeOps: false }, async (t) => {
   });
 
   await t.step("provider = ipify", async () => {
-    const ip = await fetchIP_IfconfigCo();
+    const ip = await getPublicIP({ providers: ["ipify"] });
     assertIP(ip, publicIP);
   });
 
@@ -50,32 +48,14 @@ Deno.test("getPublicIP", { sanitizeOps: false }, async (t) => {
   });
 
   await t.step("provider = httpbin", async () => {
-    const ip = await fetchIP_HttpbinOrg();
+    const ip = await getPublicIP({ providers: ["httpbin"] });
     assertIP(ip, publicIP);
   });
 });
 
 Deno.test("custom provider", { sanitizeOps: false }, async () => {
-  class C extends IpProvider {
-    ip() {
-      return "testing";
-    }
-  }
+  const provider = () => Promise.resolve("testing")
 
-  const ip = await getPublicIP({ providers: [new C()] });
+  const ip = await getPublicIP({ providers: [provider] });
   assertStrictEquals(ip, "testing");
-
-  const registrySize = IpProvider.registry.size;
-  assertStrictEquals(registrySize, 4);
-
-  class D extends IpProvider {
-  }
-  new D();
-  assertStrictEquals(IpProvider.registry.size, registrySize);
-
-  class E extends IpProvider {
-    static id = "E";
-  }
-  new E();
-  assertStrictEquals(IpProvider.registry.size, registrySize + 1);
 });

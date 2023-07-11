@@ -3,7 +3,8 @@ import { CalledProcessError, run } from "./run.ts";
 
 Deno.test("exit with 0", async () => {
   const r = await run(["deno", "--version"], { stdout: "null" });
-  assertEquals(r, { code: 0, success: true });
+  assertEquals(r.code, 0);
+  assertEquals(r.success, true);
 });
 
 Deno.test("options.check", async () => {

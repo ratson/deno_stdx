@@ -5,7 +5,7 @@ export * from "./run.ts";
 /**
  * Capture `stdout` output from a command.
  *
- * @deprecated Use `stdoutText` from `os/run` instead.
+ * @deprecated Use `output()` from `os/subprocess` instead.
  *
  * `stderr` is default to `null`.
  */
@@ -35,7 +35,7 @@ export async function stderrOutput(
 /**
  * Similar to `echo "text" | cmd`.
  *
- * @deprecated Use `input` option from `os/run` instead.
+ * @deprecated Use `pipeText()` option from `os/subprocess` instead.
  */
 export async function pipeText(
   cmd: string[],

@@ -2,7 +2,7 @@ import { JsonValue } from "../typing/json.ts";
 import { output } from "./mod.ts";
 
 /**
- * @deprecated Use `stdoutJSON()` from `os/run` instead.
+ * @deprecated Use `json()` from `os/subprocess` instead.
  */
 export async function json<T extends JsonValue>(
   ...args: Parameters<typeof output>

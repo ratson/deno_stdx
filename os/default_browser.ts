@@ -1,5 +1,5 @@
 import { osType } from "https://deno.land/std@0.193.0/_util/os.ts";
-import { output } from "../subprocess/mod.ts";
+import { output } from "./subprocess.ts";
 
 async function linux() {
   const s = await output([

@@ -1,5 +1,5 @@
 import { osType } from "https://deno.land/std@0.193.0/_util/os.ts";
-import { output, pipeText } from "../subprocess/mod.ts";
+import { output, pipeText } from "./subprocess.ts";
 
 interface Clipboard {
   readText(): Promise<string>;

@@ -1,5 +1,6 @@
 import type { PromiseOr } from "../typing/promise.ts";
-import fetchIPFromHttpbinOrg from "./ip/httpbin_org.ts";
+import fetchIP_HttpbinOrg from "./ip/httpbin.ts";
+import fetchIP_IfconfigCo from "./ip/ifconfig.ts";
 
 export class IpNotFoundError extends Error {
   override readonly name = "IpNotFoundError";
@@ -41,7 +42,7 @@ class HttpbinProvider extends IpProvider {
   static id = "httpbin" as const;
 
   ip(options: ProviderOptions) {
-    return fetchIPFromHttpbinOrg(options);
+    return fetchIP_HttpbinOrg(options);
   }
 }
 
@@ -61,12 +62,10 @@ class IcanhazipProvider extends IpProvider {
 class IfconfigProvider extends IpProvider {
   static id = "ifconfig" as const;
 
-  async ip(options: ProviderOptions) {
-    const res = await fetch(`https://ifconfig.co/ip`, {
+  ip(options: ProviderOptions) {
+    return fetchIP_IfconfigCo({
       signal: options.signal,
     });
-    const ip = await res.text();
-    return ip.trimEnd();
   }
 }
 
@@ -103,7 +102,7 @@ export async function getPublicIP(options?: Options): Promise<string> {
     if (!provider) continue;
 
     const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 5_000);
+    const timer = setTimeout(() => controller.abort(), 10_000);
     try {
       const ip = await provider.ip({ signal: controller.signal, ...opts });
       return ip;

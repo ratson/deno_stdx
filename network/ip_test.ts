@@ -1,6 +1,8 @@
 import { isIP } from "node:net";
 import { assertRejects, assertStrictEquals, isCI } from "../deps_test.ts";
 import { getPublicIP, IpNotFoundError, IpProvider } from "./ip.ts";
+import fetchIP_HttpbinOrg from "./ip/httpbin.ts";
+import fetchIP_IfconfigCo from "./ip/ifconfig.ts";
 
 const assertIP = (a: string, b: string) =>
   isCI()
@@ -25,10 +27,10 @@ Deno.test("getPublicIP", { sanitizeOps: false }, async (t) => {
     assertIP(ip, publicIP);
   });
 
-  // await t.step("provider = ipify", async () => {
-  //   const ip = await getPublicIP({ providers: ["ipify"] });
-  //   assertIP(ip, publicIP);
-  // });
+  await t.step("provider = ipify", async () => {
+    const ip = await fetchIP_IfconfigCo();
+    assertIP(ip, publicIP);
+  });
 
   await t.step("provider = icanhazip", async () => {
     const ip = await getPublicIP({ providers: ["icanhazip"] });
@@ -48,7 +50,7 @@ Deno.test("getPublicIP", { sanitizeOps: false }, async (t) => {
   });
 
   await t.step("provider = httpbin", async () => {
-    const ip = await getPublicIP({ providers: ["httpbin"] });
+    const ip = await fetchIP_HttpbinOrg();
     assertIP(ip, publicIP);
   });
 });

@@ -42,8 +42,13 @@ Deno.test("getPublicIP", { sanitizeOps: false }, async (t) => {
     }, IpNotFoundError);
   });
 
-  await t.step("provider = ifconfig", async () => {
-    const ip = await getPublicIP({ providers: ["ifconfig"] });
+  await t.step("provider = ifconfig.co", async () => {
+    const ip = await getPublicIP({ providers: ["ifconfig.co"] });
+    assertIP(ip, publicIP);
+  });
+
+  await t.step("provider = ifconfig.io", async () => {
+    const ip = await getPublicIP({ providers: ["ifconfig.io"] });
     assertIP(ip, publicIP);
   });
 

@@ -1,3 +1,4 @@
+import { isWindows } from "https://deno.land/std@0.193.0/_util/os.ts";
 import { assertEquals } from "../deps_test.ts";
 import { isSameLink } from "./is_same_link.ts";
 
@@ -14,6 +15,8 @@ Deno.test("isSameLink should return true for hard links", async () => {
 });
 
 Deno.test("isSameLink should return false for different files", async () => {
+  if (isWindows) return;
+
   const [testFile1, testFile2] = await Promise.all([
     Deno.makeTempFile(),
     Deno.makeTempFile(),

@@ -1,8 +1,9 @@
 // Ported from https://github.com/deno-library/progress
 // Copyright 2020 zfx. All rights reserved. MIT license.
+import { isWindows } from "https://deno.land/std@0.193.0/_util/os.ts";
+import { SECOND } from "https://deno.land/std@0.193.0/datetime/constants.ts";
 import { bgGreen, bgWhite } from "https://deno.land/std@0.193.0/fmt/colors.ts";
 import { writeAllSync } from "https://deno.land/std@0.193.0/streams/write_all.ts";
-import { isWindows } from "https://deno.land/std@0.193.0/_util/os.ts";
 import { ms } from "./ms.ts";
 
 const encoder = new TextEncoder();
@@ -122,13 +123,13 @@ export class ProgressBar {
     if (elapsed < this.interval && completed < total) return;
 
     this.#lastRender = now;
-    const time = ((now - this.#start) / 1000).toFixed(1) + "s";
+    const time = ((now - this.#start) / SECOND).toFixed(1) + "s";
     const formattedTime = ms(now - this.#start);
     const eta = completed == 0
       ? "-"
       : ((completed >= total)
         ? 0
-        : (total / completed - 1) * (now - this.#start) / 1000).toFixed(1) +
+        : (total / completed - 1) * (now - this.#start) / SECOND).toFixed(1) +
         "s";
 
     const percent = ((completed / total) * 100).toFixed(2) + "%";

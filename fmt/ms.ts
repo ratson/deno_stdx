@@ -1,12 +1,14 @@
 // Ported from https://github.com/vercel/ms
 // Copyright 2022 Vercel, Inc. All rights reserved. MIT license.
+import {
+  DAY as d,
+  HOUR as h,
+  MINUTE as m,
+  SECOND as s,
+  WEEK as w
+} from "https://deno.land/std@0.193.0/datetime/constants.ts";
 
 // Helpers.
-const s = 1000;
-const m = s * 60;
-const h = m * 60;
-const d = h * 24;
-const w = d * 7;
 const y = d * 365.25;
 
 type Unit =
@@ -147,7 +149,7 @@ function parse(str: string): number {
     default:
       // This should never occur.
       throw new Error(
-        `The unit ${type as string} was matched, but no matching case exists.`,
+        `The unit ${type} was matched, but no matching case exists.`,
       );
   }
 }

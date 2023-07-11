@@ -8,15 +8,16 @@ const LF = 0x0A;
 
 export async function inputPassword({
   prompt = "Password: ",
+  reader = Deno.stdin,
   writer = Deno.stderr,
 } = {}) {
-  const istty = Deno.isatty(Deno.stdin.rid);
+  const istty = Deno.isatty(reader.rid);
   const ret: number[] = [];
   try {
-    if (istty) Deno.stdin.setRaw(true);
+    if (istty) reader.setRaw(true);
     await writer.write(new TextEncoder().encode(prompt));
 
-    for await (const chunk of iterateReader(Deno.stdin)) {
+    for await (const chunk of iterateReader(reader)) {
       for (const ch of chunk) {
         switch (ch) {
           case CR:
@@ -38,7 +39,7 @@ export async function inputPassword({
       if (!istty) break;
     }
   } finally {
-    if (istty) Deno.stdin.setRaw(false);
+    if (istty) reader.setRaw(false);
     await writer.write(Uint8Array.of(CR, LF));
   }
   return new TextDecoder().decode(Uint8Array.from(ret));

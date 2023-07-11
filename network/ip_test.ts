@@ -9,6 +9,7 @@ const assertIP = (a: string, b: string) =>
 
 Deno.test("getPublicIP", { sanitizeOps: false }, async (t) => {
   const publicIP = await getPublicIP({ v: 4 });
+  assertStrictEquals(isIP(publicIP), 4);
 
   await t.step("default", async () => {
     await getPublicIP({ v: 4 });
@@ -56,10 +57,20 @@ Deno.test("getPublicIP", { sanitizeOps: false }, async (t) => {
     const ip = await getPublicIP({ providers: ["httpbin"] });
     assertIP(ip, publicIP);
   });
+
+  await t.step("signal", async () => {
+    await assertRejects(async () => {
+      const ip = await getPublicIP({
+        providers: ["httpbin"],
+        signal: AbortSignal.timeout(100),
+      });
+      assertStrictEquals(ip, publicIP);
+    }, IpNotFoundError);
+  });
 });
 
 Deno.test("custom provider", { sanitizeOps: false }, async () => {
-  const provider = () => Promise.resolve("testing")
+  const provider = () => Promise.resolve("testing");
 
   const ip = await getPublicIP({ providers: [provider] });
   assertStrictEquals(ip, "testing");

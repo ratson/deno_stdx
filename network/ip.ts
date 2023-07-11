@@ -1,3 +1,4 @@
+import { chunk } from "https://deno.land/std@0.193.0/collections/chunk.ts";
 import ipProviders, { type Provider, type ProviderOptions } from "./ip/mod.ts";
 
 export class IpNotFoundError extends Error {
@@ -10,26 +11,29 @@ export class IpNotFoundError extends Error {
 
 interface Options extends ProviderOptions {
   providers?: Array<Provider | keyof typeof ipProviders>;
+  batchSize?: number;
 }
 
-export async function getPublicIP(options?: Options): Promise<string> {
-  const { providers = Object.values(ipProviders), ...opts } = options ?? {};
+export async function getPublicIP(options: Options = {}): Promise<string> {
+  const { providers = Object.values(ipProviders), batchSize = 3, ...opts } =
+    options;
   let cause: Error | undefined;
-  for (const k of providers) {
-    const provider = typeof k === "string" ? ipProviders[k] : k;
-    if (!provider) continue;
-
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 10_000);
-    try {
-      const ip = await provider({ signal: controller.signal, ...opts });
-      return ip;
-    } catch (err) {
-      cause = err;
-      continue;
-    } finally {
-      clearTimeout(timer);
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 10_000);
+  try {
+    for (const c of chunk(providers, batchSize)) {
+      const ip = await Promise.any(c.map((k) => {
+        const provider = typeof k === "string" ? ipProviders[k] : k;
+        if (!provider) return null;
+        return provider({ signal: controller.signal, ...opts });
+      }));
+      if (ip) return ip;
     }
+  } catch (err) {
+    cause = err;
+  } finally {
+    clearTimeout(timer);
+    controller.abort();
   }
   throw new IpNotFoundError(undefined, { cause });
 }

@@ -1,3 +1,4 @@
+import { retry } from "https://deno.land/std@0.193.0/async/retry.ts";
 import { isIP } from "node:net";
 import { assertRejects, assertStrictEquals, isCI } from "../deps_test.ts";
 import { getPublicIP, IpNotFoundError } from "./ip.ts";
@@ -54,7 +55,7 @@ Deno.test("getPublicIP", { sanitizeOps: false }, async (t) => {
   });
 
   await t.step("provider = httpbin", async () => {
-    const ip = await getPublicIP({ providers: ["httpbin"] });
+    const ip = await retry(() => getPublicIP({ providers: ["httpbin"] }));
     assertIP(ip, publicIP);
   });
 

@@ -1,4 +1,4 @@
-import { iterateReader } from "https://deno.land/std@0.193.0/streams/iterate_reader.ts";
+import { iterateReader } from "https://deno.land/std@0.195.0/streams/iterate_reader.ts";
 
 const BACKSPACE = 0x7F;
 const CR = 0x0D;

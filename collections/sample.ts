@@ -1,4 +1,4 @@
-import { randomInteger } from "https://deno.land/std@0.193.0/collections/_utils.ts";
+import { randomInteger } from "https://deno.land/std@0.195.0/collections/_utils.ts";
 
 function* randomInts(max: number, n: number) {
   while (n-- > 0) {

@@ -41,6 +41,9 @@ export function assertLessOrEqual(actual: any, expected: any, msg?: string) {
   );
 }
 
+/**
+ * @deprecated Use `fail()` from `assert/fail` instead.
+ */
 export function assertFail(msg = "Failed") {
   assert(false, msg);
 }

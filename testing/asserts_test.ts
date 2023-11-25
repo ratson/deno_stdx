@@ -1,12 +1,12 @@
-import { AssertionError, assertThrows } from "../deps_test.ts";
 import {
-  assertFail,
   assertGreater,
   assertGreaterOrEqual,
+  AssertionError,
   assertLess,
   assertLessOrEqual,
-  assertType,
-} from "./asserts.ts";
+  assertThrows,
+} from "../deps_test.ts";
+import { assertFail, assertType } from "./asserts.ts";
 
 Deno.test("assertGreater", () => {
   assertGreater(2, 1);

@@ -1,7 +1,7 @@
 // Copyright the p-queue authors. MIT License.
 // Ported from https://github.com/sindresorhus/p-queue
 // deno-lint-ignore-file require-await
-import { DeadlineError } from "https://deno.land/std@0.195.0/async/deadline.ts";
+import { DeadlineError } from "https://deno.land/std@0.208.0/async/deadline.ts";
 import {
   assertEquals,
   assertRejects,

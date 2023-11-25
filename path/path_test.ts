@@ -1,4 +1,4 @@
-import { normalize, SEP } from "https://deno.land/std@0.195.0/path/mod.ts";
+import { normalize, SEP } from "https://deno.land/std@0.208.0/path/mod.ts";
 import { range } from "../collections/range.ts";
 import {
   assertArrayIncludes,
@@ -492,18 +492,18 @@ Deno.test("fs", async () => {
   assertStrictEquals(await d1l.isSymlink(), true);
   assertStrictEquals(await d1l.readLink(), f1);
 
-  let c = 0;
+  let c1 = 0;
   for await (const p of d1.glob("*")) {
     assertArrayIncludes([d1d, d1f, d1l], [p]);
-    c++;
+    c1++;
   }
-  assertStrictEquals(c, 2);
+  assertStrictEquals(c1, 3);
 
-  c = 0;
+  let c2 = 0;
   for await (const _ of d1.walk()) {
-    c++;
+    c2++;
   }
-  assertStrictEquals(c, 3);
+  assertStrictEquals(c2, c1 + 1);
 
   await d1f.copyFile(d2.joinpath("copied"));
 

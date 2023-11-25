@@ -1,5 +1,5 @@
 // deno-lint-ignore-file no-explicit-any
-import { getColorEnabled } from "https://deno.land/std@0.195.0/fmt/colors.ts";
+import { getColorEnabled } from "https://deno.land/std@0.208.0/fmt/colors.ts";
 import { ms } from "../fmt/ms.ts";
 import { camelCase } from "../strings/camel_case.ts";
 

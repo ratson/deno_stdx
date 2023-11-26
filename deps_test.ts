@@ -13,6 +13,6 @@ export {
   assertSpyCall,
   assertSpyCalls,
   spy,
-} from "https://deno.land/x/mock@0.15.2/mod.ts";
+} from "https://deno.land/std@0.208.0/testing/mock.ts";
 
 export * from "./testing/mod.ts";

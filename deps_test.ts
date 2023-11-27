@@ -15,4 +15,6 @@ export {
   spy,
 } from "https://deno.land/std@0.208.0/testing/mock.ts";
 
+export { assertType, type IsExact } from "https://deno.land/std@0.208.0/testing/types.ts";
+
 export * from "./testing/mod.ts";

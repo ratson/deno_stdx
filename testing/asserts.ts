@@ -7,6 +7,9 @@ export function assertFail(msg = "Failed") {
   assert(false, msg);
 }
 
+/**
+ * @deprecated Use `assertType()` from `testing/types` instead.
+ */
 export function assertType<T>(_: T) {
   // noop
 }

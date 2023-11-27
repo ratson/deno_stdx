@@ -1,4 +1,4 @@
-import { assertStrictEquals, assertThrows, assertType } from "../deps_test.ts";
+import { assertStrictEquals, assertThrows, assertType, IsExact } from "../deps_test.ts";
 import { document, navigator, window } from "./dom.ts";
 import type { KeyboardEvent } from "./lib.dom.ts";
 
@@ -11,7 +11,7 @@ Deno.test("document", () => {
 
   assertThrows(() => {
     document.addEventListener("keyup", (e) => {
-      assertType<KeyboardEvent>(e);
+      assertType<IsExact<typeof e, KeyboardEvent>>(true);
     });
   });
 });
@@ -20,5 +20,5 @@ Deno.test("navigator", () => {
   assertStrictEquals(navigator, globalThis.navigator);
   assertStrictEquals(navigator.clipboard, undefined);
 
-  assertType<string>(navigator.userAgent);
+  assertType<IsExact<typeof navigator.userAgent, string>>(true);
 });

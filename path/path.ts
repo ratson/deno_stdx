@@ -32,8 +32,8 @@ import {
   SEP,
   toFileUrl,
 } from "https://deno.land/std@0.208.0/path/mod.ts";
+import { JsonValue } from "https://deno.land/std@0.208.0/json/common.ts";
 import { userCacheDir, userConfigDir, userHomeDir } from "../os/path.ts";
-import { JsonValue } from "../typing/json.ts";
 
 type GlobOptions = Omit<ExpandGlobOptions, "root">;
 

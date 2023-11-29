@@ -1,10 +1,9 @@
 import { withoutAll } from "https://deno.land/std@0.208.0/collections/without_all.ts";
-import { PromiseOr } from "../typing/promise.ts";
 
-export async function withEnv(f: (env: typeof Deno.env) => PromiseOr<void>) {
+export async function withEnv<T>(f: (env: typeof Deno.env) => T) {
   const snapshot = Deno.env.toObject();
   try {
-    await f(Deno.env);
+    return await f(Deno.env);
   } finally {
     const deletedKeys = withoutAll(
       Object.keys(Deno.env.toObject()),

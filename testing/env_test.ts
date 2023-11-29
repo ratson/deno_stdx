@@ -1,4 +1,4 @@
-import { assertStrictEquals } from "https://deno.land/std@0.208.0/testing/asserts.ts";
+import { assertStrictEquals } from "https://deno.land/std@0.208.0/assert/assert_strict_equals.ts";
 import { withEnv } from "./env.ts";
 
 Deno.test("withEnv", async () => {
@@ -8,7 +8,7 @@ Deno.test("withEnv", async () => {
 
   assertStrictEquals(Deno.env.get(k), undefined);
 
-  await withEnv((env) => {
+  const r = await withEnv((env) => {
     assertStrictEquals(env.get(k), undefined);
 
     env.set(k, v);
@@ -16,7 +16,10 @@ Deno.test("withEnv", async () => {
 
     Deno.env.set(k, v2);
     assertStrictEquals(env.get(k), v2);
+
+    return Promise.resolve(1)
   });
 
   assertStrictEquals(Deno.env.get(k), undefined);
+  assertStrictEquals(r, 1);
 });

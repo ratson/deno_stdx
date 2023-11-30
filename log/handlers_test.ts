@@ -24,3 +24,28 @@ Deno.test("BufferHandler", async () => {
   console.log = f;
   assertEquals(testHandler.messages, []);
 });
+
+Deno.test("BufferHandler with empty message", () => {
+  const testHandler = new BufferHandler("DEBUG", {formatter: (x) => x.msg});
+  setup({
+    handlers: {
+      test: testHandler,
+    },
+    loggers: {
+      default: {
+        level: "DEBUG",
+        handlers: ["test"],
+      },
+    },
+  });
+  const logger = getLogger();
+
+  logger.debug("");
+  logger.debug("end");
+
+  const f = console.log;
+  console.log = () => {};
+  testHandler.flush();
+  console.log = f;
+  assertEquals(testHandler.messages, []);
+});

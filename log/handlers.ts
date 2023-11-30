@@ -8,10 +8,9 @@ export class BufferHandler extends ConsoleHandler {
   }
 
   public flush() {
-    while (true) {
-      const msg = this.messages.shift();
-      if (!msg) break;
-      super.log(msg);
+    for (const m of this.messages) {
+      super.log(m);
     }
+    this.messages.length = 0
   }
 }

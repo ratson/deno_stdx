@@ -1,7 +1,7 @@
 import { osType } from "https://deno.land/std@0.208.0/path/_os.ts";
 import { output, pipeText } from "./subprocess.ts";
 
-interface Clipboard {
+export interface Clipboard {
   readText(): Promise<string>;
   writeText(text: string): Promise<void>;
 }
@@ -52,29 +52,12 @@ const windows: Clipboard = {
 };
 
 class GenericClipboard implements Clipboard {
-  possibleBackends: Array<Clipboard> = [];
   backend?: Clipboard;
-
-  constructor() {
-    switch (osType) {
-      case "darwin":
-        this.backend = darwin;
-        break;
-      case "linux":
-        this.possibleBackends = [linux_xclip, linux_xsel];
-        break;
-      case "windows":
-        this.backend = windows;
-        break;
-      default:
-        this.backend = no_backend;
-    }
-  }
 
   async readText() {
     if (this.backend) return this.backend.readText();
 
-    for (const o of this.possibleBackends) {
+    for (const o of this.#possibleBackends) {
       try {
         const result = await o.readText();
         this.backend = o;
@@ -90,7 +73,7 @@ class GenericClipboard implements Clipboard {
   async writeText(text: string) {
     if (this.backend) return this.backend.writeText(text);
 
-    for (const o of this.possibleBackends) {
+    for (const o of this.#possibleBackends) {
       try {
         const result = await o.writeText(text);
         this.backend = o;
@@ -101,6 +84,19 @@ class GenericClipboard implements Clipboard {
     }
     this.backend = no_backend;
     return no_backend.writeText(text);
+  }
+
+  get #possibleBackends() {
+    switch (osType) {
+      case "darwin":
+        return [darwin];
+      case "linux":
+        return [linux_xclip, linux_xsel];
+      case "windows":
+        return [windows];
+      default:
+        return [no_backend];
+    }
   }
 }
 

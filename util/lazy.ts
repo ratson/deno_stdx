@@ -1,10 +1,6 @@
-const notCalled = Symbol("notCalled");
+import { once } from "./once.ts";
 
-export function lazy<T = unknown>(f: () => T) {
-  let result: T | typeof notCalled = notCalled;
-
-  return () => {
-    if (result === notCalled) result = f();
-    return result;
-  };
-}
+/**
+ * @deprecated Renamed to `once()`.
+ */
+export const lazy = once;

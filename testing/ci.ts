@@ -1,6 +1,6 @@
-import { lazy } from "../util/lazy.ts";
+import { once } from "../util/once.ts";
 
-export const isCI = lazy(() =>
+export const isCI = once(() =>
   !!(
     Deno.env.get("CI") || // Travis CI, CircleCI, Cirrus CI, Gitlab CI, Appveyor, CodeShip, dsari
     Deno.env.get("CONTINUOUS_INTEGRATION") || // Travis CI, Cirrus CI

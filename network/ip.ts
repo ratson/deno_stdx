@@ -15,11 +15,11 @@ interface Options extends ProviderOptions {
 }
 
 export async function getPublicIP(options: Options = {}): Promise<string> {
-  const { providers = Object.values(ipProviders), batchSize = 3, ...opts } =
+  const { providers = Object.values(ipProviders), batchSize = 2, ...opts } =
     options;
   let cause: Error | undefined;
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), 10_000);
+  const timer = setTimeout(() => controller.abort(), 2_000);
   try {
     for (const c of chunk(providers, batchSize)) {
       const ip = await Promise.any(c.map((k) => {

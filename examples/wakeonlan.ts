@@ -1,4 +1,4 @@
-import { wakeOnLAN } from "../network/wol.ts";
+import { wakeOnLAN } from "../net/wol.ts";
 
 const itemKey = "wolMAC";
 

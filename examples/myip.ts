@@ -1,3 +1,3 @@
-import { getPublicIP } from "../network/ip.ts";
+import { getPublicIP } from "../net/ip.ts";
 
 console.log(await getPublicIP());

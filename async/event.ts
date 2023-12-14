@@ -1,22 +1,21 @@
 import { deadline } from "https://deno.land/std@0.208.0/async/deadline.ts";
-import { deferred } from "https://deno.land/std@0.208.0/async/deferred.ts";
 
 export async function waitEvent(
   target: EventTarget,
   event: string,
   options?: { timeout?: number },
 ) {
-  const d = deferred<Event>();
+  const { promise, resolve } = Promise.withResolvers();
   const listener: EventListener = (evt) => {
-    d.resolve(evt);
+    resolve(evt);
   };
 
   target.addEventListener(event, listener, { once: true });
 
   try {
     return await (options?.timeout === undefined
-      ? d
-      : deadline(d, options.timeout));
+      ? promise
+      : deadline(promise, options.timeout));
   } finally {
     target.removeEventListener(event, listener);
   }

@@ -293,7 +293,10 @@ Deno.test("expanduser", () => {
   if (isWindows) return;
 
   assertStrictEquals(Path.from("~/").expanduser(), Path.home().joinpath("./"));
-  assertStrictEquals(Path.from("~/.cache/").expanduser(), Path.home().joinpath(".cache/"));
+  assertStrictEquals(
+    Path.from("~/.cache/").expanduser(),
+    Path.home().joinpath(".cache/"),
+  );
 
   assertStrictEquals(
     Path.from("~user/").expanduser().equals(Path.home().joinpath("..", "user")),
@@ -392,7 +395,7 @@ Deno.test("toStringTag", () => {
 
 Deno.test("DefaultCache", async () => {
   const cache = new DefaultCache();
-  // @ts-expect-error create new instance from private constuctor
+  // @ts-expect-error create new instance from private constructor
   const createPath = () => Object.freeze(new Path(crypto.randomUUID()));
   let p1 = createPath();
   const p1k = p1.toString();
@@ -400,18 +403,14 @@ Deno.test("DefaultCache", async () => {
 
   cache.set(p1k, p1);
   assertStrictEquals(cache.get(p1k), p1);
-  assertStrictEquals(cache.counter, 1);
   assertStrictEquals(cache.refs.size, 1);
 
-  if (!isCI()) return;
-  // remove reference
-  p1 = undefined;
+  p1 = undefined; // remove reference for GC to free it
   while (cache.get(p1k)) {
-    await delay(100);
+    new Uint8Array(64 * 1024 * 1024); // speed up GC
+    await delay(10);
   }
-  cache.gc();
   assertStrictEquals(cache.refs.size, 0);
-  assertStrictEquals(cache.keys.length, 0);
 });
 
 Deno.test("parent", () => {

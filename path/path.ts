@@ -50,9 +50,10 @@ export interface Cache {
 
 export class DefaultCache implements Cache {
   readonly refs = new Map<string, WeakRef<Path>>();
-  readonly keys = new Array<string>();
-  readonly gcInterval = 128;
-  counter = 0;
+
+  #registry = new FinalizationRegistry((k: string) => {
+    this.refs.delete(k);
+  });
 
   get(key: string) {
     return this.refs.get(key)?.deref();
@@ -60,25 +61,7 @@ export class DefaultCache implements Cache {
 
   set(key: string, value: Path) {
     this.refs.set(key, new WeakRef(value));
-    this.keys.push(key);
-
-    if (++this.counter > this.gcInterval) {
-      this.counter = 0;
-      this.gc();
-    }
-  }
-
-  gc() {
-    const { keys, refs: m } = this;
-    for (const k of keys.splice(0, this.gcInterval)) {
-      const v = m.get(k);
-      if (v === undefined) continue;
-      if (v.deref() === undefined) {
-        m.delete(k);
-      } else {
-        keys.push(k);
-      }
-    }
+    this.#registry.register(value, key);
   }
 }
 

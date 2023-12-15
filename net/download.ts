@@ -1,4 +1,4 @@
-import { dirname } from "https://deno.land/std@0.208.0/path/mod.ts";
+import { dirname } from "https://deno.land/std@0.208.0/path/dirname.ts";
 import { ensureDir } from "https://deno.land/std@0.208.0/fs/ensure_dir.ts";
 import { writeAll } from "https://deno.land/std@0.208.0/streams/write_all.ts";
 

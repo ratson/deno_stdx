@@ -133,7 +133,7 @@ export class Path {
   /**
    * Returns path relative to `import.meta`.
    *
-   * Note: As hosted script don't reoslve to file system path, library should avoid this method.
+   * Note: As hosted script don't resolve to file system path, library should avoid this method.
    *
    * @example
    * ```ts

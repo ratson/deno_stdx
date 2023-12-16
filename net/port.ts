@@ -16,6 +16,8 @@ export function isPortAvailable(options: Deno.ListenOptions): boolean {
 
 /**
  * Get a free port
+ *
+ * @deprecated Use `getAvailablePort()` from `net` instead.
  */
 export function getPort() {
   const listener = Deno.listen({ port: 0 });

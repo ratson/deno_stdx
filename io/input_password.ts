@@ -6,6 +6,9 @@ const CTRL_C = 0x03;
 const CTRL_D = 0x04;
 const LF = 0x0A;
 
+/**
+ * @deprecated Use `promptSecret()` from `cli/prompt_secret` instead.
+ */
 export async function inputPassword({
   prompt = "Password: ",
   reader = Deno.stdin,

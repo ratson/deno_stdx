@@ -1,4 +1,4 @@
-import { readLines } from "https://deno.land/std@0.208.0/io/read_lines.ts";
+import { readLines } from "https://deno.land/std@0.209.0/io/read_lines.ts";
 
 export async function confirm(
   message: string,

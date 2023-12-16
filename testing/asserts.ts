@@ -1,4 +1,4 @@
-import { assert } from "https://deno.land/std@0.208.0/assert/mod.ts";
+import { assert } from "https://deno.land/std@0.209.0/assert/mod.ts";
 
 /**
  * @deprecated Use `fail()` from `assert/fail` instead.

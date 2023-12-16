@@ -1,4 +1,4 @@
-import { chunk } from "https://deno.land/std@0.208.0/collections/chunk.ts";
+import { chunk } from "https://deno.land/std@0.209.0/collections/chunk.ts";
 import ipProviders, { type Provider, type ProviderOptions } from "./ip/mod.ts";
 
 export class IpNotFoundError extends Error {

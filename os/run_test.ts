@@ -1,4 +1,4 @@
-import { assertEquals, assertRejects, assertGreater } from "../deps_test.ts";
+import { assertEquals, assertGreater, assertRejects } from "../deps_test.ts";
 import { CalledProcessError, run } from "./run.ts";
 
 Deno.test("exit with 0", async () => {

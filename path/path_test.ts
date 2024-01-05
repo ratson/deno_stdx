@@ -1,4 +1,4 @@
-import { normalize, SEP } from "https://deno.land/std@0.209.0/path/mod.ts";
+import { normalize, SEP } from "https://deno.land/std@0.211.0/path/mod.ts";
 import { range } from "../collections/range.ts";
 import {
   assertArrayIncludes,

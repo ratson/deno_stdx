@@ -1,4 +1,4 @@
-import { osType } from "https://deno.land/std@0.209.0/path/_os.ts";
+import { osType } from "https://deno.land/std@0.211.0/path/_os.ts";
 
 function checkCommand(pid: number) {
   switch (osType) {
@@ -15,7 +15,7 @@ function checkCommand(pid: number) {
 }
 
 export async function isRunning(pid: number) {
-  const result = await checkCommand(pid).output()
+  const result = await checkCommand(pid).output();
   return result.success;
 }
 

@@ -1,7 +1,7 @@
 import {
   StringReader,
   StringWriter,
-} from "https://deno.land/std@0.211.0/io/mod.ts";
+} from "https://deno.land/std@0.217.0/io/mod.ts";
 import { assertStrictEquals } from "../deps_test.ts";
 import { run } from "../os/run.ts";
 import { inputPassword } from "./input_password.ts";
@@ -16,6 +16,9 @@ Deno.test("inputPassword()", async () => {
     readable = null as never;
     setRaw() {}
     close() {}
+    isTerminal() {
+      return true;
+    }
   }
 
   const password = await inputPassword({

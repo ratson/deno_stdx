@@ -15,10 +15,10 @@ import {
   walk,
   WalkOptions,
   walkSync,
-} from "https://deno.land/std@0.211.0/fs/mod.ts";
+} from "https://deno.land/std@0.217.0/fs/mod.ts";
 import {
   basename,
-  delimiter,
+  DELIMITER as delimiter,
   dirname,
   extname,
   format,
@@ -29,10 +29,10 @@ import {
   parse,
   relative,
   resolve,
-  SEP,
+  SEPARATOR as SEP,
   toFileUrl,
-} from "https://deno.land/std@0.211.0/path/mod.ts";
-import { JsonValue } from "https://deno.land/std@0.211.0/json/common.ts";
+} from "https://deno.land/std@0.217.0/path/mod.ts";
+import { JsonValue } from "https://deno.land/std@0.217.0/json/common.ts";
 import { userCacheDir, userConfigDir, userHomeDir } from "../os/path.ts";
 
 type GlobOptions = Omit<ExpandGlobOptions, "root">;
@@ -310,12 +310,10 @@ export class Path {
     return Path.from(
       s.replace(
         /^~([a-z]+|\/?)/,
-        (
-          _,
-          $1,
-        ) => (["", "/"].includes($1)
-          ? `${homeDir}${$1}`
-          : `${dirname(homeDir)}/${$1}`),
+        (_, $1) =>
+          ["", "/"].includes($1)
+            ? `${homeDir}${$1}`
+            : `${dirname(homeDir)}/${$1}`,
       ),
     );
   }
@@ -325,18 +323,21 @@ export class Path {
     opts: GlobOptions = {},
   ): AsyncIterableIterator<Path> {
     for await (
-      const file of expandGlob(glob, { ...opts, root: this.toString() })
+      const file of expandGlob(glob, {
+        ...opts,
+        root: this.toString(),
+      })
     ) {
       yield Path.from(file.path);
     }
   }
 
-  *globSync(
-    glob: string,
-    opts: GlobOptions = {},
-  ): IterableIterator<Path> {
+  *globSync(glob: string, opts: GlobOptions = {}): IterableIterator<Path> {
     for (
-      const file of expandGlobSync(glob, { ...opts, root: this.toString() })
+      const file of expandGlobSync(glob, {
+        ...opts,
+        root: this.toString(),
+      })
     ) {
       yield Path.from(file.path);
     }
@@ -347,7 +348,7 @@ export class Path {
   }
 
   relative(otherPath: Path) {
-    if (this.isAbsolute() !== otherPath.isAbsolute()) {
+    if (this.isAbsolute() !== otherPath?.isAbsolute()) {
       throw new Error("One path is relative and the other is absolute.");
     }
     return Path.from(relative(this.toString(), otherPath.toString()));
@@ -635,10 +636,7 @@ export class Path {
     } = {},
   ) {
     const { replacer, space, ...opts } = options;
-    return this.writeTextFile(
-      JSON.stringify(value, replacer, space),
-      opts,
-    );
+    return this.writeTextFile(JSON.stringify(value, replacer, space), opts);
   }
 
   get [Symbol.toStringTag]() {

@@ -1,4 +1,4 @@
-import { normalize, SEP } from "https://deno.land/std@0.211.0/path/mod.ts";
+import { normalize, SEPARATOR as SEP } from "https://deno.land/std@0.217.0/path/mod.ts";
 import { range } from "../collections/range.ts";
 import {
   assertArrayIncludes,
@@ -331,6 +331,10 @@ Deno.test("relative", () => {
   const p = Path.from("/tmp/d/file.txt");
   assertStrictEquals(p.relative(Path.from("/tmp/d")), Path.from(".."));
   assertStrictEquals(p.relative(Path.from("/tmp/d/f")), Path.from("../f"));
+
+  assertThrows(() => {
+    p.relative(undefined as never);
+  });
 
   assertThrows(() => {
     p.relative(Path.from(".."));

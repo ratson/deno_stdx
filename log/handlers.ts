@@ -1,4 +1,4 @@
-import { ConsoleHandler } from "https://deno.land/std@0.211.0/log/handlers.ts";
+import { ConsoleHandler } from "https://deno.land/std@0.217.0/log/console_handler.ts";
 
 export class BufferHandler extends ConsoleHandler {
   public readonly messages: string[] = [];

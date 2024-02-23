@@ -1,9 +1,9 @@
 // Ported from https://github.com/deno-library/progress
 // Copyright 2020 zfx. All rights reserved. MIT license.
-import { isWindows } from "https://deno.land/std@0.211.0/path/_os.ts";
-import { SECOND } from "https://deno.land/std@0.211.0/datetime/constants.ts";
-import { bgGreen, bgWhite } from "https://deno.land/std@0.211.0/fmt/colors.ts";
-import { writeAllSync } from "https://deno.land/std@0.211.0/streams/write_all.ts";
+import { isWindows } from "https://deno.land/std@0.217.0/path/_os.ts";
+import { SECOND } from "https://deno.land/std@0.217.0/datetime/constants.ts";
+import { bgGreen, bgWhite } from "https://deno.land/std@0.217.0/fmt/colors.ts";
+import { writeAllSync } from "https://deno.land/std@0.217.0/io/write_all.ts";
 import { ms } from "./ms.ts";
 
 const encoder = new TextEncoder();
@@ -169,10 +169,10 @@ export class ProgressBar {
         : preciseBar[Math.floor(preciseBar.length * preciseLength)];
     }
 
-    const complete = new Array(roundedCompleteLength).fill(
+    const complete = Array(roundedCompleteLength).fill(
       options.complete ?? this.complete,
     ).join("");
-    const incomplete = new Array(
+    const incomplete = Array(
       Math.max(width - roundedCompleteLength - (precision ? 1 : 0), 0),
     ).fill(options.incomplete ?? this.incomplete).join("");
 
@@ -254,6 +254,6 @@ export class ProgressBar {
   }
 
   #write(msg: string) {
-    writeAllSync(this.stream, encoder.encode(msg));
+    // writeAllSync(this.stream, encoder.encode(msg));
   }
 }

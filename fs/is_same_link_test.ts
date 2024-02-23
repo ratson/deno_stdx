@@ -1,4 +1,4 @@
-import { isWindows } from "https://deno.land/std@0.211.0/path/_os.ts";
+import { isWindows } from "https://deno.land/std@0.217.0/path/_os.ts";
 import { assertEquals } from "../deps_test.ts";
 import { isSameLink } from "./is_same_link.ts";
 

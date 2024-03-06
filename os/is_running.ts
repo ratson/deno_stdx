@@ -1,4 +1,4 @@
-import { osType } from "https://deno.land/std@0.217.0/path/_os.ts";
+import { osType } from "https://deno.land/std@0.218.2/path/_os.ts";
 
 function checkCommand(pid: number) {
   switch (osType) {

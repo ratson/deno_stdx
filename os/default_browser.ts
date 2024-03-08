@@ -1,4 +1,4 @@
-import { osType } from "https://deno.land/std@0.218.2/path/_os.ts";
+import { osType } from "https://deno.land/std@0.219.1/path/_os.ts";
 import { output } from "./subprocess.ts";
 
 async function linux() {

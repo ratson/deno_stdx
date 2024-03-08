@@ -1,4 +1,4 @@
-import { retry } from "https://deno.land/std@0.218.2/async/retry.ts";
+import { retry } from "https://deno.land/std@0.219.1/async/retry.ts";
 import { isIP } from "node:net";
 import { assertRejects, assertStrictEquals, isCI } from "../deps_test.ts";
 import { getPublicIP, IpNotFoundError } from "./ip.ts";

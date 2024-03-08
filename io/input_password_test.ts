@@ -1,7 +1,7 @@
 import {
   StringReader,
   StringWriter,
-} from "https://deno.land/std@0.218.2/io/mod.ts";
+} from "https://deno.land/std@0.219.1/io/mod.ts";
 import { assertStrictEquals } from "../deps_test.ts";
 import { run } from "../os/run.ts";
 import { inputPassword } from "./input_password.ts";

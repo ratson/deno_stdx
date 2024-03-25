@@ -172,6 +172,8 @@ const empty = (): void => {};
 
 /**
  * Promise queue with concurrency control
+ *
+ * @deprecated use `npm:p-queue` instead
  */
 export class AsyncQueue<
   QueueType extends Queue<RunFunction, EnqueueOptionsType> = PriorityQueue,

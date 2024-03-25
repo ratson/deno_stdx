@@ -1,4 +1,4 @@
-import { pooledMap } from "https://deno.land/std@0.219.1/async/pool.ts";
+import { pooledMap } from "https://deno.land/std@0.220.1/async/pool.ts";
 import { enumerate } from "./enumerate.ts";
 
 export async function map<T, R>(

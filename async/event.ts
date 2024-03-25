@@ -1,4 +1,4 @@
-import { deadline } from "https://deno.land/std@0.219.1/async/deadline.ts";
+import { deadline } from "https://deno.land/std@0.220.1/async/deadline.ts";
 
 export async function waitEvent(
   target: EventTarget,

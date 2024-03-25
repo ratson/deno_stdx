@@ -1,4 +1,4 @@
-import { resolve } from "https://deno.land/std@0.219.1/path/resolve.ts";
+import { resolve } from "https://deno.land/std@0.220.1/path/resolve.ts";
 
 export async function isSameLink(src: string, dest: string) {
   const p1 = resolve(src);

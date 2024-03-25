@@ -1,7 +1,7 @@
 import {
   DeadlineError,
   delay,
-} from "https://deno.land/std@0.219.1/async/mod.ts";
+} from "https://deno.land/std@0.220.1/async/mod.ts";
 import { assertRejects, assertStrictEquals } from "../deps_test.ts";
 import { waitEvent } from "./event.ts";
 

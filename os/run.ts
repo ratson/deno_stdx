@@ -1,4 +1,4 @@
-import { JsonValue } from "https://deno.land/std@0.219.1/json/common.ts";
+import { JsonValue } from "https://deno.land/std@0.220.1/json/common.ts";
 
 export interface RunOptions extends Deno.CommandOptions {
   check?: boolean;

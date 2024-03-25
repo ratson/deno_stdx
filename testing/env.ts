@@ -1,4 +1,4 @@
-import { withoutAll } from "https://deno.land/std@0.219.1/collections/without_all.ts";
+import { withoutAll } from "https://deno.land/std@0.220.1/collections/without_all.ts";
 
 export async function withEnv<T>(f: (env: typeof Deno.env) => T) {
   const snapshot = Deno.env.toObject();

@@ -1,7 +1,7 @@
 import {
   normalize,
   SEPARATOR as SEP,
-} from "https://deno.land/std@0.220.1/path/mod.ts";
+} from "https://deno.land/std@0.223.0/path/mod.ts";
 import { range } from "../collections/range.ts";
 import {
   assertArrayIncludes,

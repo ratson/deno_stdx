@@ -6,7 +6,7 @@ import {
   MINUTE as m,
   SECOND as s,
   WEEK as w
-} from "https://deno.land/std@0.220.1/datetime/constants.ts";
+} from "https://deno.land/std@0.223.0/datetime/constants.ts";
 
 // Helpers.
 const y = d * 365.25;

@@ -1,4 +1,4 @@
-import { JsonValue } from "https://deno.land/std@0.220.1/json/common.ts";
+import { JsonValue } from "https://deno.land/std@0.223.0/json/common.ts";
 import { run, type RunOptions } from "./run.ts";
 
 /**

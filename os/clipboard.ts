@@ -1,4 +1,4 @@
-import { osType } from "https://deno.land/std@0.220.1/path/_os.ts";
+import { osType } from "https://deno.land/std@0.223.0/path/_os.ts";
 import { output, pipeText } from "./subprocess.ts";
 
 export interface Clipboard {

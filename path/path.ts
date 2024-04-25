@@ -15,7 +15,7 @@ import {
   walk,
   WalkOptions,
   walkSync,
-} from "https://deno.land/std@0.223.0/fs/mod.ts";
+} from "https://deno.land/std@0.224.0/fs/mod.ts";
 import {
   basename,
   DELIMITER as delimiter,
@@ -31,8 +31,8 @@ import {
   resolve,
   SEPARATOR as SEP,
   toFileUrl,
-} from "https://deno.land/std@0.223.0/path/mod.ts";
-import { JsonValue } from "https://deno.land/std@0.223.0/json/common.ts";
+} from "https://deno.land/std@0.224.0/path/mod.ts";
+import { JsonValue } from "https://deno.land/std@0.224.0/json/common.ts";
 import { userCacheDir, userConfigDir, userHomeDir } from "../os/path.ts";
 
 type GlobOptions = Omit<ExpandGlobOptions, "root">;

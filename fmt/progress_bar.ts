@@ -1,9 +1,9 @@
 // Ported from https://github.com/deno-library/progress
 // Copyright 2020 zfx. All rights reserved. MIT license.
-import { isWindows } from "https://deno.land/std@0.223.0/path/_os.ts";
-import { SECOND } from "https://deno.land/std@0.223.0/datetime/constants.ts";
-import { bgGreen, bgWhite } from "https://deno.land/std@0.223.0/fmt/colors.ts";
-import { writeAllSync } from "https://deno.land/std@0.223.0/io/write_all.ts";
+import { isWindows } from "https://deno.land/std@0.224.0/path/_os.ts";
+import { SECOND } from "https://deno.land/std@0.224.0/datetime/constants.ts";
+import { bgGreen, bgWhite } from "https://deno.land/std@0.224.0/fmt/colors.ts";
+import { writeAllSync } from "https://deno.land/std@0.224.0/io/write_all.ts";
 import { ms } from "./ms.ts";
 
 const encoder = new TextEncoder();

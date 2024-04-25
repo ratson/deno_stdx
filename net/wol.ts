@@ -1,4 +1,4 @@
-import { concat } from "https://deno.land/std@0.223.0/bytes/concat.ts";
+import { concat } from "https://deno.land/std@0.224.0/bytes/concat.ts";
 
 export function createMagicPacket(macAddress: string): Uint8Array {
   const octets = macAddress.match(/[0-9a-fA-F]{2}/g);

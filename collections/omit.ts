@@ -1,4 +1,4 @@
-import { filterKeys } from "https://deno.land/std@0.223.0/collections/filter_keys.ts";
+import { filterKeys } from "https://deno.land/std@0.224.0/collections/filter_keys.ts";
 
 /**
  * @deprecated Use `omit()` from `std` instead.
